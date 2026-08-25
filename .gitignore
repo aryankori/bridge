@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Secrets & credentials
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+
+# Bridge runtime state
+.bridge/
+bridge-state.json
+bridge.db
+bridge.db-*
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.DS_Store?
+._*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+
+# Caches
+.cache/
+.eslintcache
+*.tsbuildinfo
+
+# Temporary files
+tmp/
+temp/
+*.tmp
