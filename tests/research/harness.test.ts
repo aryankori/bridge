@@ -212,13 +212,14 @@ describe('EXP-001 Research Harness Unit Tests', () => {
     });
 
     it('should handle paths with spaces cleanly without path corruption', () => {
-      const pathWithSpaces = 'C:\\Users\\aryan\\Documents\\AI and ML\\bridge\\research\\experiments\\exp-001';
-      const normalized = path.normalize(pathWithSpaces);
+      const basePath = path.join('Users', 'test user', 'Documents', 'AI and ML', 'bridge');
+      const normalized = path.normalize(basePath);
       expect(normalized).toContain('AI and ML');
+      expect(normalized).toContain('test user');
 
-      // Native path resolution must preserve spaces
-      const subpath = path.join(pathWithSpaces, 'worktrees', 'condition-a');
-      expect(subpath).toContain('AI and ML\\bridge\\research\\experiments\\exp-001\\worktrees\\condition-a');
+      // Native path resolution must preserve spaces across platforms
+      const subpath = path.join(basePath, 'worktrees', 'condition-a');
+      expect(subpath).toContain(path.join('AI and ML', 'bridge', 'worktrees', 'condition-a'));
     });
 
     it('should enforce identical OpenCode research flags across all conditions', () => {
