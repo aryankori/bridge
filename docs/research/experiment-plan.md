@@ -1,6 +1,6 @@
-# Bridge — Phase 1A: Controlled Work-Transfer Experiment Plan
+# Bridge — Phase 1A: Controlled Work-Transfer Experiment Plan (Revised)
 
-**Document Version:** `1.1.0`  
+**Document Version:** `2.0.0-corrected`  
 **Experiment ID:** `EXP-001-WORK-TRANSFER`  
 **Date:** 2026-08-26  
 **Auditor / Engineer:** Experimental Systems Engineer (Antigravity)  
@@ -10,9 +10,9 @@
 
 ## 1. Executive Summary & Core Hypothesis
 
-This document defines the formal experimental protocol to test the foundational hypothesis of Project Bridge:
+This document defines the corrected experimental protocol for testing the core hypothesis of Project Bridge:
 
-> **Core Hypothesis:** Work-state produced by one AI agent (Agent A) can be extracted and transferred to another heterogeneous AI agent (Agent B) in a way that measurably improves Agent B's task completion rate, code correctness, execution time, and rework cycles compared to a zero-context baseline or an unstructured conversation transcript.
+> **Core Hypothesis:** Work-state produced by one AI agent (Agent A) can be transferred to a heterogeneous AI agent (Agent B) in a way that measurably improves Agent B's task completion rate, code correctness, execution time, and rework cycles compared to a zero-context baseline or an unedited conversation transcript.
 
 ### 1.1 Non-Assumptions (Hypotheses Under Test)
 We explicitly do **not** take any of the following for granted:
@@ -24,25 +24,9 @@ We explicitly do **not** take any of the following for granted:
 
 ---
 
-## 2. Target Agent Pair & Compatibility Baseline
+## 2. Experimental Conditions Matrix
 
-### 2.1 Agent Specifications
-
-| Role | Agent | Version / Build | Executable Path | Integration Interface |
-| :--- | :--- | :--- | :--- | :--- |
-| **Agent A (Analyzer)** | Claude Code | `2.1.233` | `~\.local\bin\claude.exe` | Non-interactive CLI with `--print --output-format stream-json --verbose` |
-| **Agent B (Implementer)** | OpenCode `ox alpha` | `1.18.23` | `C:\Users\aryan\scoop\apps\opencode\current\opencode.exe` | ACP v1 (`opencode.exe acp`) over JSON-RPC 2.0 stdio (Fallback: `opencode run --format json`) |
-
-### 2.2 Empirical Compatibility Notes
-- OpenCode `1.18.23` supports ACP v1 with JSON-RPC 2.0 stdio transport.
-- Session bootstrap on Windows incurs ~1.5s - 2.5s latency due to SQLite database file locks and plugin catalog scans.
-- OpenCode streams reasoning tokens under `session/update` (`agent_thought_chunk`) before emitting assistant output (`agent_message_chunk`).
-
----
-
-## 3. Experimental Conditions Matrix
-
-The experiment evaluates three strictly controlled conditions:
+The experiment evaluates three strictly isolated conditions:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -53,103 +37,95 @@ The experiment evaluates three strictly controlled conditions:
 ├──────────────────────┼─────────────────────────────┼────────────────────────┤
 │ Clean Fixture        │ Clean Fixture               │ Clean Fixture          │
 │ + Raw Task Prompt    │ + Raw Task Prompt           │ + Raw Task Prompt      │
-│ (No prior analysis)  │ + Filtered Claude Transcript│ + Structured Dossier   │
-│                      │   (Max 4KB conversation)    │   (Schema v0.1.0-exp)  │
+│ (No prior analysis)  │ + Unedited Claude Transcript│ + Simplified Dossier   │
+│                      │   (Capped at 8 KB)          │   (Schema v0.2.0)      │
 └──────────────────────┴─────────────────────────────┴────────────────────────┘
 ```
 
-### 3.1 Condition A: Native Baseline
-- **Description:** Agent B receives the raw task prompt and a clean checkout of the repository.
+### 2.1 Condition A: Native Baseline
 - **Input:** Task prompt: *"Resolve all defects in `src/scheduler.ts` so that all 10 tests in `tests/scheduler.test.ts` pass."*
 - **Prior Information:** None (0 bytes from Agent A).
 
-### 3.2 Condition B: Transcript Transfer
-- **Description:** Agent A performs an exploratory analysis of the repository. Agent A's useful conversational transcript is filtered and provided as context to Agent B.
-- **Exact Transcript Specification:**
-  - **Generator:** Automated harness extractor capturing Agent A's stdout stream.
-  - **Inclusions:** Agent A's final response text, analytical observations, code snippet excerpts, and high-level reasoning.
-  - **Exclusions:** API retry envelopes, JSON-RPC transport frames, internal token usage statistics, and conversational niceties ("Sure, I can help with that...").
-  - **Tool Outputs:** High-level summary of tool outcomes (e.g. test failure counts) included; raw 500-line stack traces truncated.
-  - **File Contents:** Only referenced code snippets included; whole files excluded.
-  - **Size Ceiling:** Hard cap of **4,096 tokens (~16 KB UTF-8)** to prevent context window saturation.
-  - **Format:** Chronological Markdown transcript block prefixed with `[TRANSCRIPT FROM PRIOR ANALYSIS SESSION]`.
+### 2.2 Condition B: Fair Transcript Transfer (Red-Team Corrected)
+- **Input:** Task prompt + **actual unedited chronological stdout transcript** produced by Agent A during its initial analysis turn.
+- **Specification:**
+  - **No Selective Filtering:** The transcript is NOT cleaned of "less useful" conversation or niceties.
+  - **Payload Cap:** Maximum delivered payload limit of **8,192 bytes (8 KB)**.
+  - **Truncation Protocol:** If original transcript exceeds 8 KB, truncate from the end and append `\n[TRANSCRIPT TRUNCATED AT 8KB LIMIT]`.
+  - **Telemetry Captured:** Original transcript size (bytes), delivered size (bytes), truncation flag, and estimated tokens.
+  - **Delimiter:** Enclosed inside explicit `<<<UNTRUSTED_AGENT_TRANSCRIPT_START>>>` and `<<<UNTRUSTED_AGENT_TRANSCRIPT_END>>>` boundary tags.
 
-### 3.3 Condition C: Structured Work Transfer
-- **Description:** Agent A performs the exploratory analysis. The harness compiles the findings into a strictly validated `ExperimentalWorkTransfer` object (see [`docs/research/experiment-schema.md`](file:///C:/Users/aryan/Documents/AI%20and%20ML/bridge/docs/research/experiment-schema.md)).
-- **Exact Schema Specification:**
-  - **Objective:** Explicit global target description.
-  - **Diagnostics:** Typed defect findings (`DIAG-001`, `DIAG-002`, `DIAG-003`) with root-cause analysis and exact file/line ranges.
-  - **Tasks:** Atomic work items with acceptance criteria.
-  - **Constraints:** Immutability rules (e.g. "Do not alter method signatures").
-  - **Provenance & Confidence:** Evidence level (`test_execution` vs `llm_deduction`) and confidence score (0.0 - 1.0).
-  - **Size Ceiling:** Under **2,048 tokens (~8 KB UTF-8)** of structured, reference-anchored data.
+### 2.3 Condition C: Simplified Structured Work Transfer (Red-Team Corrected)
+- **Input:** Task prompt + **minimal structured dossier** formatted according to `ExperimentalWorkTransfer` v0.2.0-simplified (see [`docs/research/experiment-schema.md`](file:///C:/Users/aryan/Documents/AI%20and%20ML/bridge/docs/research/experiment-schema.md)).
+- **Specification:**
+  - **Fields Included:** `objective`, `diagnostics` (`id`, `title`, `rootCause`, `locations`), `constraints`, `verificationCommands`.
+  - **Fields Removed:** Epistemic classification trees, generalized task graphs, nested provenance hierarchies.
+  - **Delimiter:** Enclosed inside explicit `<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>` and `<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_END>>>` boundary tags.
 
 ---
 
-## 4. Task Design & Selection Rationale
+## 3. Information Measurement Model
 
-### 4.1 Target Task: Priority Token-Bucket Task Scheduler
-- **Location:** `research/experiments/exp-001/fixture/`
-- **Component Under Test:** `src/scheduler.ts` (Asynchronous task scheduler)
-- **Defects Injected:**
-  1. *Unclamped Burst Refill:* `refillTokens()` adds tokens without clamping to `capacity`, allowing illegal burst rates.
-  2. *Active Worker Counter Underflow:* Abort handler and completion handler both decrement `activeCount`, leading to negative worker counts.
-  3. *Queue Starvation on Token Exhaustion:* `pump()` exits silently when tokens are depleted without arming a delayed wake-up timer.
+Per Red-Team Correction 3, the experiment does **not** assume or force informational equivalence between Condition B and Condition C. Instead, the harness measures and reports:
+1. **Raw Payload Bytes:** Exact size of injected text.
+2. **Estimated Tokens:** Token count (tiktoken / character heuristic $\approx \text{bytes}/4$).
+3. **Files Referenced:** Explicit list of source files mentioned in payload.
+4. **Diagnostics Conveyed:** Count of distinct defects explained in payload.
+5. **Constraints Conveyed:** Count of explicit rules/invariants listed in payload.
+6. **Verification Information Conveyed:** Presence of exact test execution syntax.
 
-### 4.2 Why This Task Is Ideal for Knowledge Transfer Testing
-1. **Non-Trivial Algorithmic Coupling:** The defects cannot be resolved by simple syntax inspection. They require understanding timer lifecycles, event loops, and asynchronous state synchronization.
-2. **Analysis Payoff:** A receiving agent that knows *why* the queue starves (Defect 3) saves extensive trial-and-error debugging cycles.
-3. **Objective Automated Verification:** 10 deterministic Vitest unit tests in `tests/scheduler.test.ts` test concurrency limits, abort signals, FIFO order, and rate limiting with zero ambiguity.
-4. **Bounded Scope:** The codebase is small (~120 LOC), ensuring the experiment measures reasoning efficiency and transfer fidelity rather than disk I/O throughput.
+This measurement allows distinguishing **MORE INFORMATION** from **BETTER STRUCTURED REPRESENTATION**.
 
 ---
 
-## 5. Experimental Isolation & Worktree Protocol
+## 4. Evaluation Framework
 
-To eliminate cross-condition contamination:
-1. **Isolated Worktree Paths:**
-   - Condition A: `research/experiments/exp-001/worktrees/condition-a/`
-   - Condition B: `research/experiments/exp-001/worktrees/condition-b/`
-   - Condition C: `research/experiments/exp-001/worktrees/condition-c/`
-2. **Fresh Directory Reset:** The harness completely wipes and re-copies the clean fixture directory before each run.
-3. **Clean Process Sessions:** Every run invokes a fresh Agent B process instance without reusing previous session IDs or local SQLite caches (`--pure` execution mode where applicable).
-4. **Hermetic Test Runner:** Vitest executes within the isolated worktree directory using local configuration (`vitest.config.ts`).
+### 4.1 Primary Metrics (Outcome & Correctness)
+- **1. Task Completion:** Boolean (`true` if all 10 unit tests pass on first pass; `false` otherwise).
+- **2. Tests Passed:** Count (0 to 10) from Vitest test runner.
+- **3. Correctness Score:** $\frac{\text{Tests Passed}}{\text{Total Tests (10)}} \times 100\%$.
 
----
-
-## 6. Measurement Metrics & Instrumentation
-
-The harness collects 10 deterministic metrics per condition run:
-
-| Metric | Measurement Unit | Acquisition Method | Pass / Success Criterion |
-| :--- | :--- | :--- | :--- |
-| **1. Task Completion** | Boolean (`true`/`false`) | Final test suite exit code | `true` (Exit code 0) |
-| **2. Correctness Score** | Percentage (0 - 100%) | Passed tests / Total tests (10) | `100.0%` (10/10 tests) |
-| **3. Tests Passed** | Integer (0 - 10) | Vitest reporter JSON output | `10` |
-| **4. Wall-Clock Time** | Seconds (0.01s precision) | High-resolution timer (`performance.now()`) | Minimum elapsed seconds |
-| **5. Rework Cycles** | Count (0, 1, 2, ...) | Number of test-fix iteration loops | `0` (First-pass pass) |
-| **6. Human Interventions** | Count | Harness interruption / manual fix events | `0` (Fully autonomous) |
-| **7. Tool Invocations** | Count | ACP notifications / process tool calls | Recorded for efficiency |
-| **8. Injected Context Size** | Bytes & Token estimate | Byte length of transferred payload | Lower payload with higher accuracy |
-| **9. Files Modified** | List of file paths | `git status --porcelain` in worktree | Only `src/scheduler.ts` |
-| **10. Patch Precision** | Added / Deleted LOC | `git diff --stat` | Minimal clean diff |
+### 4.2 Secondary Metrics (Efficiency, Cost & Understanding)
+- **4. Wall-Clock Duration:** Elapsed execution time in seconds (0.01s precision).
+- **5. Rework Required:** Number of additional iterative cycles required to achieve 10/10 tests.
+- **6. Human Interventions:** Number of manual adjustments required (`0` target).
+- **7. Tool Invocations:** Count of file reads, file writes, and bash executions by Agent B.
+- **8. Token Consumption & Cost:**
+  - Agent A Input/Output tokens and cost (or `UNKNOWN` if unexposed).
+  - Agent B Input/Output tokens and cost (or `UNKNOWN` if unexposed).
+- **9. Files Changed & Diff Size:** Lines added/deleted via `git diff --stat`.
+- **10. Post-Task Transfer Fidelity (Understanding Check):**
+  After task execution, Agent B is queried in a separate turn to answer:
+  1. *What bugs existed in the original code?*
+  2. *Why did those bugs occur (root causes)?*
+  3. *What changes were made to fix them?*
+  4. *How were the changes verified?*
+  The response is recorded and scored for conceptual fidelity without modifying the repository.
 
 ---
 
-## 7. Replication & Statistical Confidence Strategy
+## 5. Security & Isolation Controls
 
-- **Phase 1 (Pilot / Harness Validation):** Single trial run ($n=1$ per condition) to verify process spawning, IPC pipe communication, timeout handling, and test reporting.
-- **Phase 2 (Replicated Battery):** $n=3$ randomized trials per condition (9 runs total) to compute:
-  - Mean duration $\mu$ and standard deviation $\sigma$.
-  - Success consistency rate across stochastic LLM outputs.
-- **Randomization Order:** Trial execution order is shuffled (`[B1, A1, C1, C2, A2, B2, A3, C3, B3]`) to prevent systemic host throttling or thermal bias.
+1. **Path Validation:** Receiving agent workspace is strictly locked to its designated worktree directory (`research/experiments/exp-001/worktrees/condition-{a,b,c}`).
+2. **Secret Scrubbing:** Regular expressions scrub all known API key formats (`nvapi-*`, `sk-ant-*`, `ghp_*`, `Bearer *`) prior to transfer generation.
+3. **Delimited Untrusted Payloads:** All transferred data is wrapped in explicit untrusted data markers.
+4. **No Direct Execution:** Transferred commands are informational hints; the harness does not execute transferred strings directly without validation.
 
 ---
 
-## 8. Security & Untrusted Data Boundary
+## 6. Replication Protocol
 
-Transferred work state is treated as **untrusted user input**:
-1. **Prompt Injection Defense:** Transferred text from Agent A cannot contain command injection delimiters (e.g. `system:`, `override:`) that alter Agent B's baseline tool permissions.
-2. **Schema Sanitization:** `ExperimentalWorkTransfer` parser rejects arbitrary executable code or invalid field schemas.
-3. **Secret Scrubbing:** Harness regex-filters API keys (`nvapi-*`, `sk-ant-*`, `ghp_*`) from all transcripts and dossiers before injection.
-4. **Filesystem Confinement:** Agent B's tool execution is strictly confined to its assigned worktree directory.
+- **Pilot Validation ($n=1$):** 1 run per condition to validate harness plumbing, logging, and test assertions.
+- **Experimental Battery ($n=3$ per condition):** 9 total runs in randomized sequence (`[B1, A1, C1, C2, A2, B2, A3, C3, B3]`) to quantify variance across stochastic model runs.
+- **Review Trigger:** If results demonstrate high variance ($>20\%$ coefficient of variation), additional trials will be proposed after reviewing the initial batch.
+
+---
+
+## 7. Analytical Dimensions
+
+The analysis will answer five separate research questions rather than collapsing into a single subjective score:
+1. **Does additional information improve performance?** (Condition B vs Condition A)
+2. **Does structured representation improve performance?** (Condition C vs Condition B)
+3. **Does structure justify its overhead?** (Token efficiency vs test pass rate)
+4. **Does the receiving agent actually understand the work?** (Post-task fidelity check)
+5. **Is the effect statistically consistent?** (Standard deviation across $n=3$ trials)
