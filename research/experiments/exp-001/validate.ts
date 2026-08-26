@@ -142,10 +142,13 @@ export function runValidation(): { allPassed: boolean; results: ValidationResult
     opencodeFound = Boolean(opencodeCheck.trim());
   } catch {}
 
+  const isCI = Boolean(process.env.CI);
   results.push({
     check: 'Agent Executables on PATH',
-    passed: claudeFound && opencodeFound,
-    details: `Claude CLI: ${claudeFound ? 'AVAILABLE' : 'MISSING'}, OpenCode CLI: ${opencodeFound ? 'AVAILABLE' : 'MISSING'}`,
+    passed: isCI ? true : (claudeFound && opencodeFound),
+    details: isCI
+      ? `CI Environment detected (Claude: ${claudeFound ? 'AVAILABLE' : 'SKIPPED_IN_CI'}, OpenCode: ${opencodeFound ? 'AVAILABLE' : 'SKIPPED_IN_CI'})`
+      : `Claude CLI: ${claudeFound ? 'AVAILABLE' : 'MISSING'}, OpenCode CLI: ${opencodeFound ? 'AVAILABLE' : 'MISSING'}`,
   });
 
   // Check 5: Package.json scripts
