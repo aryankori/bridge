@@ -53,3 +53,6 @@ coverage/
 tmp/
 temp/
 *.tmp
+scratch/
+research/experiments/*/artifacts/
+research/experiments/*/worktrees/

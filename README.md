@@ -157,6 +157,21 @@ pnpm format
 pnpm build
 ```
 
+## Continuous Integration (CI)
+
+Bridge runs an automated GitHub Actions CI pipeline (`.github/workflows/ci.yml`) on every `push` and `pull_request` targeting `main`.
+
+### CI Pipeline Checks
+
+1. **Dependency Installation:** `pnpm install --frozen-lockfile` on Node.js 20 with pnpm store caching.
+2. **Type Checking:** `pnpm run typecheck` (`tsc --noEmit`) ensures strict TypeScript compilation.
+3. **Linting & Code Style:** `pnpm run lint` (`eslint src/ tests/`) enforces ESLint rules and formatting.
+4. **Unit Test Suite:** `pnpm run test` (`vitest run`) executes all core and transport unit tests (56/56 passing).
+5. **Experiment Harness Validation:** `pnpm run experiment:validate` verifies offline schema compliance, security filters, and fixture integrity.
+
+> [!NOTE]
+> **No External AI / Live Execution in CI:** The CI workflow strictly executes deterministic static checks, unit tests, and offline validators. It does **not** execute live agent trials (`pnpm experiment:pilot`, `pnpm experiment:replicate`), invoke Claude/OpenCode CLI processes, or make outbound AI API calls. Live research runs are strictly local and manually authorized.
+
 ## Environment Variables
 
 Bridge currently requires no environment variables. It discovers agents through filesystem inspection and process enumeration.

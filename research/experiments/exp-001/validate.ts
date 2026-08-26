@@ -16,7 +16,7 @@ import * as path from 'node:path';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { scrubSecrets, validatePathConfinement, truncatePayload } from './security.js';
-import { validateExtractedTransfer } from './agent-runners.js';
+import { validateExtractedTransfer, getExecutionEnv } from './agent-runners.js';
 
 interface ValidationResult {
   check: string;
@@ -128,6 +128,7 @@ export function runValidation(): { allPassed: boolean; results: ValidationResult
   let opencodeFound = false;
   try {
     const claudeCheck = execSync('where.exe claude 2>nul || where.exe claude.cmd 2>nul || which claude 2>/dev/null', {
+      env: getExecutionEnv(),
       encoding: 'utf-8',
     });
     claudeFound = Boolean(claudeCheck.trim());
@@ -135,6 +136,7 @@ export function runValidation(): { allPassed: boolean; results: ValidationResult
 
   try {
     const opencodeCheck = execSync('where.exe opencode 2>nul || where.exe opencode.exe 2>nul || which opencode 2>/dev/null', {
+      env: getExecutionEnv(),
       encoding: 'utf-8',
     });
     opencodeFound = Boolean(opencodeCheck.trim());

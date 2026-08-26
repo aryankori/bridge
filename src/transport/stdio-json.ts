@@ -168,7 +168,7 @@ export class StdioJsonTransport implements Transport {
             child.kill('SIGKILL');
           }
           resolve();
-        }, 3000);
+        }, process.platform === 'win32' ? 300 : 3000);
 
         child.once('close', () => {
           clearTimeout(timeout);
@@ -176,7 +176,7 @@ export class StdioJsonTransport implements Transport {
         });
 
         // Try graceful first
-        child.kill('SIGTERM');
+        child.kill(process.platform === 'win32' ? undefined : 'SIGTERM');
       });
     }
 

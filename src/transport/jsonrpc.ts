@@ -85,11 +85,6 @@ export class JsonRpcClient {
       pending.reject(new Error('JSON-RPC client stopped'));
       this.pending.delete(id);
     }
-
-    if (this.messageLoopPromise) {
-      await this.messageLoopPromise;
-      this.messageLoopPromise = null;
-    }
   }
 
   /**

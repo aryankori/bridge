@@ -2,23 +2,40 @@
  * Bridge — Phase 1D: Real Agent Execution & Extraction Engine
  *
  * Implements:
- * 1. Claude Code execution (Agent A) in non-interactive stream-json mode
+ * 1. Claude Code execution (Agent A) in non-interactive stream-json mode (shell: false, direct spawn)
  * 2. Structured transfer extraction from actual Claude output (NO ANSWER KEY)
- * 3. OpenCode execution (Agent B) via ACP stdio JSON-RPC 2.0 / CLI
+ * 3. OpenCode execution (Agent B) in controlled research mode (--pure, --auto, --format json, shell: false)
  * 4. Post-task transfer fidelity / understanding check
  */
 
 import { spawn } from 'node:child_process';
-import { createInterface } from 'node:readline';
 import type { ExperimentalWorkTransfer, TransferFidelityCheck } from './types.js';
 import { scrubSecrets, validatePathConfinement } from './security.js';
 
 // ---------------------------------------------------------------------------
-// Executable Path Resolution
+// Executable Path Resolution & Environment Configuration
 // ---------------------------------------------------------------------------
 
-export const AGENT_A_COMMAND = process.platform === 'win32' ? 'claude.cmd' : 'claude';
+export const AGENT_A_COMMAND = process.platform === 'win32' ? 'claude.exe' : 'claude';
 export const AGENT_B_COMMAND = process.platform === 'win32' ? 'opencode.exe' : 'opencode';
+
+/**
+ * Builds a deterministic execution environment with required PATH entries for Windows/POSIX.
+ */
+export function getExecutionEnv(): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  if (process.platform === 'win32') {
+    const userProfile = process.env.USERPROFILE || 'C:\\Users\\aryan';
+    const extraPaths = [
+      `${userProfile}\\.local\\bin`,
+      `${userProfile}\\scoop\\shims`,
+      `${userProfile}\\scoop\\apps\\nodejs\\current`,
+      `${userProfile}\\AppData\\Roaming\\npm`,
+    ];
+    env.PATH = `${extraPaths.join(';')};${env.PATH || ''}`;
+  }
+  return env;
+}
 
 // ---------------------------------------------------------------------------
 // 1. Agent A (Claude Code) Execution
@@ -37,6 +54,11 @@ export interface ClaudeExecutionResult {
 /**
  * Executes Claude Code non-interactively on the target repository to perform an initial exploratory analysis.
  * The prompt does NOT disclose the evaluation answer key.
+ *
+ * Subprocess configuration:
+ * - Direct spawn without shell (shell: false) to prevent command-line whitespace truncation.
+ * - Stdio ignored on stdin (stdio: ['ignore', 'pipe', 'pipe']) to prevent interactive TTY blocking.
+ * - Verified flags: -p <prompt> --output-format stream-json --verbose --no-session-persistence
  */
 export async function runClaudeAnalysis(
   worktreePath: string,
@@ -71,9 +93,9 @@ export async function runClaudeAnalysis(
 
     const child = spawn(AGENT_A_COMMAND, args, {
       cwd: worktreePath,
-      env: { ...process.env },
-      stdio: ['pipe', 'pipe', 'pipe'],
-      shell: process.platform === 'win32',
+      env: getExecutionEnv(),
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false,
     });
 
     timer = setTimeout(() => {
@@ -199,6 +221,7 @@ export async function extractStructuredTransfer(
     extractionPrompt,
     '--output-format',
     'stream-json',
+    '--verbose',
     '--no-session-persistence',
   ];
 
@@ -208,9 +231,9 @@ export async function extractStructuredTransfer(
     let stderrAccumulator = '';
 
     const child = spawn(AGENT_A_COMMAND, args, {
-      env: { ...process.env },
-      stdio: ['pipe', 'pipe', 'pipe'],
-      shell: process.platform === 'win32',
+      env: getExecutionEnv(),
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false,
     });
 
     timer = setTimeout(() => {
@@ -266,7 +289,6 @@ export async function extractStructuredTransfer(
 }
 
 function parseExtractedJsonText(streamJsonOutput: string): string {
-  // Extract text from stream-json lines or raw JSON
   const lines = streamJsonOutput.split('\n');
   let text = '';
   for (const line of lines) {
@@ -288,7 +310,6 @@ function parseExtractedJsonText(streamJsonOutput: string): string {
     }
   }
 
-  // Strip markdown code fences if present
   const cleaned = text.trim()
     .replace(/^```json\s*/i, '')
     .replace(/^```\s*/, '')
@@ -331,7 +352,6 @@ export function parseProgrammaticTransfer(transcriptText: string): ExperimentalW
   const diagnostics: ExperimentalWorkTransfer['diagnostics'] = [];
   let diagCount = 1;
 
-  // Search for mentioned bugs or code locations in transcript
   const lines = transcriptText.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -385,7 +405,15 @@ export interface OpenCodeExecutionResult {
 
 /**
  * Executes OpenCode on the assigned worktree with the condition-specific prompt.
- * Uses ACP protocol over stdio with fallback to CLI json mode.
+ *
+ * Controlled Research Execution Configuration:
+ * - Direct spawn without shell (shell: false) and native cwd to prevent path whitespace truncation.
+ * - --pure: Excludes external plugin bloat and workspace noise, enforcing a controlled test environment.
+ * - --auto: Grants autonomous file edit and terminal permissions inside the confined worktree.
+ * - --format json: Emits NDJSON execution stream with precise token usage and step telemetry.
+ * - --dir <worktreePath>: Explicitly anchors OpenCode to the test worktree.
+ *
+ * Crucial experimental control: ALL THREE conditions (A, B, C) execute with this exact same configuration.
  */
 export async function runOpenCodeTask(
   worktreePath: string,
@@ -402,85 +430,52 @@ export async function runOpenCodeTask(
   let outputTokens: number | 'UNKNOWN' = 'UNKNOWN';
   let totalTokens: number | 'UNKNOWN' = 'UNKNOWN';
 
+  const args = [
+    'run',
+    promptText,
+    '--auto',
+    '--pure',
+    '--format', 'json',
+    '--dir', worktreePath,
+  ];
+
   return new Promise((resolve, reject) => {
     let timer: NodeJS.Timeout;
 
-    // Launch OpenCode via verified ACP server over stdio
-    const child = spawn(AGENT_B_COMMAND, ['acp', '--print-logs', '--log-level', 'INFO'], {
+    const child = spawn(AGENT_B_COMMAND, args, {
       cwd: worktreePath,
-      env: { ...process.env },
-      stdio: ['pipe', 'pipe', 'pipe'],
-      shell: process.platform === 'win32',
+      env: getExecutionEnv(),
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false,
     });
-
-    const rl = createInterface({ input: child.stdout });
-    let sessionId: string | null = null;
-    let step = 'init';
 
     timer = setTimeout(() => {
       child.kill('SIGKILL');
       reject(new Error(`OpenCode execution timed out after ${timeoutMs}ms`));
     }, timeoutMs);
 
-    rl.on('line', (line: string) => {
-      const trimmed = line.trim();
-      if (!trimmed) return;
-      stdoutAccumulator += line + '\n';
+    child.stdout.on('data', (chunk: Buffer) => {
+      const text = chunk.toString('utf-8');
+      stdoutAccumulator += text;
 
-      try {
-        const msg = JSON.parse(trimmed);
-        rawEvents.push(msg);
+      const lines = text.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        try {
+          const event = JSON.parse(trimmed);
+          rawEvents.push(event);
 
-        // Step 1: Handle initialize response
-        if (msg.id === 1 && step === 'init') {
-          step = 'session_new';
-          child.stdin.write(
-            JSON.stringify({
-              jsonrpc: '2.0',
-              id: 2,
-              method: 'session/new',
-              params: {
-                cwd: worktreePath.replace(/\\/g, '/'),
-                mcpServers: [],
-              },
-            }) + '\n',
-          );
-        }
-
-        // Step 2: Handle session/new response
-        if (msg.id === 2 && step === 'session_new' && msg.result?.sessionId) {
-          step = 'prompting';
-          sessionId = msg.result.sessionId;
-          child.stdin.write(
-            JSON.stringify({
-              jsonrpc: '2.0',
-              id: 3,
-              method: 'session/prompt',
-              params: {
-                sessionId,
-                prompt: [{ type: 'text', text: promptText }],
-              },
-            }) + '\n',
-          );
-        }
-
-        // Step 3: Track usage updates during prompt turn
-        if (msg.method === 'session/update' && msg.params?.update?.sessionUpdate === 'usage_update') {
-          const usage = msg.params.update;
-          if (usage.used) inputTokens = usage.used;
-        }
-
-        // Step 4: Handle session/prompt completion
-        if (msg.id === 3 && step === 'prompting') {
-          if (msg.result?.usage) {
-            inputTokens = msg.result.usage.inputTokens ?? inputTokens;
-            outputTokens = msg.result.usage.outputTokens ?? outputTokens;
-            totalTokens = msg.result.usage.totalTokens ?? totalTokens;
+          // Extract token counts from step-finish events
+          if (event.type === 'step_finish' && event.part?.tokens) {
+            const tok = event.part.tokens;
+            if (tok.input !== undefined) inputTokens = (inputTokens === 'UNKNOWN' ? 0 : inputTokens) + tok.input;
+            if (tok.output !== undefined) outputTokens = (outputTokens === 'UNKNOWN' ? 0 : outputTokens) + tok.output;
+            if (tok.total !== undefined) totalTokens = (totalTokens === 'UNKNOWN' ? 0 : totalTokens) + tok.total;
           }
-          child.kill('SIGTERM');
+        } catch {
+          // Non-JSON line
         }
-      } catch {
-        // Non-JSON stdout line
       }
     });
 
@@ -497,6 +492,10 @@ export async function runOpenCodeTask(
       clearTimeout(timer);
       const durationMs = performance.now() - startTime;
 
+      if (totalTokens === 'UNKNOWN' && inputTokens !== 'UNKNOWN' && outputTokens !== 'UNKNOWN') {
+        totalTokens = inputTokens + outputTokens;
+      }
+
       resolve({
         stdout: scrubSecrets(stdoutAccumulator),
         stderr: scrubSecrets(stderrAccumulator),
@@ -508,23 +507,6 @@ export async function runOpenCodeTask(
         rawEvents,
       });
     });
-
-    // Send ACP initialize request
-    child.stdin.write(
-      JSON.stringify({
-        jsonrpc: '2.0',
-        id: 1,
-        method: 'initialize',
-        params: {
-          protocolVersion: 1,
-          clientCapabilities: {
-            fs: { readTextFile: true, writeTextFile: true },
-            terminal: true,
-          },
-          clientInfo: { name: 'bridge-harness', version: '0.1.0' },
-        },
-      }) + '\n',
-    );
   });
 }
 
@@ -549,14 +531,14 @@ export async function runOpenCodeFidelityCheck(
 
   try {
     const result = await runOpenCodeTask(worktreePath, fidelityPrompt, timeoutMs);
-    const text = extractAssistantText(result.rawEvents);
+    const text = extractAssistantText(result.rawEvents) || result.stdout;
 
     return {
       bugsIdentified: extractSection(text, '1', 'bugs'),
       rootCausesExplained: extractSection(text, '2', 'causes'),
       changesSummarized: extractSection(text, '3', 'changes'),
       verificationDescribed: extractSection(text, '4', 'verify'),
-      rawResponse: text || result.stdout,
+      rawResponse: text,
     };
   } catch (err: unknown) {
     return {
@@ -573,8 +555,10 @@ function extractAssistantText(events: unknown[]): string {
   let text = '';
   for (const event of events) {
     const e = event as any;
-    if (e.method === 'session/update' && e.params?.update?.sessionUpdate === 'agent_message_chunk') {
-      text += e.params.update.content?.text ?? '';
+    if (e.type === 'text' && e.part?.text) {
+      text += e.part.text;
+    } else if (e.part?.content?.text) {
+      text += e.part.content.text;
     }
   }
   return text.trim();

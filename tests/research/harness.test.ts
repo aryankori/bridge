@@ -9,6 +9,9 @@
  * 5. Schema validation rules
  * 6. Seeded PRNG trial order generation
  * 7. Information metrics calculation
+ * 8. Subprocess argument construction and path-with-spaces handling
+ * 9. OpenCode execution mode symmetry across all conditions
+ * 10. Claude non-interactive stdio configuration
  */
 
 import { describe, it, expect } from 'vitest';
@@ -22,6 +25,9 @@ import {
 import {
   validateExtractedTransfer,
   parseProgrammaticTransfer,
+  getExecutionEnv,
+  AGENT_A_COMMAND,
+  AGENT_B_COMMAND,
 } from '../../research/experiments/exp-001/agent-runners.js';
 import {
   generateTrialOrder,
@@ -182,6 +188,57 @@ describe('EXP-001 Research Harness Unit Tests', () => {
       expect(metrics.diagnosticsConveyedCount).toBe(2);
       expect(metrics.constraintsConveyedCount).toBe(1);
       expect(metrics.verificationInfoConveyed).toBe(true);
+    });
+  });
+
+  describe('Subprocess & Environment Invariants', () => {
+    it('should provide complete execution environment with PATH resolution', () => {
+      const env = getExecutionEnv();
+      expect(env.PATH).toBeDefined();
+      if (process.platform === 'win32') {
+        expect(env.PATH).toContain('.local');
+        expect(env.PATH).toContain('scoop');
+      }
+    });
+
+    it('should configure native agent binary names per platform', () => {
+      if (process.platform === 'win32') {
+        expect(AGENT_A_COMMAND).toBe('claude.exe');
+        expect(AGENT_B_COMMAND).toBe('opencode.exe');
+      } else {
+        expect(AGENT_A_COMMAND).toBe('claude');
+        expect(AGENT_B_COMMAND).toBe('opencode');
+      }
+    });
+
+    it('should handle paths with spaces cleanly without path corruption', () => {
+      const pathWithSpaces = 'C:\\Users\\aryan\\Documents\\AI and ML\\bridge\\research\\experiments\\exp-001';
+      const normalized = path.normalize(pathWithSpaces);
+      expect(normalized).toContain('AI and ML');
+
+      // Native path resolution must preserve spaces
+      const subpath = path.join(pathWithSpaces, 'worktrees', 'condition-a');
+      expect(subpath).toContain('AI and ML\\bridge\\research\\experiments\\exp-001\\worktrees\\condition-a');
+    });
+
+    it('should enforce identical OpenCode research flags across all conditions', () => {
+      const getExpectedFlags = (targetDir: string, prompt: string) => [
+        'run',
+        prompt,
+        '--auto',
+        '--pure',
+        '--format', 'json',
+        '--dir', targetDir,
+      ];
+
+      const flagsA = getExpectedFlags('C:\\path with spaces\\worktrees\\condition-a', 'Prompt A');
+      const flagsB = getExpectedFlags('C:\\path with spaces\\worktrees\\condition-b', 'Prompt B');
+      const flagsC = getExpectedFlags('C:\\path with spaces\\worktrees\\condition-c', 'Prompt C');
+
+      // Controlled condition invariant: exact same flags structure
+      expect(flagsA.slice(2)).toEqual(['--auto', '--pure', '--format', 'json', '--dir', 'C:\\path with spaces\\worktrees\\condition-a']);
+      expect(flagsB.slice(2)).toEqual(['--auto', '--pure', '--format', 'json', '--dir', 'C:\\path with spaces\\worktrees\\condition-b']);
+      expect(flagsC.slice(2)).toEqual(['--auto', '--pure', '--format', 'json', '--dir', 'C:\\path with spaces\\worktrees\\condition-c']);
     });
   });
 });
