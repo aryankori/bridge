@@ -15,7 +15,10 @@
     "lint:fix": "eslint src/ tests/ --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "experiment:validate": "tsx research/experiments/exp-001/validate.ts",
+    "experiment:pilot": "tsx research/experiments/exp-001/harness.ts --mode pilot",
+    "experiment:replicate": "tsx research/experiments/exp-001/harness.ts --mode replicate"
   },
   "engines": {
     "node": ">=20.0.0"

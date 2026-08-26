@@ -10,10 +10,30 @@
  * - WebSocket: real-time bidirectional — Hermes gateway
  * - Named Pipes: Windows IPC — Claude Code daemon
  *
- * Transport implementations will be added as adapters need them.
+ * Currently implemented:
+ * - StdioJsonTransport: NDJSON over child process stdin/stdout
+ * - JsonRpcClient: JSON-RPC 2.0 protocol layer over any transport
  */
 
-// Transport implementations will be registered here.
-// Example:
-// export { AcpTransport } from './acp.js';
-// export { StdioJsonTransport } from './stdio-json.js';
+export type {
+  Transport,
+  TransportState,
+  StdioTransportOptions,
+  JsonRpcRequest,
+  JsonRpcNotification,
+  JsonRpcSuccessResponse,
+  JsonRpcErrorResponse,
+  JsonRpcResponse,
+  JsonRpcMessage,
+} from './types.js';
+
+export {
+  JSON_RPC_ERROR_CODES,
+  isJsonRpcRequest,
+  isJsonRpcNotification,
+  isJsonRpcResponse,
+  isJsonRpcErrorResponse,
+} from './types.js';
+
+export { StdioJsonTransport } from './stdio-json.js';
+export { JsonRpcClient, JsonRpcError } from './jsonrpc.js';

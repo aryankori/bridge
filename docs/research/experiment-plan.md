@@ -129,3 +129,22 @@ The analysis will answer five separate research questions rather than collapsing
 3. **Does structure justify its overhead?** (Token efficiency vs test pass rate)
 4. **Does the receiving agent actually understand the work?** (Post-task fidelity check)
 5. **Is the effect statistically consistent?** (Standard deviation across $n=3$ trials)
+
+---
+
+## 8. How ExperimentalWorkTransfer Is Generated
+
+In Phase 1D, the experiment harness enforces strict zero-knowledge isolation:
+
+1. **No Answer Key / Hardcoded Dossier:**
+   - The harness contains zero pre-written diagnostics, root causes, or line numbers.
+   - Condition C receives only what Agent A (Claude Code) discovered and emitted during its live analysis run.
+
+2. **Live Execution & Extraction Flow:**
+   - **Step 1:** Claude Code runs non-interactively (`claude -p "<prompt>" --output-format stream-json --verbose --no-session-persistence`) against the clean fixture worktree.
+   - **Step 2:** The harness captures Claude's live stdout and streams assistant messages.
+   - **Step 3:** The parser searches for a fenced JSON block conforming to `ExperimentalWorkTransfer` (v0.2.0-simplified).
+   - **Step 4:** If valid, `validateExtractedTransfer()` validates required fields (`objective`, `diagnostics[].{id, title, rootCause, locations}`, `constraints`, `verificationCommands`).
+   - **Step 5 (Fallback):** If Claude output does not contain clean JSON, `parseProgrammaticTransfer()` extracts diagnostics heuristically from Claude's text sections without injecting any experimenter knowledge.
+   - **Step 6:** The resulting payload is scrubbed for secrets, bounded by path confinement, wrapped in untrusted data delimiters (`<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>`), and delivered to OpenCode in Condition C.
+
