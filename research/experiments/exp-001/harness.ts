@@ -1,18 +1,21 @@
 /**
- * Bridge — Phase 1D: Work-Transfer Controlled Experiment Harness
+ * Bridge — Phase 1E: Work-Transfer Controlled Experiment Harness
  *
  * Full research harness for EXP-001:
  * - Condition A: Native Baseline (Task prompt + clean fixture)
  * - Condition B: Fair Transcript Transfer (Task prompt + unedited Claude stdout capped at 8 KB)
  * - Condition C: Structured Work Transfer (Task prompt + ExperimentalWorkTransfer extracted from Claude)
  *
- * Zero answer key leakage: All diagnostics and transfer objects are derived
- * strictly from Agent A's live execution output.
+ * Hard Invariants:
+ * 1. Zero answer key leakage: All diagnostics are derived strictly from Agent A's live execution output.
+ * 2. Hard Stage Gates: If Agent A fails or outputs empty stdout, trials are marked INVALID and halted.
+ * 3. Zero Simulation: All metrics are strictly measured from live child processes or marked UNKNOWN.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
+import { fileURLToPath } from 'node:url';
 import type {
   ExperimentalWorkTransfer,
   InformationMetrics,
@@ -31,8 +34,10 @@ import {
   extractStructuredTransfer,
   runOpenCodeTask,
   runOpenCodeFidelityCheck,
-  AGENT_A_COMMAND,
-  AGENT_B_COMMAND,
+  resolveExecutable,
+  AgentExecutionError,
+  type ClaudeExecutionResult,
+  type ExtractionResult,
 } from './agent-runners.js';
 
 // ---------------------------------------------------------------------------
@@ -149,7 +154,12 @@ export function runTests(worktreeDir: string): {
   }
 }
 
-export function captureGitDiff(worktreeDir: string): { diff: string; filesChanged: string[]; added: number; deleted: number } {
+export function captureGitDiff(worktreeDir: string): {
+  diff: string;
+  filesChanged: string[];
+  added: number;
+  deleted: number;
+} {
   try {
     const diff = execSync('git diff --no-color', { cwd: worktreeDir, encoding: 'utf-8' });
     const stat = execSync('git diff --stat', { cwd: worktreeDir, encoding: 'utf-8' });
@@ -225,20 +235,108 @@ export async function runExperiment(
   console.log(`  Randomization Seed: ${customSeed}`);
   console.log(`=============================================================\n`);
 
+  // Step 0: Resolve executables deterministically
+  const agentA = resolveExecutable('claude');
+  const agentB = resolveExecutable('opencode');
+
   const trialOrder = generateTrialOrder(customSeed, mode);
   const trials: TrialRecord[] = [];
 
   // Step 1: Execute Agent A (Claude Code) initial analysis ONCE per experiment run
-  // This provides the real, unedited evidence used for both Condition B and C.
-  console.log(`[STAGE 1] Launching Agent A (${AGENT_A_COMMAND}) for live codebase analysis...`);
+  console.log(`[STAGE 1] Launching Agent A (${agentA.command}) for live codebase analysis...`);
   const analysisWorktree = prepareWorktree('a');
-  const claudeResult = await runClaudeAnalysis(analysisWorktree);
 
-  fs.writeFileSync(path.join(artifactDir, 'agent-a-stdout.raw.txt'), claudeResult.stdout);
-  fs.writeFileSync(path.join(artifactDir, 'agent-a-stderr.raw.txt'), claudeResult.stderr);
-  console.log(`[STAGE 1] Agent A analysis complete (${(claudeResult.durationMs / 1000).toFixed(2)}s, ${Buffer.byteLength(claudeResult.stdout)} bytes).\n`);
+  let claudeResult: ClaudeExecutionResult;
+  try {
+    claudeResult = await runClaudeAnalysis(analysisWorktree);
+    fs.writeFileSync(path.join(artifactDir, 'agent-a-stdout.raw.txt'), claudeResult.stdout);
+    fs.writeFileSync(path.join(artifactDir, 'agent-a-stderr.raw.txt'), claudeResult.stderr);
+    console.log(
+      `[STAGE 1] Agent A analysis complete (${(claudeResult.durationMs / 1000).toFixed(2)}s, ${Buffer.byteLength(claudeResult.stdout)} bytes).\n`,
+    );
+  } catch (err: unknown) {
+    const errorObj = err instanceof AgentExecutionError ? err : new AgentExecutionError('UNKNOWN', String(err));
+    console.error(`\n❌ [HARD GUARD TRIGGERED] Agent A Execution Failed: ${errorObj.message}`);
+    console.error(`   Halting experiment. All downstream trials marked INVALID.\n`);
 
-  // Step 2: Prepare Condition B (Unedited 8KB Transcript)
+    // Record invalid trials for the entire manifest
+    for (const { trialIndex, condition } of trialOrder) {
+      trials.push({
+        trialIndex,
+        condition,
+        conditionName:
+          condition === 'A'
+            ? 'Native Baseline'
+            : condition === 'B'
+              ? 'Unedited Transcript Transfer (8KB)'
+              : 'Structured Work Transfer (Schema v0.2.0)',
+        status: 'INVALID',
+        invalidReason: {
+          stage: 'STAGE_1_AGENT_A_ANALYSIS',
+          classification: errorObj.classification,
+          message: errorObj.message,
+        },
+        startTime: new Date().toISOString(),
+        endTime: new Date().toISOString(),
+        wallClockDurationSeconds: 0,
+        success: false,
+        testsPassed: 0,
+        testsTotal: 10,
+        correctnessScore: 0,
+        reworkCycles: 0,
+        humanInterventions: 0,
+        filesChanged: [],
+        linesAdded: 0,
+        linesDeleted: 0,
+        gitDiff: '',
+        informationMetrics: calculateInformationMetrics(''),
+        costMetrics: {
+          agentAInputTokens: 'UNKNOWN',
+          agentAOutputTokens: 'UNKNOWN',
+          agentATotalTokens: 'UNKNOWN',
+          agentBInputTokens: 'UNKNOWN',
+          agentBOutputTokens: 'UNKNOWN',
+          agentBTotalTokens: 'UNKNOWN',
+          estimatedCostUsd: 'UNKNOWN',
+        },
+      });
+    }
+
+    const invalidManifest: ExperimentManifest = {
+      experimentId,
+      timestamp,
+      mode,
+      randomizationSeed: customSeed,
+      status: 'INVALID',
+      invalidReason: `Agent A failure: ${errorObj.message}`,
+      trialOrder,
+      agentA: {
+        name: 'Claude Code',
+        version: '2.1.233',
+        command: agentA.command,
+        resolvedPath: agentA.resolvedPath,
+        source: agentA.source,
+      },
+      agentB: {
+        name: 'OpenCode ox alpha',
+        version: '1.18.23',
+        command: agentB.command,
+        resolvedPath: agentB.resolvedPath,
+        source: agentB.source,
+      },
+      trials,
+      summary: {
+        totalTrials: trials.length,
+        validTrials: 0,
+        passedTrials: 0,
+      },
+    };
+
+    fs.writeFileSync(path.join(artifactDir, 'manifest.json'), JSON.stringify(invalidManifest, null, 2));
+    throw errorObj;
+  }
+
+  // Step 2: Prepare Condition B (Unedited 8KB Transcript from verified Agent A stdout)
   console.log(`[STAGE 2] Preparing Condition B unedited transcript payload...`);
   const truncatedTranscript = truncatePayload(claudeResult.stdout, 8192);
   const conditionBPayload = wrapUntrustedData(truncatedTranscript.content, 'transcript');
@@ -247,13 +345,22 @@ export async function runExperiment(
 
   // Step 3: Prepare Condition C (Structured Transfer Extracted from Claude's real work)
   console.log(`[STAGE 3] Extracting structured ExperimentalWorkTransfer from Agent A output (NO ANSWER KEY)...`);
-  const extractionResult = await extractStructuredTransfer(claudeResult.stdout);
-  const transferJson = JSON.stringify(extractionResult.transfer, null, 2);
-  const conditionCPayload = wrapUntrustedData(transferJson, 'transfer');
-  const promptC = `${TASK_PROMPT}\n\n${conditionCPayload}`;
-  fs.writeFileSync(path.join(artifactDir, 'condition-c-transfer.json'), transferJson);
-  fs.writeFileSync(path.join(artifactDir, 'condition-c-payload.txt'), promptC);
-  console.log(`[STAGE 3] Structured transfer extracted (${extractionResult.transfer.diagnostics.length} diagnostics found).\n`);
+  let extractionResult: ExtractionResult;
+  try {
+    extractionResult = await extractStructuredTransfer(claudeResult.stdout);
+    const transferJson = JSON.stringify(extractionResult.transfer, null, 2);
+    const conditionCPayload = wrapUntrustedData(transferJson, 'transfer');
+    const promptC = `${TASK_PROMPT}\n\n${conditionCPayload}`;
+    fs.writeFileSync(path.join(artifactDir, 'condition-c-transfer.json'), transferJson);
+    fs.writeFileSync(path.join(artifactDir, 'condition-c-payload.txt'), promptC);
+    console.log(
+      `[STAGE 3] Structured transfer extracted (${extractionResult.transfer.diagnostics.length} diagnostics found).\n`,
+    );
+  } catch (err: unknown) {
+    const errorObj = err instanceof AgentExecutionError ? err : new AgentExecutionError('UNKNOWN', String(err));
+    console.error(`\n❌ [HARD GUARD TRIGGERED] Condition C Transfer Extraction Failed: ${errorObj.message}`);
+    throw errorObj;
+  }
 
   // Step 4: Execute Trials in Randomized Sequence
   for (const { trialIndex, condition } of trialOrder) {
@@ -281,8 +388,8 @@ export async function runExperiment(
         transcriptWasTruncated: truncatedTranscript.wasTruncated,
       });
     } else {
-      promptForCondition = promptC;
-      infoMetrics = calculateInformationMetrics(promptC, {
+      promptForCondition = `${TASK_PROMPT}\n\n${wrapUntrustedData(JSON.stringify(extractionResult.transfer, null, 2), 'transfer')}`;
+      infoMetrics = calculateInformationMetrics(promptForCondition, {
         diagnosticsCount: extractionResult.transfer.diagnostics.length,
         constraintsCount: extractionResult.transfer.constraints.length,
         verificationConveyed: extractionResult.transfer.verificationCommands.length > 0,
@@ -290,73 +397,126 @@ export async function runExperiment(
     }
 
     // Run Agent B (OpenCode)
-    const opencodeResult = await runOpenCodeTask(worktree, promptForCondition);
-    fs.writeFileSync(path.join(trialArtifactDir, 'agent-b-stdout.txt'), opencodeResult.stdout);
-    fs.writeFileSync(path.join(trialArtifactDir, 'agent-b-stderr.txt'), opencodeResult.stderr);
+    let trialRecord: TrialRecord;
+    try {
+      const opencodeResult = await runOpenCodeTask(worktree, promptForCondition);
+      fs.writeFileSync(path.join(trialArtifactDir, 'agent-b-stdout.txt'), opencodeResult.stdout);
+      fs.writeFileSync(path.join(trialArtifactDir, 'agent-b-stderr.txt'), opencodeResult.stderr);
 
-    // Evaluate tests
-    const testResult = runTests(worktree);
-    const gitDiff = captureGitDiff(worktree);
-    fs.writeFileSync(path.join(trialArtifactDir, 'patch.diff'), gitDiff.diff);
-    fs.writeFileSync(path.join(trialArtifactDir, 'test-output.txt'), testResult.output);
+      // Evaluate tests
+      const testResult = runTests(worktree);
+      const gitDiff = captureGitDiff(worktree);
+      fs.writeFileSync(path.join(trialArtifactDir, 'patch.diff'), gitDiff.diff);
+      fs.writeFileSync(path.join(trialArtifactDir, 'test-output.txt'), testResult.output);
 
-    // Post-task fidelity check
-    console.log(`  Running post-task transfer fidelity check...`);
-    const fidelityCheck = await runOpenCodeFidelityCheck(worktree);
-    fs.writeFileSync(path.join(trialArtifactDir, 'fidelity-check.json'), JSON.stringify(fidelityCheck, null, 2));
+      // Post-task fidelity check
+      console.log(`  Running post-task transfer fidelity check...`);
+      const fidelityCheck = await runOpenCodeFidelityCheck(worktree);
+      fs.writeFileSync(path.join(trialArtifactDir, 'fidelity-check.json'), JSON.stringify(fidelityCheck, null, 2));
 
-    const trialEnd = new Date().toISOString();
-    const durationSec = parseFloat((opencodeResult.durationMs / 1000).toFixed(2));
+      const trialEnd = new Date().toISOString();
+      const durationSec = parseFloat((opencodeResult.durationMs / 1000).toFixed(2));
 
-    const costMetrics: CostMetrics = {
-      agentAInputTokens: claudeResult.inputTokens,
-      agentAOutputTokens: claudeResult.outputTokens,
-      agentATotalTokens: claudeResult.totalTokens,
-      agentBInputTokens: opencodeResult.inputTokens,
-      agentBOutputTokens: opencodeResult.outputTokens,
-      agentBTotalTokens: opencodeResult.totalTokens,
-      estimatedCostUsd: 'UNKNOWN',
-    };
+      const costMetrics: CostMetrics = {
+        agentAInputTokens: claudeResult.inputTokens,
+        agentAOutputTokens: claudeResult.outputTokens,
+        agentATotalTokens: claudeResult.totalTokens,
+        agentBInputTokens: opencodeResult.inputTokens,
+        agentBOutputTokens: opencodeResult.outputTokens,
+        agentBTotalTokens: opencodeResult.totalTokens,
+        estimatedCostUsd: 'UNKNOWN',
+      };
 
-    const trialRecord: TrialRecord = {
-      trialIndex,
-      condition,
-      conditionName:
-        condition === 'A'
-          ? 'Native Baseline'
-          : condition === 'B'
-            ? 'Unedited Transcript Transfer (8KB)'
-            : 'Structured Work Transfer (Schema v0.2.0)',
-      startTime: trialStart,
-      endTime: trialEnd,
-      wallClockDurationSeconds: durationSec,
-      success: testResult.success,
-      testsPassed: testResult.passed,
-      testsTotal: testResult.total,
-      correctnessScore: (testResult.passed / testResult.total) * 100,
-      reworkCycles: testResult.success ? 0 : 1,
-      humanInterventions: 0,
-      filesChanged: gitDiff.filesChanged,
-      linesAdded: gitDiff.added,
-      linesDeleted: gitDiff.deleted,
-      gitDiff: gitDiff.diff,
-      informationMetrics: infoMetrics,
-      costMetrics,
-      fidelityCheck,
-    };
+      trialRecord = {
+        trialIndex,
+        condition,
+        conditionName:
+          condition === 'A'
+            ? 'Native Baseline'
+            : condition === 'B'
+              ? 'Unedited Transcript Transfer (8KB)'
+              : 'Structured Work Transfer (Schema v0.2.0)',
+        status: 'VALID',
+        startTime: trialStart,
+        endTime: trialEnd,
+        wallClockDurationSeconds: durationSec,
+        success: testResult.success,
+        testsPassed: testResult.passed,
+        testsTotal: testResult.total,
+        correctnessScore: (testResult.passed / testResult.total) * 100,
+        reworkCycles: 0,
+        humanInterventions: 0,
+        filesChanged: gitDiff.filesChanged,
+        linesAdded: gitDiff.added,
+        linesDeleted: gitDiff.deleted,
+        gitDiff: gitDiff.diff,
+        informationMetrics: infoMetrics,
+        costMetrics,
+        fidelityCheck,
+      };
+
+      console.log(
+        `  Trial ${trialIndex} Outcome: ${testResult.passed}/10 Tests Passed (${testResult.success ? 'PASS' : 'FAIL'}) in ${durationSec}s\n`,
+      );
+    } catch (err: unknown) {
+      const errorObj = err instanceof AgentExecutionError ? err : new AgentExecutionError('UNKNOWN', String(err));
+      console.error(`  ❌ Trial ${trialIndex} [Condition ${condition}] Failed: ${errorObj.message}`);
+
+      trialRecord = {
+        trialIndex,
+        condition,
+        conditionName:
+          condition === 'A'
+            ? 'Native Baseline'
+            : condition === 'B'
+              ? 'Unedited Transcript Transfer (8KB)'
+              : 'Structured Work Transfer (Schema v0.2.0)',
+        status: 'INVALID',
+        invalidReason: {
+          stage: 'AGENT_B_EXECUTION',
+          classification: errorObj.classification,
+          message: errorObj.message,
+        },
+        startTime: trialStart,
+        endTime: new Date().toISOString(),
+        wallClockDurationSeconds: 0,
+        success: false,
+        testsPassed: 0,
+        testsTotal: 10,
+        correctnessScore: 0,
+        reworkCycles: 0,
+        humanInterventions: 0,
+        filesChanged: [],
+        linesAdded: 0,
+        linesDeleted: 0,
+        gitDiff: '',
+        informationMetrics: infoMetrics,
+        costMetrics: {
+          agentAInputTokens: claudeResult.inputTokens,
+          agentAOutputTokens: claudeResult.outputTokens,
+          agentATotalTokens: claudeResult.totalTokens,
+          agentBInputTokens: 'UNKNOWN',
+          agentBOutputTokens: 'UNKNOWN',
+          agentBTotalTokens: 'UNKNOWN',
+          estimatedCostUsd: 'UNKNOWN',
+        },
+      };
+    }
 
     trials.push(trialRecord);
-    console.log(`  Trial ${trialIndex} Outcome: ${testResult.passed}/10 Tests Passed (${testResult.success ? 'PASS' : 'FAIL'}) in ${durationSec}s\n`);
   }
 
   // Step 5: Compute summary statistics
-  const passedTrials = trials.filter((t) => t.success).length;
-  const trialsA = trials.filter((t) => t.condition === 'A');
-  const trialsB = trials.filter((t) => t.condition === 'B');
-  const trialsC = trials.filter((t) => t.condition === 'C');
+  const validTrials = trials.filter((t) => t.status === 'VALID');
+  const passedTrials = validTrials.filter((t) => t.success).length;
+  const trialsA = validTrials.filter((t) => t.condition === 'A');
+  const trialsB = validTrials.filter((t) => t.condition === 'B');
+  const trialsC = validTrials.filter((t) => t.condition === 'C');
 
   const calcMean = (arr: TrialRecord[]) =>
-    arr.length > 0 ? parseFloat((arr.reduce((acc, t) => acc + t.wallClockDurationSeconds, 0) / arr.length).toFixed(2)) : undefined;
+    arr.length > 0
+      ? parseFloat((arr.reduce((acc, t) => acc + t.wallClockDurationSeconds, 0) / arr.length).toFixed(2))
+      : undefined;
   const calcSuccessRate = (arr: TrialRecord[]) =>
     arr.length > 0 ? parseFloat(((arr.filter((t) => t.success).length / arr.length) * 100).toFixed(1)) : undefined;
 
@@ -365,20 +525,26 @@ export async function runExperiment(
     timestamp,
     mode,
     randomizationSeed: customSeed,
+    status: validTrials.length === trials.length ? 'VALID' : 'INVALID',
     trialOrder,
     agentA: {
       name: 'Claude Code',
       version: '2.1.233',
-      command: AGENT_A_COMMAND,
+      command: agentA.command,
+      resolvedPath: agentA.resolvedPath,
+      source: agentA.source,
     },
     agentB: {
       name: 'OpenCode ox alpha',
       version: '1.18.23',
-      command: AGENT_B_COMMAND,
+      command: agentB.command,
+      resolvedPath: agentB.resolvedPath,
+      source: agentB.source,
     },
     trials,
     summary: {
       totalTrials: trials.length,
+      validTrials: validTrials.length,
       passedTrials,
       meanDurationA: calcMean(trialsA),
       meanDurationB: calcMean(trialsB),
@@ -391,14 +557,12 @@ export async function runExperiment(
 
   fs.writeFileSync(path.join(artifactDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   console.log(`\n=============================================================`);
-  console.log(`  EXPERIMENT COMPLETED: ${passedTrials}/${trials.length} trials passed.`);
+  console.log(`  EXPERIMENT COMPLETED: ${passedTrials}/${validTrials.length} valid trials passed.`);
   console.log(`  Manifest saved to: ${path.join(artifactDir, 'manifest.json')}`);
   console.log(`=============================================================\n`);
 
   return manifest;
 }
-
-import { fileURLToPath } from 'node:url';
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
   const args = process.argv.slice(2);

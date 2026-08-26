@@ -1,22 +1,21 @@
 /**
- * Bridge — Phase 1D: Experiment Configuration & Environment Validator
+ * Bridge — Phase 1E: Experiment Configuration & Environment Validator
  *
  * Validates:
  * 1. Schema validity and TypeScript definitions
  * 2. Required directories and fixture files
- * 3. Executable availability (claude, opencode) on PATH
+ * 3. Executable availability (claude, opencode) using deterministic resolver
  * 4. Security functions (path confinement, secret scrubbing, 8KB truncation)
  * 5. Package scripts alignment
  *
- * Does NOT launch AI agents or invoke external LLMs.
+ * Does NOT launch live experiment runs.
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { scrubSecrets, validatePathConfinement, truncatePayload } from './security.js';
-import { validateExtractedTransfer, getExecutionEnv } from './agent-runners.js';
+import { validateExtractedTransfer, resolveExecutable } from './agent-runners.js';
 
 interface ValidationResult {
   check: string;
@@ -123,32 +122,31 @@ export function runValidation(): { allPassed: boolean; results: ValidationResult
     });
   }
 
-  // Check 4: Executable binary presence
-  let claudeFound = false;
-  let opencodeFound = false;
+  // Check 4: Deterministic Executable Resolution
+  let claudePath = '';
+  let opencodePath = '';
+  let claudeResolved = false;
+  let opencodeResolved = false;
+
   try {
-    const claudeCheck = execSync('where.exe claude 2>nul || where.exe claude.cmd 2>nul || which claude 2>/dev/null', {
-      env: getExecutionEnv(),
-      encoding: 'utf-8',
-    });
-    claudeFound = Boolean(claudeCheck.trim());
+    const resolved = resolveExecutable('claude');
+    claudePath = resolved.resolvedPath;
+    claudeResolved = true;
   } catch {}
 
   try {
-    const opencodeCheck = execSync('where.exe opencode 2>nul || where.exe opencode.exe 2>nul || which opencode 2>/dev/null', {
-      env: getExecutionEnv(),
-      encoding: 'utf-8',
-    });
-    opencodeFound = Boolean(opencodeCheck.trim());
+    const resolved = resolveExecutable('opencode');
+    opencodePath = resolved.resolvedPath;
+    opencodeResolved = true;
   } catch {}
 
   const isCI = Boolean(process.env.CI);
   results.push({
-    check: 'Agent Executables on PATH',
-    passed: isCI ? true : (claudeFound && opencodeFound),
+    check: 'Deterministic Executable Resolution',
+    passed: isCI ? true : (claudeResolved && opencodeResolved),
     details: isCI
-      ? `CI Environment detected (Claude: ${claudeFound ? 'AVAILABLE' : 'SKIPPED_IN_CI'}, OpenCode: ${opencodeFound ? 'AVAILABLE' : 'SKIPPED_IN_CI'})`
-      : `Claude CLI: ${claudeFound ? 'AVAILABLE' : 'MISSING'}, OpenCode CLI: ${opencodeFound ? 'AVAILABLE' : 'MISSING'}`,
+      ? `CI Environment detected (Claude: ${claudeResolved ? claudePath : 'SKIPPED_IN_CI'}, OpenCode: ${opencodeResolved ? opencodePath : 'SKIPPED_IN_CI'})`
+      : `Claude: ${claudeResolved ? claudePath : 'NOT RESOLVED'}, OpenCode: ${opencodeResolved ? opencodePath : 'NOT RESOLVED'}`,
   });
 
   // Check 5: Package.json scripts
@@ -156,11 +154,12 @@ export function runValidation(): { allPassed: boolean; results: ValidationResult
   const hasPilot = Boolean(packageJson.scripts?.['experiment:pilot']);
   const hasReplicate = Boolean(packageJson.scripts?.['experiment:replicate']);
   const hasValidate = Boolean(packageJson.scripts?.['experiment:validate']);
+  const hasSmoke = Boolean(packageJson.scripts?.['experiment:smoke']);
 
   results.push({
     check: 'Package.json Experiment Scripts',
-    passed: hasPilot && hasReplicate && hasValidate,
-    details: `experiment:pilot: ${hasPilot ? 'YES' : 'NO'}, experiment:replicate: ${hasReplicate ? 'YES' : 'NO'}, experiment:validate: ${hasValidate ? 'YES' : 'NO'}`,
+    passed: hasPilot && hasReplicate && hasValidate && hasSmoke,
+    details: `experiment:pilot: ${hasPilot ? 'YES' : 'NO'}, experiment:replicate: ${hasReplicate ? 'YES' : 'NO'}, experiment:validate: ${hasValidate ? 'YES' : 'NO'}, experiment:smoke: ${hasSmoke ? 'YES' : 'NO'}`,
   });
 
   const allPassed = results.every((r) => r.passed);
@@ -186,7 +185,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToP
 
   if (allPassed) {
     console.log(`=============================================================`);
-    console.log(`  VALIDATION SUMMARY: ALL CHECKS PASSED. READY FOR PILOT.`);
+    console.log(`  VALIDATION SUMMARY: ALL CHECKS PASSED. READY FOR SMOKE TESTS.`);
     console.log(`=============================================================\n`);
     process.exit(0);
   } else {

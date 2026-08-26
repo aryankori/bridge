@@ -17,6 +17,7 @@
     "format:check": "prettier --check .",
     "clean": "rm -rf dist",
     "experiment:validate": "tsx research/experiments/exp-001/validate.ts",
+    "experiment:smoke": "tsx research/experiments/exp-001/smoke-tests.ts",
     "experiment:pilot": "tsx research/experiments/exp-001/harness.ts --mode pilot",
     "experiment:replicate": "tsx research/experiments/exp-001/harness.ts --mode replicate"
   },

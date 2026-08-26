@@ -1,23 +1,54 @@
 /**
- * Bridge — Phase 1D: Real Agent Execution & Extraction Engine
+ * Bridge — Phase 1E: Real Agent Execution & Extraction Engine
  *
  * Implements:
- * 1. Claude Code execution (Agent A) in non-interactive stream-json mode (shell: false, direct spawn)
- * 2. Structured transfer extraction from actual Claude output (NO ANSWER KEY)
- * 3. OpenCode execution (Agent B) in controlled research mode (--pure, --auto, --format json, shell: false)
- * 4. Post-task transfer fidelity / understanding check
+ * 1. Deterministic executable discovery for Claude Code & OpenCode
+ * 2. Strict Claude Code execution (Agent A) with explicit failure classification
+ * 3. Hard stage gates: Zero fake / stub fallback on empty transcript
+ * 4. Structured transfer extraction from actual Agent A evidence (NO ANSWER KEY)
+ * 5. Controlled OpenCode execution (Agent B) with symmetric --pure --auto --format json
+ * 6. Post-task transfer fidelity / understanding check
  */
 
-import { spawn } from 'node:child_process';
-import type { ExperimentalWorkTransfer, TransferFidelityCheck } from './types.js';
+import * as fs from 'fs';
+import * as path from 'path';
+import { spawn, execSync } from 'node:child_process';
+import type {
+  ExperimentalWorkTransfer,
+  TransferFidelityCheck,
+  AgentFailureClassification,
+  ResolvedExecutable,
+} from './types.js';
 import { scrubSecrets, validatePathConfinement } from './security.js';
+
+// ---------------------------------------------------------------------------
+// Error Classification
+// ---------------------------------------------------------------------------
+
+export class AgentExecutionError extends Error {
+  public readonly classification: AgentFailureClassification;
+  public readonly details?: {
+    exitCode?: number | null;
+    stdout?: string;
+    stderr?: string;
+    resolvedPath?: string;
+  };
+
+  constructor(
+    classification: AgentFailureClassification,
+    message: string,
+    details?: { exitCode?: number | null; stdout?: string; stderr?: string; resolvedPath?: string },
+  ) {
+    super(`[${classification}] ${message}`);
+    this.name = 'AgentExecutionError';
+    this.classification = classification;
+    this.details = details;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Executable Path Resolution & Environment Configuration
 // ---------------------------------------------------------------------------
-
-export const AGENT_A_COMMAND = process.platform === 'win32' ? 'claude.exe' : 'claude';
-export const AGENT_B_COMMAND = process.platform === 'win32' ? 'opencode.exe' : 'opencode';
 
 /**
  * Builds a deterministic execution environment with required PATH entries for Windows/POSIX.
@@ -37,6 +68,88 @@ export function getExecutionEnv(): NodeJS.ProcessEnv {
   return env;
 }
 
+/**
+ * Deterministically resolves the installed executable path for an agent.
+ * Checks known installation candidate locations, system PATH, and platform shims.
+ * Fails cleanly if the executable is not installed.
+ */
+export function resolveExecutable(name: 'claude' | 'opencode'): ResolvedExecutable {
+  const isWindows = process.platform === 'win32';
+  const userProfile = process.env.USERPROFILE || (isWindows ? 'C:\\Users\\aryan' : '');
+
+  // 1. Check known candidate paths
+  const candidatePaths: string[] = [];
+  if (isWindows) {
+    if (name === 'claude') {
+      candidatePaths.push(
+        path.join(userProfile, '.local', 'bin', 'claude.exe'),
+        path.join(userProfile, '.local', 'bin', 'claude.cmd'),
+        path.join(userProfile, 'AppData', 'Roaming', 'npm', 'claude.cmd'),
+      );
+    } else if (name === 'opencode') {
+      candidatePaths.push(
+        path.join(userProfile, 'scoop', 'shims', 'opencode.exe'),
+        path.join(userProfile, 'scoop', 'shims', 'opencode.cmd'),
+        path.join(userProfile, 'AppData', 'Roaming', 'npm', 'opencode.cmd'),
+      );
+    }
+  } else {
+    const home = process.env.HOME || '';
+    if (name === 'claude') {
+      candidatePaths.push(
+        path.join(home, '.local', 'bin', 'claude'),
+        '/usr/local/bin/claude',
+        '/usr/bin/claude',
+      );
+    } else if (name === 'opencode') {
+      candidatePaths.push(
+        path.join(home, '.local', 'bin', 'opencode'),
+        '/usr/local/bin/opencode',
+        '/usr/bin/opencode',
+      );
+    }
+  }
+
+  for (const candidate of candidatePaths) {
+    if (candidate && fs.existsSync(candidate)) {
+      return {
+        command: candidate,
+        resolvedPath: path.resolve(candidate),
+        source: 'configured',
+      };
+    }
+  }
+
+  // 2. Query PATH via system tool
+  const env = getExecutionEnv();
+  const queryCmd = isWindows
+    ? `where.exe ${name}.exe 2>nul || where.exe ${name}.cmd 2>nul || where.exe ${name} 2>nul`
+    : `which ${name} 2>/dev/null`;
+
+  try {
+    const stdout = execSync(queryCmd, { env, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+    const firstLine = stdout.split('\r\n').join('\n').split('\n').map((s) => s.trim()).filter(Boolean)[0];
+    if (firstLine && fs.existsSync(firstLine)) {
+      return {
+        command: firstLine,
+        resolvedPath: path.resolve(firstLine),
+        source: 'path',
+      };
+    }
+  } catch {
+    // Lookup failed
+  }
+
+  throw new AgentExecutionError(
+    'EXECUTABLE_NOT_FOUND',
+    `Could not locate executable for '${name}'. Checked candidates: ${candidatePaths.join(', ')}. Ensure ${name} is installed and available on PATH.`,
+  );
+}
+
+// Default command identifiers for reference
+export const AGENT_A_NAME = 'claude';
+export const AGENT_B_NAME = 'opencode';
+
 // ---------------------------------------------------------------------------
 // 1. Agent A (Claude Code) Execution
 // ---------------------------------------------------------------------------
@@ -49,22 +162,26 @@ export interface ClaudeExecutionResult {
   inputTokens: number | 'UNKNOWN';
   outputTokens: number | 'UNKNOWN';
   totalTokens: number | 'UNKNOWN';
+  resolvedExecutable: ResolvedExecutable;
 }
 
 /**
  * Executes Claude Code non-interactively on the target repository to perform an initial exploratory analysis.
  * The prompt does NOT disclose the evaluation answer key.
  *
- * Subprocess configuration:
- * - Direct spawn without shell (shell: false) to prevent command-line whitespace truncation.
- * - Stdio ignored on stdin (stdio: ['ignore', 'pipe', 'pipe']) to prevent interactive TTY blocking.
- * - Verified flags: -p <prompt> --output-format stream-json --verbose --no-session-persistence
+ * Hard failure guards:
+ * - Throws AgentExecutionError('EXECUTABLE_NOT_FOUND') if claude binary is missing.
+ * - Throws AgentExecutionError('TIMEOUT') if execution exceeds timeout.
+ * - Throws AgentExecutionError('PROCESS_EXIT_NONZERO') if Claude exits with non-zero code.
+ * - Throws AgentExecutionError('EMPTY_OUTPUT') if stdout is empty or whitespace-only.
  */
 export async function runClaudeAnalysis(
   worktreePath: string,
   timeoutMs: number = 120_000,
 ): Promise<ClaudeExecutionResult> {
   validatePathConfinement(worktreePath, process.cwd());
+
+  const resolved = resolveExecutable('claude');
 
   const analysisPrompt = [
     'Analyze the codebase in src/scheduler.ts and tests/scheduler.test.ts.',
@@ -91,7 +208,7 @@ export async function runClaudeAnalysis(
   return new Promise((resolve, reject) => {
     let timer: NodeJS.Timeout;
 
-    const child = spawn(AGENT_A_COMMAND, args, {
+    const child = spawn(resolved.command, args, {
       cwd: worktreePath,
       env: getExecutionEnv(),
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -100,7 +217,13 @@ export async function runClaudeAnalysis(
 
     timer = setTimeout(() => {
       child.kill('SIGKILL');
-      reject(new Error(`Claude Code analysis timed out after ${timeoutMs}ms`));
+      reject(
+        new AgentExecutionError(
+          'TIMEOUT',
+          `Claude Code analysis timed out after ${timeoutMs}ms`,
+          { resolvedPath: resolved.resolvedPath },
+        ),
+      );
     }, timeoutMs);
 
     child.stdout.on('data', (chunk: Buffer) => {
@@ -130,25 +253,56 @@ export async function runClaudeAnalysis(
 
     child.on('error', (err: Error) => {
       clearTimeout(timer);
-      reject(new Error(`Failed to launch Claude Code (${AGENT_A_COMMAND}): ${err.message}`));
+      reject(
+        new AgentExecutionError(
+          'EXECUTABLE_NOT_FOUND',
+          `Failed to launch Claude Code (${resolved.command}): ${err.message}`,
+          { resolvedPath: resolved.resolvedPath },
+        ),
+      );
     });
 
     child.on('close', (code: number | null) => {
       clearTimeout(timer);
       const durationMs = performance.now() - startTime;
+      const cleanStdout = scrubSecrets(stdoutAccumulator);
+      const cleanStderr = scrubSecrets(stderrAccumulator);
+
+      if (code !== 0) {
+        reject(
+          new AgentExecutionError(
+            'PROCESS_EXIT_NONZERO',
+            `Claude Code exited with non-zero code (${code}). Stderr: ${cleanStderr.substring(0, 500)}`,
+            { exitCode: code, stdout: cleanStdout, stderr: cleanStderr, resolvedPath: resolved.resolvedPath },
+          ),
+        );
+        return;
+      }
+
+      if (!cleanStdout.trim()) {
+        reject(
+          new AgentExecutionError(
+            'EMPTY_OUTPUT',
+            `Claude Code completed with empty stdout. Stderr: ${cleanStderr.substring(0, 500)}`,
+            { exitCode: code, stdout: cleanStdout, stderr: cleanStderr, resolvedPath: resolved.resolvedPath },
+          ),
+        );
+        return;
+      }
 
       if (inputTokens !== 'UNKNOWN' && outputTokens !== 'UNKNOWN') {
         totalTokens = inputTokens + outputTokens;
       }
 
       resolve({
-        stdout: scrubSecrets(stdoutAccumulator),
-        stderr: scrubSecrets(stderrAccumulator),
-        exitCode: code ?? 0,
+        stdout: cleanStdout,
+        stderr: cleanStderr,
+        exitCode: 0,
         durationMs,
         inputTokens,
         outputTokens,
         totalTokens,
+        resolvedExecutable: resolved,
       });
     });
   });
@@ -168,12 +322,24 @@ export interface ExtractionResult {
 /**
  * Extracts a strictly validated ExperimentalWorkTransfer from Claude's ACTUAL analysis output.
  * Does NOT consult any answer key or pre-populated defect list.
+ *
+ * Hard gates:
+ * - Rejects immediately if claudeRawStdout is empty.
+ * - Fails with AGENT_A_TRANSFER_EXTRACTION_FAILURE if extraction produces no genuine evidence.
  */
 export async function extractStructuredTransfer(
   claudeRawStdout: string,
   timeoutMs: number = 60_000,
 ): Promise<ExtractionResult> {
+  if (!claudeRawStdout || !claudeRawStdout.trim()) {
+    throw new AgentExecutionError(
+      'AGENT_A_NO_TRANSCRIPT',
+      'AGENT_A_NO_TRANSCRIPT: Cannot extract structured transfer from empty Agent A transcript.',
+    );
+  }
+
   const startTime = performance.now();
+  const resolved = resolveExecutable('claude');
 
   const extractionPrompt = [
     'You are a neutral work-state extractor for Project Bridge.',
@@ -230,7 +396,7 @@ export async function extractStructuredTransfer(
     let stdoutAccumulator = '';
     let stderrAccumulator = '';
 
-    const child = spawn(AGENT_A_COMMAND, args, {
+    const child = spawn(resolved.command, args, {
       env: getExecutionEnv(),
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: false,
@@ -238,7 +404,23 @@ export async function extractStructuredTransfer(
 
     timer = setTimeout(() => {
       child.kill('SIGKILL');
-      reject(new Error(`Extraction pass timed out after ${timeoutMs}ms`));
+      // Fallback to programmatic parser if secondary LLM pass times out
+      try {
+        const programmatic = parseProgrammaticTransfer(claudeRawStdout);
+        resolve({
+          transfer: programmatic,
+          extractionPrompt,
+          rawExtractionOutput: 'LLM pass timed out; deterministic programmatic parser used.',
+          durationMs: performance.now() - startTime,
+        });
+      } catch (fallbackErr: unknown) {
+        reject(
+          new AgentExecutionError(
+            'AGENT_A_TRANSFER_EXTRACTION_FAILURE',
+            `Extraction timed out and fallback failed: ${(fallbackErr as Error).message}`,
+          ),
+        );
+      }
     }, timeoutMs);
 
     child.stdout.on('data', (chunk: Buffer) => {
@@ -249,9 +431,24 @@ export async function extractStructuredTransfer(
       stderrAccumulator += chunk.toString('utf-8');
     });
 
-    child.on('error', (err: Error) => {
+    child.on('error', () => {
       clearTimeout(timer);
-      reject(new Error(`Failed to launch extraction pass: ${err.message}`));
+      try {
+        const programmatic = parseProgrammaticTransfer(claudeRawStdout);
+        resolve({
+          transfer: programmatic,
+          extractionPrompt,
+          rawExtractionOutput: 'Spawn failed; deterministic programmatic parser used.',
+          durationMs: performance.now() - startTime,
+        });
+      } catch (fallbackErr: unknown) {
+        reject(
+          new AgentExecutionError(
+            'AGENT_A_TRANSFER_EXTRACTION_FAILURE',
+            `Extraction launch failed and fallback failed: ${(fallbackErr as Error).message}`,
+          ),
+        );
+      }
     });
 
     child.on('close', () => {
@@ -270,18 +467,23 @@ export async function extractStructuredTransfer(
           rawExtractionOutput: stdoutAccumulator,
           durationMs,
         });
-      } catch (err: unknown) {
-        // Fallback to deterministic programmatic parser if LLM extraction returned non-JSON
+      } catch {
+        // Fallback to deterministic programmatic parser on actual verified Agent A stdout
         try {
           const programmatic = parseProgrammaticTransfer(claudeRawStdout);
           resolve({
             transfer: programmatic,
             extractionPrompt,
-            rawExtractionOutput: stdoutAccumulator || 'Programmatic fallback used',
+            rawExtractionOutput: stdoutAccumulator || 'Programmatic fallback from genuine transcript',
             durationMs,
           });
         } catch (fallbackErr: unknown) {
-          reject(new Error(`Extraction failed: ${(err as Error).message}. Fallback error: ${(fallbackErr as Error).message}`));
+          reject(
+            new AgentExecutionError(
+              'AGENT_A_TRANSFER_EXTRACTION_FAILURE',
+              `Extraction failed: ${(fallbackErr as Error).message}`,
+            ),
+          );
         }
       }
     });
@@ -310,13 +512,12 @@ function parseExtractedJsonText(streamJsonOutput: string): string {
     }
   }
 
-  const cleaned = text.trim()
+  return text
+    .trim()
     .replace(/^```json\s*/i, '')
     .replace(/^```\s*/, '')
     .replace(/```\s*$/, '')
     .trim();
-
-  return cleaned;
 }
 
 export function validateExtractedTransfer(transfer: any): asserts transfer is ExperimentalWorkTransfer {
@@ -326,11 +527,11 @@ export function validateExtractedTransfer(transfer: any): asserts transfer is Ex
   if (transfer.schemaVersion !== '0.2.0-simplified') {
     transfer.schemaVersion = '0.2.0-simplified';
   }
-  if (typeof transfer.objective !== 'string') {
+  if (typeof transfer.objective !== 'string' || !transfer.objective.trim()) {
     throw new Error('Missing or invalid objective string');
   }
-  if (!Array.isArray(transfer.diagnostics)) {
-    throw new Error('Missing or invalid diagnostics array');
+  if (!Array.isArray(transfer.diagnostics) || transfer.diagnostics.length === 0) {
+    throw new Error('Missing or empty diagnostics array');
   }
   for (const diag of transfer.diagnostics) {
     if (!diag.id || !diag.title || !diag.rootCause) {
@@ -340,22 +541,30 @@ export function validateExtractedTransfer(transfer: any): asserts transfer is Ex
   if (!Array.isArray(transfer.constraints)) {
     transfer.constraints = [];
   }
-  if (!Array.isArray(transfer.verificationCommands)) {
+  if (!Array.isArray(transfer.verificationCommands) || transfer.verificationCommands.length === 0) {
     transfer.verificationCommands = [{ command: 'pnpm test', description: 'Run test suite' }];
   }
 }
 
 /**
- * Deterministic programmatic extractor used as a fallback if secondary LLM pass is unavailable.
+ * Deterministic programmatic extractor used ONLY on genuine, verified Agent A stdout.
+ * Rejects empty or invalid input.
  */
 export function parseProgrammaticTransfer(transcriptText: string): ExperimentalWorkTransfer {
+  if (!transcriptText || !transcriptText.trim()) {
+    throw new AgentExecutionError(
+      'AGENT_A_NO_TRANSCRIPT',
+      'Cannot extract programmatic transfer from empty transcript.',
+    );
+  }
+
   const diagnostics: ExperimentalWorkTransfer['diagnostics'] = [];
   let diagCount = 1;
 
   const lines = transcriptText.split('\n');
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.match(/bug|defect|issue|error|leak|overflow|decrement|starvation/i)) {
+    if (line.match(/bug|defect|issue|error|leak|overflow|decrement|starvation|clamp|capacity|refill/i)) {
       diagnostics.push({
         id: `DIAG-00${diagCount++}`,
         title: line.trim().substring(0, 80),
@@ -371,12 +580,21 @@ export function parseProgrammaticTransfer(transcriptText: string): ExperimentalW
   }
 
   if (diagnostics.length === 0) {
-    diagnostics.push({
-      id: 'DIAG-001',
-      title: 'Discovered issue in scheduler logic',
-      rootCause: transcriptText.substring(0, 200),
-      locations: [{ filePath: 'src/scheduler.ts' }],
-    });
+    // If no keyword matches, use non-empty excerpt of actual transcript
+    const trimmed = transcriptText.trim();
+    if (trimmed.length > 20) {
+      diagnostics.push({
+        id: 'DIAG-001',
+        title: 'Analysis findings from Agent A',
+        rootCause: trimmed.substring(0, 200),
+        locations: [{ filePath: 'src/scheduler.ts' }],
+      });
+    } else {
+      throw new AgentExecutionError(
+        'AGENT_A_TRANSFER_EXTRACTION_FAILURE',
+        'AGENT_A_TRANSFER_EXTRACTION_FAILURE: Transcript contains no discernible diagnostic information.',
+      );
+    }
   }
 
   return {
@@ -401,6 +619,7 @@ export interface OpenCodeExecutionResult {
   outputTokens: number | 'UNKNOWN';
   totalTokens: number | 'UNKNOWN';
   rawEvents: unknown[];
+  resolvedExecutable: ResolvedExecutable;
 }
 
 /**
@@ -422,6 +641,8 @@ export async function runOpenCodeTask(
 ): Promise<OpenCodeExecutionResult> {
   validatePathConfinement(worktreePath, process.cwd());
 
+  const resolved = resolveExecutable('opencode');
+
   const startTime = performance.now();
   let stdoutAccumulator = '';
   let stderrAccumulator = '';
@@ -435,14 +656,16 @@ export async function runOpenCodeTask(
     promptText,
     '--auto',
     '--pure',
-    '--format', 'json',
-    '--dir', worktreePath,
+    '--format',
+    'json',
+    '--dir',
+    worktreePath,
   ];
 
   return new Promise((resolve, reject) => {
     let timer: NodeJS.Timeout;
 
-    const child = spawn(AGENT_B_COMMAND, args, {
+    const child = spawn(resolved.command, args, {
       cwd: worktreePath,
       env: getExecutionEnv(),
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -451,7 +674,13 @@ export async function runOpenCodeTask(
 
     timer = setTimeout(() => {
       child.kill('SIGKILL');
-      reject(new Error(`OpenCode execution timed out after ${timeoutMs}ms`));
+      reject(
+        new AgentExecutionError(
+          'TIMEOUT',
+          `OpenCode execution timed out after ${timeoutMs}ms`,
+          { resolvedPath: resolved.resolvedPath },
+        ),
+      );
     }, timeoutMs);
 
     child.stdout.on('data', (chunk: Buffer) => {
@@ -485,26 +714,57 @@ export async function runOpenCodeTask(
 
     child.on('error', (err: Error) => {
       clearTimeout(timer);
-      reject(new Error(`Failed to spawn OpenCode (${AGENT_B_COMMAND}): ${err.message}`));
+      reject(
+        new AgentExecutionError(
+          'EXECUTABLE_NOT_FOUND',
+          `Failed to spawn OpenCode (${resolved.command}): ${err.message}`,
+          { resolvedPath: resolved.resolvedPath },
+        ),
+      );
     });
 
     child.on('close', (code: number | null) => {
       clearTimeout(timer);
       const durationMs = performance.now() - startTime;
+      const cleanStdout = scrubSecrets(stdoutAccumulator);
+      const cleanStderr = scrubSecrets(stderrAccumulator);
+
+      if (code !== 0) {
+        reject(
+          new AgentExecutionError(
+            'PROCESS_EXIT_NONZERO',
+            `OpenCode exited with non-zero code (${code}). Stderr: ${cleanStderr.substring(0, 500)}`,
+            { exitCode: code, stdout: cleanStdout, stderr: cleanStderr, resolvedPath: resolved.resolvedPath },
+          ),
+        );
+        return;
+      }
+
+      if (!cleanStdout.trim() && rawEvents.length === 0) {
+        reject(
+          new AgentExecutionError(
+            'EMPTY_OUTPUT',
+            `OpenCode produced no output or events. Stderr: ${cleanStderr.substring(0, 500)}`,
+            { exitCode: code, stdout: cleanStdout, stderr: cleanStderr, resolvedPath: resolved.resolvedPath },
+          ),
+        );
+        return;
+      }
 
       if (totalTokens === 'UNKNOWN' && inputTokens !== 'UNKNOWN' && outputTokens !== 'UNKNOWN') {
         totalTokens = inputTokens + outputTokens;
       }
 
       resolve({
-        stdout: scrubSecrets(stdoutAccumulator),
-        stderr: scrubSecrets(stderrAccumulator),
-        exitCode: code ?? 0,
+        stdout: cleanStdout,
+        stderr: cleanStderr,
+        exitCode: 0,
         durationMs,
         inputTokens,
         outputTokens,
         totalTokens,
         rawEvents,
+        resolvedExecutable: resolved,
       });
     });
   });
@@ -565,7 +825,10 @@ function extractAssistantText(events: unknown[]): string {
 }
 
 function extractSection(fullText: string, numberPrefix: string, fallbackKeyword: string): string {
-  const regex = new RegExp(`(?:${numberPrefix}[.)]|${fallbackKeyword})[:\\s]*([\\s\\S]*?)(?=(?:[0-9][.)]|$))`, 'i');
+  const regex = new RegExp(
+    `(?:${numberPrefix}[.)]|${fallbackKeyword})[:\\s]*([\\s\\S]*?)(?=(?:[0-9][.)]|$))`,
+    'i',
+  );
   const match = fullText.match(regex);
   return match ? match[1].trim() : fullText.substring(0, 150);
 }
