@@ -1,4 +1,4 @@
-# Bridge — Phase 1A: Red-Team Review Resolution Matrix
+# Bridge - Phase 1A: Red-Team Review Resolution Matrix
 
 **Document ID:** `EXP-001-RED-TEAM-RESOLUTION`  
 **Date:** 2026-08-26  

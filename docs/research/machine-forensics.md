@@ -1,4 +1,4 @@
-# Phase 0 — Machine Forensics Report
+# Phase 0 - Machine Forensics Report
 
 **Date:** 2026-08-25
 **Machine:** HP Pavilion Gaming Laptop 15-ec2xxx
@@ -32,14 +32,14 @@
 | Git     | (latest via scoop) | `C:\Program Files\Git\`                                     |
 | Rust    | ❌ Not installed   | scoop install failed                                        |
 | Go      | ❌ Not installed   | scoop install failed                                        |
-| .NET    | ❌ Not installed   | —                                                           |
+| .NET    | ❌ Not installed   | -                                                          |
 
 ### Package Managers
 
-- **scoop** — 36 packages (primary Windows package manager)
-- **chocolatey** — 19 packages (via UniGetUI)
-- **npm** / **pnpm** — Node.js packages
-- **pip** — Python packages
+- **scoop** - 36 packages (primary Windows package manager)
+- **chocolatey** - 19 packages (via UniGetUI)
+- **npm** / **pnpm** - Node.js packages
+- **pip** - Python packages
 
 ### Developer Tools
 
@@ -69,24 +69,24 @@
 
 **Process Architecture:**
 
-- Claude Code CLI binary (`claude.exe`) — the primary interface
-- Daemon supervisor — manages background workers
-- Workers — prewarmed instances for faster response
+- Claude Code CLI binary (`claude.exe`) - the primary interface
+- Daemon supervisor - manages background workers
+- Workers - prewarmed instances for faster response
 - Named pipe control socket for inter-process communication
 
 **Transport:**
 
-- `--output-format stream-json` — structured streaming via stdout [DOCUMENTED]
-- `--output-format json` — single JSON result [DOCUMENTED]
-- `--input-format stream-json` — structured streaming input via stdin [DOCUMENTED]
+- `--output-format stream-json` - structured streaming via stdout [DOCUMENTED]
+- `--output-format json` - single JSON result [DOCUMENTED]
+- `--input-format stream-json` - structured streaming input via stdin [DOCUMENTED]
 - Named pipe daemon control [OBSERVED]
-- `--remote-control` — Remote Control mode with named session [DOCUMENTED]
+- `--remote-control` - Remote Control mode with named session [DOCUMENTED]
 
 **Session Storage:**
 
-- `~\.claude\sessions\` — session data [OBSERVED]
-- `%APPDATA%\Claude\claude-code-sessions\` — Electron-managed sessions [OBSERVED]
-- `~\.claude\history.jsonl` — conversation history index [OBSERVED]
+- `~\.claude\sessions\` - session data [OBSERVED]
+- `%APPDATA%\Claude\claude-code-sessions\` - Electron-managed sessions [OBSERVED]
+- `~\.claude\history.jsonl` - conversation history index [OBSERVED]
 - Resumable via `--resume`, `--continue`, `--session-id` [DOCUMENTED]
 
 **Integration Surfaces:**
@@ -121,27 +121,27 @@
 
 **Process Architecture:**
 
-- CLI (`opencode.exe`) — TUI and headless modes
-- Desktop app (`OpenCode.exe`) — Electron-based GUI
-- Headless server (`opencode serve`) — HTTP API
-- ACP server (`opencode acp`) — JSON-RPC for editor integration
+- CLI (`opencode.exe`) - TUI and headless modes
+- Desktop app (`OpenCode.exe`) - Electron-based GUI
+- Headless server (`opencode serve`) - HTTP API
+- ACP server (`opencode acp`) - JSON-RPC for editor integration
 
 **Transport:**
 
-- `opencode serve` — local HTTP server [DOCUMENTED]
-- `opencode acp` — JSON-RPC 2.0 (ACP standard) [DOCUMENTED]
-- `opencode attach <url>` — attach to running server [DOCUMENTED]
-- `opencode web` — HTTP server + web UI [DOCUMENTED]
+- `opencode serve` - local HTTP server [DOCUMENTED]
+- `opencode acp` - JSON-RPC 2.0 (ACP standard) [DOCUMENTED]
+- `opencode attach <url>` - attach to running server [DOCUMENTED]
+- `opencode web` - HTTP server + web UI [DOCUMENTED]
 - mDNS service discovery (optional) [DOCUMENTED]
 
 **Session Storage:**
 
-- `~\.codex\sessions\` — session directories [OBSERVED]
-- `~\.codex\state_5.sqlite` — state database (200KB) [OBSERVED]
-- `~\.codex\logs_2.sqlite` — log database (6.2MB) [OBSERVED]
-- `~\.codex\memories_1.sqlite` — memory database (40KB) [OBSERVED]
-- `~\.codex\goals_1.sqlite` — goals database (32KB) [OBSERVED]
-- `~\.codex\session_index.jsonl` — session index [OBSERVED]
+- `~\.codex\sessions\` - session directories [OBSERVED]
+- `~\.codex\state_5.sqlite` - state database (200KB) [OBSERVED]
+- `~\.codex\logs_2.sqlite` - log database (6.2MB) [OBSERVED]
+- `~\.codex\memories_1.sqlite` - memory database (40KB) [OBSERVED]
+- `~\.codex\goals_1.sqlite` - goals database (32KB) [OBSERVED]
+- `~\.codex\session_index.jsonl` - session index [OBSERVED]
 - Session export/import via `opencode export`/`opencode import` [DOCUMENTED]
 
 **Integration Surfaces:**
@@ -176,26 +176,26 @@
 
 **Process Architecture:**
 
-- Python-based CLI (`hermes.exe`) — the primary interface
-- Desktop app (Electron) — 5 processes running
-- Gateway server on port 9119 — JSON-RPC/WebSocket
+- Python-based CLI (`hermes.exe`) - the primary interface
+- Desktop app (Electron) - 5 processes running
+- Gateway server on port 9119 - JSON-RPC/WebSocket
 - Web UI server
 
 **Transport:**
 
-- `hermes serve` — HTTP/WebSocket server on port 9119 [DOCUMENTED]
-- `hermes acp` — ACP mode for editor integration [DOCUMENTED]
-- Gateway — JSON-RPC/WebSocket [OBSERVED] gateway_state.json
+- `hermes serve` - HTTP/WebSocket server on port 9119 [DOCUMENTED]
+- `hermes acp` - ACP mode for editor integration [DOCUMENTED]
+- Gateway - JSON-RPC/WebSocket [OBSERVED] gateway_state.json
 - Pairing system for remote access [OBSERVED]
 
 **Session Storage:**
 
-- `%LOCALAPPDATA%\hermes\sessions\` — session directories [OBSERVED]
-- `%LOCALAPPDATA%\hermes\state.db` — SQLite state database (28MB) [OBSERVED]
-- `%LOCALAPPDATA%\hermes\kanban.db` — task database (118KB) [OBSERVED]
-- `%LOCALAPPDATA%\hermes\projects.db` — project database (45KB) [OBSERVED]
-- `%LOCALAPPDATA%\hermes\memories\` — memory system [OBSERVED]
-- `%LOCALAPPDATA%\hermes\config.yaml` — configuration (18KB) [OBSERVED]
+- `%LOCALAPPDATA%\hermes\sessions\` - session directories [OBSERVED]
+- `%LOCALAPPDATA%\hermes\state.db` - SQLite state database (28MB) [OBSERVED]
+- `%LOCALAPPDATA%\hermes\kanban.db` - task database (118KB) [OBSERVED]
+- `%LOCALAPPDATA%\hermes\projects.db` - project database (45KB) [OBSERVED]
+- `%LOCALAPPDATA%\hermes\memories\` - memory system [OBSERVED]
+- `%LOCALAPPDATA%\hermes\config.yaml` - configuration (18KB) [OBSERVED]
 - Resumable via `--resume`, `--continue` [DOCUMENTED]
 
 **Integration Surfaces:**
@@ -231,14 +231,14 @@
 
 **Transport:**
 
-- `--output-format stream-json` — structured streaming [DOCUMENTED]
-- `--output-format json` — single JSON result [DOCUMENTED]
-- `--acp` — ACP mode [DOCUMENTED]
+- `--output-format stream-json` - structured streaming [DOCUMENTED]
+- `--output-format json` - single JSON result [DOCUMENTED]
+- `--acp` - ACP mode [DOCUMENTED]
 - Sandbox mode [DOCUMENTED]
 
 **Session Storage:**
 
-- `~\.gemini\history\` — session history [OBSERVED]
+- `~\.gemini\history\` - session history [OBSERVED]
 - Resumable via `--resume` [DOCUMENTED]
 
 **Key Capabilities:**
@@ -261,8 +261,8 @@
 
 **Transport:**
 
-- `--output-format stream-json` — structured streaming [DOCUMENTED]
-- `--output-format json` — single JSON result [DOCUMENTED]
+- `--output-format stream-json` - structured streaming [DOCUMENTED]
+- `--output-format json` - single JSON result [DOCUMENTED]
 
 **Session Storage:**
 

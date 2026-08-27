@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1E: Live Executable Integration Smoke Tests
+ * Bridge - Phase 1E: Live Executable Integration Smoke Tests
  *
  * Runs actual minimal live invocations of both Claude Code and OpenCode
  * to verify executable path resolution, subprocess spawning, space-path handling,

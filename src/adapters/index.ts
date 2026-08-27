@@ -1,5 +1,5 @@
 /**
- * Bridge Adapters — Agent-specific integrations
+ * Bridge Adapters - Agent-specific integrations
  *
  * Each adapter encapsulates all knowledge about one agent.
  * The Bridge core imports adapters through this barrel;

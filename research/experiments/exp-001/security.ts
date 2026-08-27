@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1D: Experiment Security & Sanitization Module
+ * Bridge - Phase 1D: Experiment Security & Sanitization Module
  *
  * Implements:
  * - Strict path confinement checks to prevent directory traversal

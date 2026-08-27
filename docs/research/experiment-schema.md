@@ -1,4 +1,4 @@
-# Bridge — Experimental Work Transfer Schema (Simplified)
+# Bridge - Experimental Work Transfer Schema (Simplified)
 
 **Schema Identifier:** `ExperimentalWorkTransfer`  
 **Version:** `0.2.0-simplified`  
@@ -139,14 +139,14 @@ Resolve all defects in src/scheduler.ts so that tests in tests/scheduler.test.ts
 
 ## Diagnostics
 - **[DIAG-001] Unclamped token refill allows burst overflow**
-  - *Location:* `src/scheduler.ts#L42-L47` (`refillTokens`)
-  - *Root Cause:* `refillTokens()` adds calculated tokens without clamping to `this.capacity`, allowing token counts to grow unbounded during idle intervals.
+ - *Location:* `src/scheduler.ts#L42-L47` (`refillTokens`)
+ - *Root Cause:* `refillTokens()` adds calculated tokens without clamping to `this.capacity`, allowing token counts to grow unbounded during idle intervals.
 - **[DIAG-002] Active concurrency counter double decrement on abort**
-  - *Location:* `src/scheduler.ts#L88-L96` (`executeTask`)
-  - *Root Cause:* `executeTask` decrements `this.activeCount` once in the abort signal listener and again in the `finally` block, causing `activeCount` to drop below zero.
+ - *Location:* `src/scheduler.ts#L88-L96` (`executeTask`)
+ - *Root Cause:* `executeTask` decrements `this.activeCount` once in the abort signal listener and again in the `finally` block, causing `activeCount` to drop below zero.
 - **[DIAG-003] Queue starvation on token depletion**
-  - *Location:* `src/scheduler.ts#L65-L75` (`pump`)
-  - *Root Cause:* `pump()` terminates synchronously when available tokens are insufficient for the next task without arming a delayed refill timer.
+ - *Location:* `src/scheduler.ts#L65-L75` (`pump`)
+ - *Root Cause:* `pump()` terminates synchronously when available tokens are insufficient for the next task without arming a delayed refill timer.
 
 ## Constraints
 - Do not modify public method signatures in TaskScheduler.

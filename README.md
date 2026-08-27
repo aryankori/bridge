@@ -4,7 +4,7 @@ The interoperability and orchestration layer between AI agents running on your c
 
 ## Vision
 
-Bridge sits between you and your AI tools. Instead of context-switching between Claude Code, OpenCode, Hermes, Gemini, Cursor, and whatever ships next month — Bridge provides a unified substrate that can discover, connect to, launch, observe, and coordinate all of them.
+Bridge sits between you and your AI tools. Instead of context-switching between Claude Code, OpenCode, Hermes, Gemini, Cursor, and whatever ships next month - Bridge provides a unified substrate that can discover, connect to, launch, observe, and coordinate all of them.
 
 ```
                     HUMAN
@@ -23,7 +23,7 @@ Bridge is **not** a chat UI. It is **not** a wrapper around LLM APIs. It is a sy
 
 ## Current Status
 
-**Phase 0 — Reconnaissance (Complete)**
+**Phase 0 - Reconnaissance (Complete)**
 
 The project is in its foundation phase. We have:
 
@@ -199,13 +199,13 @@ See `.env.example` for documentation of future variables.
 
 ## Development Principles
 
-1. **Evidence before abstraction** — Every type, interface, and architectural decision is grounded in observed agent behavior
-2. **Agent-specific logic belongs in adapters** — The core never imports agent-specific code
-3. **Core remains agent-agnostic** — Adding a new agent means writing a new adapter, not modifying the core
-4. **No secrets in git** — Environment files, API keys, tokens, and credentials are always excluded
-5. **Prefer official integration surfaces** — Use ACP, MCP, and documented CLIs before resorting to process hacking
-6. **Isolate undocumented hacks** — When unofficial behavior is used, it's contained in an adapter with documented risk
-7. **Security-first process control** — Bridge may control powerful agents; every control surface is a security boundary
+1. **Evidence before abstraction** - Every type, interface, and architectural decision is grounded in observed agent behavior
+2. **Agent-specific logic belongs in adapters** - The core never imports agent-specific code
+3. **Core remains agent-agnostic** - Adding a new agent means writing a new adapter, not modifying the core
+4. **No secrets in git** - Environment files, API keys, tokens, and credentials are always excluded
+5. **Prefer official integration surfaces** - Use ACP, MCP, and documented CLIs before resorting to process hacking
+6. **Isolate undocumented hacks** - When unofficial behavior is used, it's contained in an adapter with documented risk
+7. **Security-first process control** - Bridge may control powerful agents; every control surface is a security boundary
 
 ## Roadmap
 

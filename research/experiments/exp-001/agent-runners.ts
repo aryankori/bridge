@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1E: Real Agent Execution & Extraction Engine
+ * Bridge - Phase 1E: Real Agent Execution & Extraction Engine
  *
  * Implements:
  * 1. Deterministic executable discovery for Claude Code & OpenCode

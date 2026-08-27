@@ -1,4 +1,4 @@
-# Bridge — Phase 1A: Controlled Work-Transfer Experiment Plan (Revised)
+# Bridge - Phase 1A: Controlled Work-Transfer Experiment Plan (Revised)
 
 **Document Version:** `2.0.0-corrected`  
 **Experiment ID:** `EXP-001-WORK-TRANSFER`  
@@ -49,18 +49,18 @@ The experiment evaluates three strictly isolated conditions:
 ### 2.2 Condition B: Fair Transcript Transfer (Red-Team Corrected)
 - **Input:** Task prompt + **actual unedited chronological stdout transcript** produced by Agent A during its initial analysis turn.
 - **Specification:**
-  - **No Selective Filtering:** The transcript is NOT cleaned of "less useful" conversation or niceties.
-  - **Payload Cap:** Maximum delivered payload limit of **8,192 bytes (8 KB)**.
-  - **Truncation Protocol:** If original transcript exceeds 8 KB, truncate from the end and append `\n[TRANSCRIPT TRUNCATED AT 8KB LIMIT]`.
-  - **Telemetry Captured:** Original transcript size (bytes), delivered size (bytes), truncation flag, and estimated tokens.
-  - **Delimiter:** Enclosed inside explicit `<<<UNTRUSTED_AGENT_TRANSCRIPT_START>>>` and `<<<UNTRUSTED_AGENT_TRANSCRIPT_END>>>` boundary tags.
+ - **No Selective Filtering:** The transcript is NOT cleaned of "less useful" conversation or niceties.
+ - **Payload Cap:** Maximum delivered payload limit of **8,192 bytes (8 KB)**.
+ - **Truncation Protocol:** If original transcript exceeds 8 KB, truncate from the end and append `\n[TRANSCRIPT TRUNCATED AT 8KB LIMIT]`.
+ - **Telemetry Captured:** Original transcript size (bytes), delivered size (bytes), truncation flag, and estimated tokens.
+ - **Delimiter:** Enclosed inside explicit `<<<UNTRUSTED_AGENT_TRANSCRIPT_START>>>` and `<<<UNTRUSTED_AGENT_TRANSCRIPT_END>>>` boundary tags.
 
 ### 2.3 Condition C: Simplified Structured Work Transfer (Red-Team Corrected)
 - **Input:** Task prompt + **minimal structured dossier** formatted according to `ExperimentalWorkTransfer` v0.2.0-simplified (see [`docs/research/experiment-schema.md`](file:///C:/Users/aryan/Documents/AI%20and%20ML/bridge/docs/research/experiment-schema.md)).
 - **Specification:**
-  - **Fields Included:** `objective`, `diagnostics` (`id`, `title`, `rootCause`, `locations`), `constraints`, `verificationCommands`.
-  - **Fields Removed:** Epistemic classification trees, generalized task graphs, nested provenance hierarchies.
-  - **Delimiter:** Enclosed inside explicit `<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>` and `<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_END>>>` boundary tags.
+ - **Fields Included:** `objective`, `diagnostics` (`id`, `title`, `rootCause`, `locations`), `constraints`, `verificationCommands`.
+ - **Fields Removed:** Epistemic classification trees, generalized task graphs, nested provenance hierarchies.
+ - **Delimiter:** Enclosed inside explicit `<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>` and `<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_END>>>` boundary tags.
 
 ---
 
@@ -91,8 +91,8 @@ This measurement allows distinguishing **MORE INFORMATION** from **BETTER STRUCT
 - **6. Human Interventions:** Number of manual adjustments required (`0` target).
 - **7. Tool Invocations:** Count of file reads, file writes, and bash executions by Agent B.
 - **8. Token Consumption & Cost:**
-  - Agent A Input/Output tokens and cost (or `UNKNOWN` if unexposed).
-  - Agent B Input/Output tokens and cost (or `UNKNOWN` if unexposed).
+ - Agent A Input/Output tokens and cost (or `UNKNOWN` if unexposed).
+ - Agent B Input/Output tokens and cost (or `UNKNOWN` if unexposed).
 - **9. Files Changed & Diff Size:** Lines added/deleted via `git diff --stat`.
 - **10. Post-Task Transfer Fidelity (Understanding Check):**
   After task execution, Agent B is queried in a separate turn to answer:
@@ -137,14 +137,14 @@ The analysis will answer five separate research questions rather than collapsing
 In Phase 1D, the experiment harness enforces strict zero-knowledge isolation:
 
 1. **No Answer Key / Hardcoded Dossier:**
-   - The harness contains zero pre-written diagnostics, root causes, or line numbers.
-   - Condition C receives only what Agent A (Claude Code) discovered and emitted during its live analysis run.
+  - The harness contains zero pre-written diagnostics, root causes, or line numbers.
+  - Condition C receives only what Agent A (Claude Code) discovered and emitted during its live analysis run.
 
 2. **Live Execution & Extraction Flow:**
-   - **Step 1:** Claude Code runs non-interactively (`claude -p "<prompt>" --output-format stream-json --verbose --no-session-persistence`) against the clean fixture worktree.
-   - **Step 2:** The harness captures Claude's live stdout and streams assistant messages.
-   - **Step 3:** The parser searches for a fenced JSON block conforming to `ExperimentalWorkTransfer` (v0.2.0-simplified).
-   - **Step 4:** If valid, `validateExtractedTransfer()` validates required fields (`objective`, `diagnostics[].{id, title, rootCause, locations}`, `constraints`, `verificationCommands`).
-   - **Step 5 (Fallback):** If Claude output does not contain clean JSON, `parseProgrammaticTransfer()` extracts diagnostics heuristically from Claude's text sections without injecting any experimenter knowledge.
-   - **Step 6:** The resulting payload is scrubbed for secrets, bounded by path confinement, wrapped in untrusted data delimiters (`<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>`), and delivered to OpenCode in Condition C.
+  - **Step 1:** Claude Code runs non-interactively (`claude -p "<prompt>" --output-format stream-json --verbose --no-session-persistence`) against the clean fixture worktree.
+  - **Step 2:** The harness captures Claude's live stdout and streams assistant messages.
+  - **Step 3:** The parser searches for a fenced JSON block conforming to `ExperimentalWorkTransfer` (v0.2.0-simplified).
+  - **Step 4:** If valid, `validateExtractedTransfer()` validates required fields (`objective`, `diagnostics[].{id, title, rootCause, locations}`, `constraints`, `verificationCommands`).
+  - **Step 5 (Fallback):** If Claude output does not contain clean JSON, `parseProgrammaticTransfer()` extracts diagnostics heuristically from Claude's text sections without injecting any experimenter knowledge.
+  - **Step 6:** The resulting payload is scrubbed for secrets, bounded by path confinement, wrapped in untrusted data delimiters (`<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>`), and delivered to OpenCode in Condition C.
 

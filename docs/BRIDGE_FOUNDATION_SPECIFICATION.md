@@ -66,18 +66,18 @@ Package Managers: Scoop (36 packages), Chocolatey (19 packages), pnpm (v9.15.3)
 Sessions operate across three distinct storage patterns:
 
 1. **Structured Append Log (JSONL):**
-   - *Agents:* Claude Code (`~\.claude\history.jsonl`, `~\.claude\sessions\*.jsonl`), agy.
-   - *Format:* Line-delimited JSON events with explicit turn counters, tokens, and ISO timestamps.
-   - *Lifecycle:* Append-only per turn; resumed via `--resume <id>` or `--continue`.
+  - *Agents:* Claude Code (`~\.claude\history.jsonl`, `~\.claude\sessions\*.jsonl`), agy.
+  - *Format:* Line-delimited JSON events with explicit turn counters, tokens, and ISO timestamps.
+  - *Lifecycle:* Append-only per turn; resumed via `--resume <id>` or `--continue`.
 
 2. **Relational Transactional Engine (SQLite with WAL):**
-   - *Agents:* OpenCode (`~\.codex\state_5.sqlite`, `logs_2.sqlite`), Hermes (`~\AppData\Local\hermes\state.db`, `kanban.db`).
-   - *Format:* ACID relational schema with separate tables for sessions, messages, tool executions, and embeddings.
-   - *Lifecycle:* Multi-session state preservation with transactional rollbacks and export/import commands.
+  - *Agents:* OpenCode (`~\.codex\state_5.sqlite`, `logs_2.sqlite`), Hermes (`~\AppData\Local\hermes\state.db`, `kanban.db`).
+  - *Format:* ACID relational schema with separate tables for sessions, messages, tool executions, and embeddings.
+  - *Lifecycle:* Multi-session state preservation with transactional rollbacks and export/import commands.
 
 3. **Hybrid File System Hierarchies (JSON / YAML / Markdown):**
-   - *Agents:* Gemini CLI (`~\.gemini\history\`), Hermes (`~\AppData\Local\hermes\memories\`).
-   - *Format:* Directory tree containing discrete conversation state files.
+  - *Agents:* Gemini CLI (`~\.gemini\history\`), Hermes (`~\AppData\Local\hermes\memories\`).
+  - *Format:* Directory tree containing discrete conversation state files.
 
 ---
 
@@ -171,18 +171,18 @@ export interface AgentAdapter {
 
 Bridge implements a typed event bus (`EventBus`) with the following core taxonomy:
 
-- `agent:discovered` — Agent detected during filesystem/PATH scan.
-- `agent:registered` — Agent adapter activated and ready for dispatch.
-- `agent:removed` — Agent adapter torn down and resources released.
-- `session:created` — New conversation/task context initialized.
-- `session:active` — Agent currently executing model turn or tool call.
-- `session:idle` — Agent waiting for input.
-- `session:closed` — Session terminated.
-- `session:error` — Unhandled failure emitted by agent runtime.
-- `message:sent` — Outbound message successfully transmitted to agent.
-- `message:received` — Complete turn message received from agent.
-- `message:stream-chunk` — Partial token or tool update in real time.
-- `transport:connected` / `transport:disconnected` / `transport:error` — Connection lifecycle.
+- `agent:discovered` - Agent detected during filesystem/PATH scan.
+- `agent:registered` - Agent adapter activated and ready for dispatch.
+- `agent:removed` - Agent adapter torn down and resources released.
+- `session:created` - New conversation/task context initialized.
+- `session:active` - Agent currently executing model turn or tool call.
+- `session:idle` - Agent waiting for input.
+- `session:closed` - Session terminated.
+- `session:error` - Unhandled failure emitted by agent runtime.
+- `message:sent` - Outbound message successfully transmitted to agent.
+- `message:received` - Complete turn message received from agent.
+- `message:stream-chunk` - Partial token or tool update in real time.
+- `transport:connected` / `transport:disconnected` / `transport:error` - Connection lifecycle.
 
 ---
 

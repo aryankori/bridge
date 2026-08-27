@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1E: Work-Transfer Controlled Experiment Harness
+ * Bridge - Phase 1E: Work-Transfer Controlled Experiment Harness
  *
  * Full research harness for EXP-001:
  * - Condition A: Native Baseline (Task prompt + clean fixture)

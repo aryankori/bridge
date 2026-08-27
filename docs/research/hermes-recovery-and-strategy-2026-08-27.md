@@ -1,8 +1,8 @@
-# BRIDGE — RECOVERY & STRATEGY REPORT
+# BRIDGE - RECOVERY & STRATEGY REPORT
 
 **Author:** Hermes Agent (Independent Research, Architecture, Security & Strategy Reviewer)
 **Date:** 2026-08-27
-**Context:** Recovery from interrupted session — power failure during previous Hermes cycle
+**Context:** Recovery from interrupted session - power failure during previous Hermes cycle
 
 ---
 
@@ -15,7 +15,7 @@
 - **Remote:** `https://github.com/aryankori/bridge.git`
 
 ### Last Completed Hermes Tasks
-1. ✅ **EXP-001E Final Re-Certification** → `bridge-exp-001e-final-certification.md` — GO issued
+1. ✅ **EXP-001E Final Re-Certification** → `bridge-exp-001e-final-certification.md` - GO issued
 2. ✅ **Strategic Landscape & Company Design** → `bridge-strategic-landscape-company-design.md`
 3. ✅ **Project Intelligence Foundation** → `bridge-project-intelligence-foundation.md`
 4. ✅ **Experimental Review** → `bridge-hermes-experimental-review.md`
@@ -35,7 +35,7 @@
 **EXP-001 pilot execution awaiting runtime prerequisites:**
 - Claude upstream quota resolution
 - OpenCode inference availability
-- Backend reachability (`ANTHROPIC_BASE_URL=http://localhost:8080` — currently unreachable via curl, but user states "ITS CURRENTLY WORKING" — likely a proxy/tunnel)
+- Backend reachability (`ANTHROPIC_BASE_URL=http://localhost:8080` - currently unreachable via curl, but user states "ITS CURRENTLY WORKING" - likely a proxy/tunnel)
 
 ### Next Required Task
 **Execute EXP-001 pilot** once Antigravity confirms runtime readiness. Hermes should then observe results and issue post-pilot assessment.
@@ -71,9 +71,9 @@
 - ✅ Contamination prevention (fake results.json removed, artifacts gitignored)
 
 ### Remaining (Non-Blocking)
-1. **Backend reachability** — `http://localhost:8080` unreachable via direct curl, but user confirms working. Likely requires proxy/tunnel.
-2. **OpenCode model selection** — Antigravity investigating which model to pin. Not a blocker for pilot.
-3. **Pilot execution** — Not yet run. Awaiting Antigravity's go-ahead.
+1. **Backend reachability** - `http://localhost:8080` unreachable via direct curl, but user confirms working. Likely requires proxy/tunnel.
+2. **OpenCode model selection** - Antigravity investigating which model to pin. Not a blocker for pilot.
+3. **Pilot execution** - Not yet run. Awaiting Antigravity's go-ahead.
 
 ---
 
@@ -94,7 +94,7 @@ The question is NOT "Which model has the highest benchmark score?" but "What mod
 
 ### Recommendation
 
-**MODEL SELECTION INCONCLUSIVE** — insufficient evidence to recommend a specific model without knowing:
+**MODEL SELECTION INCONCLUSIVE** - insufficient evidence to recommend a specific model without knowing:
 1. Which models OpenCode supports
 2. Which models are available under the user's subscription
 3. Current rate limit status
@@ -117,19 +117,19 @@ The AI agent memory space is **crowded and rapidly maturing**. Bridge does not n
 
 | Technology | What It Solves | What It Doesn't Solve | Bridge Could Use It | Build Own? | Dependency Risk |
 |---|---|---|---|---|---|
-| **Honcho** | Cross-session memory, user modeling, persistent context | Project-specific intelligence, code relationships | As memory backend for agent sessions | No — use as component | Medium (managed service) |
-| **Cognee** | Codebase knowledge graph, AST parsing, MCP-native | Real-time session capture, human validation | As code graph engine | No — use as component | Low (open source, Apache 2.0) |
-| **Mem0** | Managed memory API, user/session/agent scopes | Code relationships, project truth | As memory API layer | No — use as component | Medium (managed service) |
-| **agentmemory** | Lightweight MCP memory, 12 lifecycle hooks | Knowledge graph, contradiction handling | As session capture hook | No — use as component | Low (open source) |
-| **QMD** | Local markdown search, BM25 + vector + LLM rerank | Cross-session persistence, agent integration | As local documentation retrieval | No — use as component | Low (open source, local) |
+| **Honcho** | Cross-session memory, user modeling, persistent context | Project-specific intelligence, code relationships | As memory backend for agent sessions | No - use as component | Medium (managed service) |
+| **Cognee** | Codebase knowledge graph, AST parsing, MCP-native | Real-time session capture, human validation | As code graph engine | No - use as component | Low (open source, Apache 2.0) |
+| **Mem0** | Managed memory API, user/session/agent scopes | Code relationships, project truth | As memory API layer | No - use as component | Medium (managed service) |
+| **agentmemory** | Lightweight MCP memory, 12 lifecycle hooks | Knowledge graph, contradiction handling | As session capture hook | No - use as component | Low (open source) |
+| **QMD** | Local markdown search, BM25 + vector + LLM rerank | Cross-session persistence, agent integration | As local documentation retrieval | No - use as component | Low (open source, local) |
 
 #### Critical Insight
 
 **Bridge should NOT build a memory store.** The memory storage problem is solved. Bridge should build:
-1. **The reconciliation engine** — distinguishing "Claude suggested X" from "the project decided X"
-2. **The project truth model** — lifecycle states, supersession, staleness detection
-3. **The capture pipeline** — extracting intelligence from agent sessions
-4. **The materialization layer** — agent-specific context injection
+1. **The reconciliation engine** - distinguishing "Claude suggested X" from "the project decided X"
+2. **The project truth model** - lifecycle states, supersession, staleness detection
+3. **The capture pipeline** - extracting intelligence from agent sessions
+4. **The materialization layer** - agent-specific context injection
 
 ---
 
@@ -178,15 +178,15 @@ The AI agent memory space is **crowded and rapidly maturing**. Bridge does not n
 
 | Product | Positioning | Threat Level |
 |---|---|---|
-| **Cortex (Cursor)** | Production-ready memory for AI agents | HIGH — Cursor has distribution |
-| **Mind (OpenCode)** | MCP-native persistent memory extender | MEDIUM — OpenCode-specific |
-| **MemoryLake** | Cross-session permanent context retention | LOW — no differentiation |
-| **Agent Memory (Cloudflare)** | Agents that remember, persistent memory layer | MEDIUM — Cloudflare has infra |
-| **Codebase-Memory (arXiv)** | Tree-Sitter-based knowledge graphs via MCP | LOW — academic, not product |
+| **Cortex (Cursor)** | Production-ready memory for AI agents | HIGH - Cursor has distribution |
+| **Mind (OpenCode)** | MCP-native persistent memory extender | MEDIUM - OpenCode-specific |
+| **MemoryLake** | Cross-session permanent context retention | LOW - no differentiation |
+| **Agent Memory (Cloudflare)** | Agents that remember, persistent memory layer | MEDIUM - Cloudflare has infra |
+| **Codebase-Memory (arXiv)** | Tree-Sitter-based knowledge graphs via MCP | LOW - academic, not product |
 
 ### Consolidation Trend
 
-The memory space is **consolidating around MCP as the standard interface**. Cognee, agentmemory, and Mem0 all expose MCP servers. This is good for Bridge — it means memory components are interchangeable.
+The memory space is **consolidating around MCP as the standard interface**. Cognee, agentmemory, and Mem0 all expose MCP servers. This is good for Bridge - it means memory components are interchangeable.
 
 ### The Gap
 
@@ -202,12 +202,12 @@ This is Bridge's opportunity.
 
 | Layer | Definition | Technical Distinct? | Bridge Should Own? |
 |---|---|---|---|
-| **Chat History** | Raw conversation log | Yes — append-only, unstructured | No (store, don't process) |
-| **Context** | What the agent sees this session | Yes — ephemeral, window-bound | No (materialize, don't store) |
-| **Work State** | Current task progress | Yes — transient, task-bound | No (capture, don't persist) |
-| **Project Memory** | Distilled session knowledge | Yes — persistent, queryable | Yes (core asset) |
-| **Project Intelligence** | Verified, actionable knowledge | Yes — lifecycle-aware, provenance-rich | Yes (the moat) |
-| **Project Truth** | Authoritative current state | Yes — reconciled, contradiction-free | Yes (the ultimate goal) |
+| **Chat History** | Raw conversation log | Yes - append-only, unstructured | No (store, don't process) |
+| **Context** | What the agent sees this session | Yes - ephemeral, window-bound | No (materialize, don't store) |
+| **Work State** | Current task progress | Yes - transient, task-bound | No (capture, don't persist) |
+| **Project Memory** | Distilled session knowledge | Yes - persistent, queryable | Yes (core asset) |
+| **Project Intelligence** | Verified, actionable knowledge | Yes - lifecycle-aware, provenance-rich | Yes (the moat) |
+| **Project Truth** | Authoritative current state | Yes - reconciled, contradiction-free | Yes (the ultimate goal) |
 
 ### How Bridge Should Know
 
@@ -222,12 +222,12 @@ This is Bridge's opportunity.
 ### The Reconciliation Problem
 
 This is harder than retrieval. The model must:
-1. **Detect conflicts** — two claims contradict
-2. **Establish precedence** — which claim is newer/verified
-3. **Resolve contradictions** — mark one as superseded
-4. **Surface uncertainty** — when resolution is ambiguous
+1. **Detect conflicts** - two claims contradict
+2. **Establish precedence** - which claim is newer/verified
+3. **Resolve contradictions** - mark one as superseded
+4. **Surface uncertainty** - when resolution is ambiguous
 
-**This is the technical moat.** Not storage, not retrieval — reconciliation.
+**This is the technical moat.** Not storage, not retrieval - reconciliation.
 
 ---
 
@@ -321,8 +321,8 @@ The thesis is invalid when:
 | **Retrieval** | ADOPT (QMD or Cognee) | Solved problem, MCP-native |
 | **Embeddings** | ADOPT (Cognee or local) | Standard technology, no differentiation |
 | **Code Graph** | ADOPT (Cognee) | AST parsing is hard; Cognee does it well |
-| **Project Memory** | BUILD | This is the moat — reconciliation, lifecycle, truth |
-| **Provenance** | BUILD | Core differentiation — who decided what |
+| **Project Memory** | BUILD | This is the moat - reconciliation, lifecycle, truth |
+| **Provenance** | BUILD | Core differentiation - who decided what |
 | **Contradiction Handling** | BUILD | No one else solves this |
 | **Session Capture** | WRAP (agentmemory hooks) | Use hooks, add custom extraction |
 | **Context Materialization** | BUILD | Agent-specific injection is the product |
@@ -361,7 +361,7 @@ The thesis is invalid when:
 
 ### Is project memory actually valuable?
 
-**Yes, but not as storage.** The value is in **reconciliation** — knowing what's true now. Storage is commoditized. Truth is not.
+**Yes, but not as storage.** The value is in **reconciliation** - knowing what's true now. Storage is commoditized. Truth is not.
 
 ### Do modern agents already solve this?
 
@@ -389,7 +389,7 @@ The thesis is invalid when:
 
 ### Is this a company or just infrastructure?
 
-**It's a company IF the reconciliation engine is defensible.** If it's just storage, it's infrastructure (and commoditized). The moat is the **accumulated reconciliation data** — 2 years of project trajectories, human corrections, and validated decisions.
+**It's a company IF the reconciliation engine is defensible.** If it's just storage, it's infrastructure (and commoditized). The moat is the **accumulated reconciliation data** - 2 years of project trajectories, human corrections, and validated decisions.
 
 ---
 
@@ -438,7 +438,7 @@ The thesis is invalid when:
 
 ### 5. What is the strongest version of the Project Intelligence thesis?
 
-**"Bridge is the project's institutional memory — not a chat archive, but a verified, queryable representation of what the project has learned, capable of distinguishing suggestion from decision from truth."**
+**"Bridge is the project's institutional memory - not a chat archive, but a verified, queryable representation of what the project has learned, capable of distinguishing suggestion from decision from truth."**
 
 ### 6. What existing technology deserves the closest investigation?
 

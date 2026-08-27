@@ -2,7 +2,7 @@
 
 ## Status
 
-**Accepted** — 2026-08-25
+**Accepted** - 2026-08-25
 
 ## Context
 
@@ -38,7 +38,7 @@ Strong typing is critical for an infrastructure project that defines adapter con
 
 ### Package Manager: pnpm
 
-Already installed. Uses symlinks to dramatically reduce disk usage — critical on a machine at 97% disk capacity. Strict dependency resolution prevents phantom dependencies that cause production bugs.
+Already installed. Uses symlinks to dramatically reduce disk usage - critical on a machine at 97% disk capacity. Strict dependency resolution prevents phantom dependencies that cause production bugs.
 
 ### Build: tsup
 
@@ -93,7 +93,7 @@ TypeScript execution without a build step during development. Watches for change
 
 - All Bridge source code is TypeScript
 - The project uses ESM exclusively (no CommonJS)
-- Dependencies must be justified — no large frameworks
+- Dependencies must be justified - no large frameworks
 - The ACP/MCP protocol libraries are natively compatible
 - Future desktop shell can use Electron or Tauri with the same codebase
 - TypeScript 7.x peer dependency warnings with @typescript-eslint (cosmetic, not functional)

@@ -1,4 +1,4 @@
-# Bridge — Phase 1E: Experiment Readiness Assessment (Post-Red-Team & Integrity Restoration)
+# Bridge - Phase 1E: Experiment Readiness Assessment (Post-Red-Team & Integrity Restoration)
 
 **Document ID:** `EXP-001-READINESS`  
 **Date:** 2026-08-26  

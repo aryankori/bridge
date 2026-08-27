@@ -1,5 +1,5 @@
 /**
- * Bridge Transport Layer — Type Definitions
+ * Bridge Transport Layer - Type Definitions
  *
  * Abstractions for communication channels between Bridge and agents.
  * Every adapter uses a transport under the hood; the transport handles

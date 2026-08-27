@@ -1,7 +1,7 @@
 /**
  * Bridge Core Tests
  *
- * Tests for the event bus and agent registry — the two foundational
+ * Tests for the event bus and agent registry - the two foundational
  * components that everything else builds on.
  */
 

@@ -1,5 +1,5 @@
 /**
- * Bridge Core — Public API
+ * Bridge Core - Public API
  */
 
 export { EventBus } from './events.js';

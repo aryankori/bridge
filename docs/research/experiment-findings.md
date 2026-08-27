@@ -1,4 +1,4 @@
-# Bridge — Experiment Findings & Answers to Research Questions
+# Bridge - Experiment Findings & Answers to Research Questions
 
 **Experiment ID:** `EXP-001-WORK-TRANSFER`  
 **Date:** 2026-08-25  
@@ -15,7 +15,7 @@ Condition A (baseline without prior work) failed Test 9 and required rework. Bot
 
 ### 2. Does structured work transfer outperform a raw transcript?
 **Answer: YES.**  
-Structured work transfer (Condition C) completed the task in **2.1 seconds**, compared to **7.8 seconds** for transcript transfer (Condition B) — a **73% speedup**. Structured fields (`rootCause`, `locations`, `suggestedFix`) eliminated parsing ambiguity and cognitive overhead.
+Structured work transfer (Condition C) completed the task in **2.1 seconds**, compared to **7.8 seconds** for transcript transfer (Condition B) - a **73% speedup**. Structured fields (`rootCause`, `locations`, `suggestedFix`) eliminated parsing ambiguity and cognitive overhead.
 
 ### 3. Which information from Agent A is actually useful?
 **Answer:**

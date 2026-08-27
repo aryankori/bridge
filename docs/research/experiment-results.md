@@ -1,4 +1,4 @@
-# Bridge — Experiment Results: EXP-001-WORK-TRANSFER
+# Bridge - Experiment Results: EXP-001-WORK-TRANSFER
 
 **Experiment ID:** `EXP-001-WORK-TRANSFER`  
 **Date:** 2026-08-25  
@@ -33,7 +33,7 @@
 ### Condition C: Structured Work Transfer
 - **Prompt:** Normalized JSON `ExperimentalWorkTransfer` dossier with typed `diagnostics`, `rootCause`, `locations`, and `suggestedFix`.
 - **Outcome:** 10/10 tests passed on the first cycle.
-- **Latency & Efficiency:** Lowest execution duration (2.1 s — **73% faster than Condition B**). Zero ambiguous token parsing required.
+- **Latency & Efficiency:** Lowest execution duration (2.1 s - **73% faster than Condition B**). Zero ambiguous token parsing required.
 
 ---
 

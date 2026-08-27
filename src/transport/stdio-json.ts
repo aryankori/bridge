@@ -2,7 +2,7 @@
  * StdioJsonTransport
  *
  * Manages a child process and provides NDJSON streaming over stdin/stdout.
- * This is the foundational transport for Bridge — both Claude Code's
+ * This is the foundational transport for Bridge - both Claude Code's
  * stream-json format and OpenCode's ACP protocol communicate this way.
  *
  * Architecture:
@@ -87,7 +87,7 @@ export class StdioJsonTransport implements Transport {
           const parsed = JSON.parse(trimmed);
           this.enqueue(parsed);
         } catch {
-          // Non-JSON line — some agents emit preamble text before JSON.
+          // Non-JSON line - some agents emit preamble text before JSON.
           // Capture it but don't crash.
           this.stderrLines.push(`[non-json stdout] ${trimmed}`);
         }
@@ -227,11 +227,11 @@ export class StdioJsonTransport implements Transport {
 
   private enqueue(data: unknown): void {
     if (this.waitingResolvers.length > 0) {
-      // Someone is waiting — give it to them directly
+      // Someone is waiting - give it to them directly
       const resolve = this.waitingResolvers.shift()!;
       resolve({ value: data, done: false });
     } else {
-      // No one waiting — buffer it
+      // No one waiting - buffer it
       this.messageQueue.push(data);
     }
   }

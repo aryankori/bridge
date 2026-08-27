@@ -1,5 +1,5 @@
 /**
- * Claude Code Adapter — Agent-specific Types
+ * Claude Code Adapter - Agent-specific Types
  *
  * Type definitions for Claude Code's stream-json output format.
  * Reverse-engineered from live CLI output with:

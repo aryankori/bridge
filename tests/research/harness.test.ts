@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1E: Research Experiment Harness & Hard Stage-Gate Unit Tests
+ * Bridge - Phase 1E: Research Experiment Harness & Hard Stage-Gate Unit Tests
  */
 
 import { describe, it, expect } from 'vitest';

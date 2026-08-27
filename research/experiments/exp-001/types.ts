@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1E: Research Experiment Type Definitions
+ * Bridge - Phase 1E: Research Experiment Type Definitions
  * Schema: ExperimentalWorkTransfer v0.2.0-simplified & Experiment Telemetry
  */
 

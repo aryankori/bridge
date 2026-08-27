@@ -176,7 +176,7 @@ export class JsonRpcClient {
         this.handleMessage(raw);
       }
     } catch (err) {
-      // Transport error — reject all pending
+      // Transport error - reject all pending
       const error = err instanceof Error ? err : new Error(String(err));
       for (const [id, pending] of this.pending) {
         clearTimeout(pending.timer);
@@ -200,7 +200,7 @@ export class JsonRpcClient {
     }
 
     // Could also be a server-initiated request (JSON-RPC allows this).
-    // For now we just ignore those — Bridge doesn't implement any server methods yet.
+    // For now we just ignore those - Bridge doesn't implement any server methods yet.
   }
 
   private handleResponse(response: JsonRpcResponse): void {
@@ -230,7 +230,7 @@ export class JsonRpcClient {
       try {
         handler(params);
       } catch {
-        // Swallow listener errors — don't crash the message loop
+        // Swallow listener errors - don't crash the message loop
       }
     }
   }

@@ -21,7 +21,7 @@ rl.on('line', (line) => {
   try {
     const msg = JSON.parse(trimmed);
 
-    // Notification (no id) — just acknowledge silently
+    // Notification (no id) - just acknowledge silently
     if (!('id' in msg)) {
       // For 'emit_notification' notifications, echo back as a server notification
       if (msg.method === 'trigger_notification') {

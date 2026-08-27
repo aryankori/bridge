@@ -1,5 +1,5 @@
 /**
- * Bridge — Phase 1E: Experiment Configuration & Environment Validator
+ * Bridge - Phase 1E: Experiment Configuration & Environment Validator
  *
  * Validates:
  * 1. Schema validity and TypeScript definitions
