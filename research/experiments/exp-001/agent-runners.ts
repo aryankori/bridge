@@ -150,6 +150,14 @@ export function resolveExecutable(name: 'claude' | 'opencode'): ResolvedExecutab
 export const AGENT_A_NAME = 'claude';
 export const AGENT_B_NAME = 'opencode';
 
+/**
+ * Pinned model for EXP-001 reproducibility.
+ * All three conditions (A, B, C) use this exact model for Agent B (OpenCode).
+ * Selected for: live NVIDIA NIM active deployment, 120B MoE (12B active), fast latency (~9-15s),
+ * verified non-interactive execution, and n=3 replication stability.
+ */
+export const PINNED_OPENCODE_MODEL = 'nvidia/nvidia/nemotron-3-super-120b-a12b';
+
 // ---------------------------------------------------------------------------
 // 1. Agent A (Claude Code) Execution
 // ---------------------------------------------------------------------------
@@ -658,6 +666,8 @@ export async function runOpenCodeTask(
     '--pure',
     '--format',
     'json',
+    '--model',
+    PINNED_OPENCODE_MODEL,
     '--dir',
     worktreePath,
   ];

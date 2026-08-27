@@ -10,7 +10,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { resolveExecutable, getExecutionEnv } from './agent-runners.js';
+import { resolveExecutable, getExecutionEnv, PINNED_OPENCODE_MODEL } from './agent-runners.js';
 import { scrubSecrets } from './security.js';
 
 export interface SmokeTestResult {
@@ -135,6 +135,8 @@ export async function runOpenCodeSmokeTest(timeoutMs: number = 90_000): Promise<
     '--pure',
     '--format',
     'json',
+    '--model',
+    PINNED_OPENCODE_MODEL,
     '--dir',
     tempBase,
   ];
