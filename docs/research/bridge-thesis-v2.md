@@ -1,4 +1,4 @@
-# Bridge Thesis v2: The Project Truth & Reconciliation Substrate
+# Bridge Thesis v2: Effective Standing & Authority Arbitration
 
 **Document ID:** `BRIDGE-THESIS-V2`  
 **Date:** 2026-08-27  
@@ -36,15 +36,18 @@ Bridge has evolved through five distinct conceptual stages:
 [Phase 3: Project Intelligence]
        │  (Lifecycle-aware facts with provenance, linked to files and commits)
        ▼
-[Phase 4: Project Truth & Reconciliation]  <-- CURRENT THESIS
-          (Authoritative, reconciled, contradiction-free ground truth verified by Git + tests + human decisions)
+[Phase 4: Project Truth & Reconciliation] (FALSIFIED)
+       │  (Authoritative, reconciled ground truth. Falsified: Bridge should not own the ledger)
+       ▼
+[Phase 5: Effective Standing / Authority Arbitration]  <-- CURRENT THESIS
+          (Computing comparative authority under conflict from fragmented, existing authority sources)
 ```
 
 ### The Current Thesis
 
-> **Bridge is the Authoritative Project Truth & Reconciliation Substrate for AI-Assisted Software Development.**
+> **Bridge computes Effective Standing to provide federated, project-specific, runtime authority arbitration across heterogeneous AI agents.**
 
-Bridge does not simply "remember" conversations. Bridge **reconciles** claims from agents, code commits, test suites, and human developers into an authoritative, contradiction-free model of project reality. When any agent starts work, Bridge materializes an optimal, verified slice of Project Truth into that agent's native format.
+Bridge does not own a standalone "Project Truth" ledger, nor does it replace existing systems of record. Instead, Bridge **consumes** existing authority sources (IAM, Git, Jira, policy, etc.) to compute the "Effective Standing" (comparative authority under conflict) of agents at runtime. The core moat is the project-specific authority graph and the integration work required to compute it.
 
 ---
 
@@ -68,20 +71,14 @@ Where EXP-001 addresses single-hop task handoffs, **Project Intelligence** intro
 
 ---
 
-## 5. What Project Truth & Reconciliation Adds
+## 5. What Effective Standing / Authority Arbitration Adds
 
-Project Intelligence without Reconciliation creates an append-only swamp of conflicting claims. **Project Truth & Reconciliation** provides the critical control layer:
+Where EXP-001 addresses single-hop task handoffs, **Authority Arbitration** provides the critical control layer for multi-agent environments without requiring a new centralized database:
 
-1. **Contradiction Detection:** Detects when a new agent proposal or decision conflicts with existing project state.
-2. **Lifecycle State Machine:** Tracks the maturity of every claim through formal states:
-   - `proposed` (Agent suggested in conversation; unverified)
-   - `decided` (Human developer explicitly approved)
-   - `implemented` (Present in code via verified Git commit diff)
-   - `verified` (Automated test suite passed on the commit)
-   - `superseded` / `obsolete` (Formally replaced by a newer decision or diff)
-3. **Precedence Resolution:** Establishes deterministic precedence rules:
-   $$\text{Verified Code Diff} > \text{Human Decision} > \text{Agent Proposal}$$
-4. **Authoritative Materialization:** Prevents stale, discarded, or obsolete ideas from ever entering an agent's prompt context.
+1. **Federated Authority Sources:** Consumes identity and policy from where it already lives (OIDC, Git roles, Jira assignments).
+2. **Dynamic Computation:** Calculates "Effective Standing" at runtime when two agents, or an agent and a human, conflict over a decision or resource.
+3. **No New Ledger:** Avoids the trap of building a centralized "Project Truth" database. The system of record remains the underlying infrastructure.
+4. **The Moat:** The defensible value is the project-specific authority graph and the deep integration work required to compute it across fragmented enterprise tools.
 
 ---
 
@@ -94,7 +91,7 @@ Project Intelligence without Reconciliation creates an append-only swamp of conf
 | **FACT** | Test execution results (exit codes, assertions) are objective binary evidence. | Verified by test runners (Vitest) |
 | **FACT** | ACP (JSON-RPC 2.0) and stdio (stream-json) provide reliable agent I/O transport. | Verified by Bridge transport layer |
 | **HYPOTHESIS** | Schema-driven work transfer (EXP-001) significantly outperforms raw transcripts in receiver agent task completion. | Formulated in EXP-001; awaiting empirical pilot & replication |
-| **HYPOTHESIS** | Reconciled Project Truth reduces agent hallucination and error rates more effectively than generic RAG memory. | Formulated for EXP-002 |
+| **HYPOTHESIS** | Computing Effective Standing from existing authority sources arbitrates conflicts better than a centralized policy engine. | Formulated for EXP-002 |
 | **HYPOTHESIS** | LLM extraction can reliably parse structured transfer state from arbitrary unstructured agent transcripts. | Initial harness testing positive; full variance unknown |
 | **UNKNOWN** | The exact degradation curve of receiver agents across varying task complexities ($n=3$ pilot will measure). | Empirical data pending |
 | **UNKNOWN** | Optimal balance between fully automated reconciliation from Git events versus human confirmation gates. | To be researched in Phase 2 |
@@ -140,9 +137,8 @@ Bridge strictly separates what can be computed **deterministically** from what r
 | **ADOPT** | **ast-grep / Tree-sitter / TypeScript Compiler API** | Instant, deterministic AST and symbol graph extraction without LLM cost. |
 | **ADOPT** | **QMD / BM25 Local Indexing** | Fast, local-first keyword and markdown search over workspace documentation. |
 | **WRAP** | **Honcho / Mem0 / Cognee (via MCP)** | If raw session storage or basic graph storage is needed, wrap existing tools behind standard interfaces; do not treat them as the product core. |
-| **BUILD** | **The Reconciliation Engine** | The core proprietary moat: contradiction detection, precedence rules, and temporal state tracking. |
-| **BUILD** | **The Project Truth State Machine** | Formal lifecycle tracking (`proposed` $\to$ `decided` $\to$ `implemented` $\to$ `verified` $\to$ `superseded`). |
-| **BUILD** | **Deterministic Evidence Grounding** | Binding natural language claims to immutable Git commit SHAs and AST node hashes. |
+| **BUILD** | **The Authority Graph** | The core proprietary moat: mapping fragmented enterprise tools into a unified authority representation. |
+| **BUILD** | **Effective Standing Computation** | The engine that calculates comparative authority under conflict. |
 | **BUILD** | **Work-Transfer Materializer** | Generating target-agent-specific injection payloads with strict token budget enforcement. |
 | **AVOID** | **Custom Vector Databases** | Vector storage is an undifferentiated commodity. |
 | **AVOID** | **Generic Multi-Agent Chat GUIs** | Shallow chat wrappers offer zero defensibility and solve the wrong problem. |
@@ -153,23 +149,19 @@ Bridge strictly separates what can be computed **deterministically** from what r
 ## 9. The Fundamental Product Object
 
 ### Question
-What is the core conceptual primitive of Bridge: `Memory`, `Context`, `WorkTransfer`, `ProjectState`, `ProjectIntelligence`, or `ProjectTruth`?
+What is the core conceptual primitive of Bridge: `Memory`, `Context`, `WorkTransfer`, `ProjectTruth`, or `EffectiveStanding`?
 
 ### Decision & Rationale
 
-**The fundamental Bridge object is `ProjectTruth`.**
+**The fundamental Bridge object is `EffectiveStanding`.**
 
-1. **Why not `Memory`?** Memory is passive, unverified, and captures discarded speculations alongside genuine decisions.
-2. **Why not `Context`?** Context is ephemeral, disposable, window-bound, and specific to a single model turn.
-3. **Why not `WorkTransfer`?** WorkTransfer is a transient transmission payload (a single-hop packet between Agent A and Agent B), not the enduring system state.
-4. **Why not `ProjectIntelligence`?** Intelligence represents enriched knowledge, but without reconciliation it tolerates contradictions.
-5. **Why `ProjectTruth`?** 
-   - `ProjectTruth` is the **authoritative, reconciled representation of project reality**.
-   - `ProjectState` is simply a temporal snapshot of `ProjectTruth` at a specific commit.
-   - `WorkTransfer` is simply a localized diff/projection of `ProjectTruth` formatted for task handoff.
-   - `Context` is simply a materialized view of `ProjectTruth` fitted into an agent's prompt window.
+1. **Why not `ProjectTruth`?** (Falsified Hypothesis). A standalone "Project Truth" ledger assumes Bridge can and should become the ultimate system of record. This competes with Git and introduces massive synchronization overhead.
+2. **Why `EffectiveStanding`?** 
+   - Standing is comparative authority under conflict.
+   - Bridge dynamically computes this standing from existing authority sources rather than attempting to store an omniscient truth.
+   - The value is in the arbitration of authority, not the storage of state.
 
-Everything in Bridge flows from, validates against, or updates **ProjectTruth**.
+Everything in Bridge flows from, validates against, or updates the computation of **EffectiveStanding**.
 
 ---
 

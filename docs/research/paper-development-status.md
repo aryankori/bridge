@@ -35,19 +35,33 @@ The repository and runtime environment have been recovered and verified followin
 
 ## 4. CURRENT RESEARCH QUESTIONS
 
-The empirical program evaluates the interoperability primitives required above individual agents:
+The empirical program evaluates the interoperability primitives required above individual agents. The thesis has recently shifted from "Project Truth / Commitment Control" to "Effective Standing / Authority Arbitration" based on rigorous falsification testing (standing-falsification.md and final-thesis-falsification.md). The original "Project Truth" thesis is explicitly preserved as a falsified hypothesis.
 
 1. **EXP-001 (Work-State Transfer):** Does structured `ExperimentalWorkTransfer` schema state significantly outperform raw chat transcript replay or zero-context when an interrupted task is handed off to a new receiver agent?
-2. **EXP-002 (Persistent Project Intelligence):** If structured transfer works, does maintaining a longitudinal, verified project intelligence layer across multiple sessions reduce agent contradiction, rework, and hallucination compared to fresh, memory-less sessions?
-3. **EXP-003 (Reconciliation / Commitment Control):** Does enforcing strict state governance (differentiating between proposed, decided, implemented, verified, and superseded states) prevent agents from acting on outdated or unauthorized information?
+2. **EXP-002 (Effective Standing / Authority Arbitration):** How can a project-specific authority graph be computed from existing, fragmented systems of record (Git, Jira, IAM) to arbitrate conflicts between agents, rather than relying on a standalone (and now falsified) "Project Truth" ledger?
+3. **EXP-003 (Runtime Arbitration):** Does dynamic computation of effective standing prevent agents from acting on outdated or unauthorized information better than a centralized policy engine?
 
 ## 5. NEXT REQUIRED ACTION
 
-1. **Clear Quota Blocker:** Wait for the Cloud Code quota reset on `aryan.kori14@gmail.com` (or add a fresh account to `antigravity-claude-proxy`).
-2. **Verify Prerequisites:** Re-run the smoke test suite (`npx tsx research/experiments/exp-001/smoke-tests.ts`). Both Claude and OpenCode must report `✅ PASS`.
-3. **Run EXP-001 Pilot:** Only when the smoke tests are dual-green, execute `pnpm run experiment:pilot`.
-4. **Inspect Pilot & Replicate:** Analyze the initial trial. If technically sound, proceed to $n=3$ replication per condition.
+- [x] Create core directory structure (`paper/`)
+- [x] Establish `main.tex` and `references.bib`
+- [x] Draft **Introduction** (01)
+- [x] Draft **Problem Definition** (02)
+- [x] Draft **Background** (03)
+- [x] Draft **Research Questions** (04)
+- [x] Draft **Experimental Methodology** (05)
+- [x] Insert rigid placeholders for **Results** (06) and **Analysis** (07)
+- [x] Draft **Conceptual Framework** (08)
+- [x] Draft **Related Work** (09)
+- [x] Draft **Threats to Validity** (10)
+- [x] Insert rigid placeholders for **Discussion** (11) and **Conclusion** (12)
+- [x] Create theoretical conceptual figures (TikZ / Placeholders)
+- [x] Conduct **Venue Research** (`venue-research.md`)
+- [x] Conduct **Novelty Audit** (`novelty-audit.md`)
+- [x] Write **Reproducibility Guide** (`reproducibility.md`)
+- [x] Write **Submission Checklist** (`submission-checklist.md`)
+- [x] Compile LaTeX to PDF (`main.pdf`)
 
 ---
 
-*Note: The academic paper development (LaTeX rendering, venue selection, reproducibility manifest) is strictly gated on the successful execution and analysis of the empirical experiments. No paper sections will be drafted until empirical data is captured.*
+*Note: The academic paper development (LaTeX rendering, venue selection, reproducibility manifest) is gated on the successful execution and analysis of the empirical experiments.*

@@ -5,7 +5,7 @@
 **Author:** Kori
 
 ## Executive Summary
-This memo defines the architectural boundaries and product strategy for the Bridge framework. It establishes what Bridge will govern, what it will delegate, and crucially, what it will refuse to build. This document assumes that the core hypothesis—that agentic software engineering requires deterministic state reconciliation rather than passive memory—is empirically validated by ongoing research.
+This memo defines the architectural boundaries and product strategy for the Bridge framework. It establishes what Bridge will govern, what it will delegate, and crucially, what it will refuse to build. This document reflects the updated thesis: Bridge computes **Effective Standing** from existing, fragmented authority sources for federated, runtime authority arbitration across heterogeneous AI agents, explicitly rejecting the prior "Project Truth / Commitment Control" ledger model.
 
 ---
 
@@ -19,10 +19,10 @@ To define Bridge, we must identify the exact boundary it intercepts and governs.
 *   **D. project state ↔ systems of record:** OBSERVE. Git and CI manage this boundary.
 *   **E. intent ↔ authorized action:** MEDIATE. Bridge translates intent into verifiable structures.
 *   **F. action ↔ evidence:** OBSERVE. The compiler/test-runner generates evidence from action.
-*   **G. evidence ↔ accepted state:** **OWN.** This is the core thesis of Bridge. Evidence (a passing test) does not become *Project Truth* until it is reconciled against the original agent's intent. 
-*   **H. commitment ↔ fulfillment:** **OWN.** Bridge governs the lifecycle of an agent's obligation to the codebase.
+*   **G. evidence ↔ accepted state:** DELEGATE. Existing systems of record (Git, CI) own this. The prior hypothesis (that Bridge should own this as "Project Truth") has been falsified.
+*   **H. intent ↔ comparative authority:** **OWN.** This is the core thesis of Bridge. Bridge computes "Effective Standing" (comparative authority under conflict) dynamically.
 
-**Conclusion:** Bridge is not a communication router, nor is it a vector database. Bridge is the **epistemological boundary** between an agent's claim (intent/action) and deterministic reality (evidence/accepted state).
+**Conclusion:** Bridge is not a communication router, a vector database, or a new system of record. Bridge is the **authority arbitration layer** that computes effective standing from existing authority sources.
 
 ---
 
@@ -37,39 +37,37 @@ To maintain a lean engineering footprint and focus purely on the reconciliation 
 | **ACP** | AVOID | Nascent and redundant with A2A/MCP convergence. |
 | **Git** | WRAP | Git is the absolute system of record. Bridge wraps Git to tie deterministic diffs to agent intents. |
 | **CI** | WRAP | CI provides the deterministic evidence (exit codes, test coverage). Bridge consumes this via webhooks or CLI parsing. |
-| **IAM** | AVOID | Do not build authentication or authorization layers. Rely on enterprise OIDC/SAML or local system identity. |
+| **IAM / Policy** | WRAP | Consume identity and policy from where it already lives (OIDC, Git roles, Jira). Do not build a standalone policy engine. |
 | **Retrieval** | WRAP | If semantic search is needed, wrap existing engines (Chroma, Pinecone). Do not build custom HNSW indexing. |
 | **Code Graphs** | WRAP | Use AST extractors (e.g., tree-sitter, Cognee). Do not build a custom code parsing engine. |
-| **Memory** | AVOID | Reject the concept of raw "memory." Do not store unpruned conversation transcripts. |
-| **Provenance** | BUILD | Bridge's core IP: Structurally linking an LLM generation ID to a specific Git commit and CI test result. |
-| **Verification** | BUILD | The reconciliation engine that evaluates evidence against claims to transition state to "Project Truth." |
+| **Memory/Ledgers** | AVOID | Reject the concept of owning a standalone "Project Truth" ledger. Bridge computes standing; it does not store an omniscient truth. |
+| **Authority Graph** | BUILD | Bridge's core IP: The project-specific authority graph and the integration work required to compute effective standing across fragmented tools. |
+| **Arbitration** | BUILD | The engine that calculates comparative authority under conflict. |
 
 ---
 
 ## MISSION 3 — MINIMUM PRODUCT OBJECT
 
-If Bridge is the governance layer between intent and reality, it requires a canonical state object. 
+If Bridge is the authority arbitration layer, it requires a canonical object for computing comparative authority.
 
 *Rejected Objects:*
-*   `WorkState` / `ProjectState`: Too monolithic and prone to bloat.
-*   `Claim` / `Evidence` / `Decision`: Too fragmented; these are properties, not the core entity.
+*   `ProjectTruth` / `Commitment`: Falsified. Implies Bridge owns a massive ledger that competes with existing systems of record.
+*   `Policy`: Too static. Standing is comparative and contextual, not just RBAC.
 
-**The Minimum Canonical Object: `Commitment`**
+**The Minimum Canonical Object: `EffectiveStanding`**
 
-A `Commitment` represents an agent's obligation to mutate the project state. It is the smallest unit that encapsulates the entire Bridge lifecycle.
+`EffectiveStanding` represents the dynamically computed authority of an agent (or human) in a specific conflict context, derived from external sources (Git history, Jira assignments, IAM).
 
 ```typescript
-type Commitment = {
-  id: string;
-  proposer: AgentIdentity;
-  intent: string;              // What the agent wants to do
-  target: ResourceURI;         // Where the change happens
-  expectedEvidence: string[];  // e.g., "Passes test-auth.ts"
-  actualEvidence: Evidence[];  // Git diff hash, CI exit code
-  status: 'PROPOSED' | 'IMPLEMENTED' | 'VERIFIED' | 'SUPERSEDED' | 'REJECTED';
+type EffectiveStanding = {
+  subject: AgentIdentity;
+  context: ResourceURI;
+  authoritySources: AuthoritySource[]; // e.g., Git Blame, Jira Assignee
+  computedWeight: number;
+  standing: 'DOMINANT' | 'SUBORDINATE' | 'PEER' | 'UNAUTHORIZED';
 };
 ```
-By focusing solely on tracking and reconciling `Commitments`, Bridge avoids becoming a bloated general-purpose database.
+By focusing solely on computing `EffectiveStanding` at runtime, Bridge avoids becoming a bloated policy engine or a redundant system of record.
 
 ---
 
@@ -77,12 +75,12 @@ By focusing solely on tracking and reconciling `Commitments`, Bridge avoids beco
 
 Assuming research validates the thesis, the Minimum Viable Product (MVP) is a **CLI/local-first Daemon (`bridge-cli`)**.
 
-*   **INPUT:** An agent initiates a task by submitting a `Commitment` proposal (via local MCP or CLI invocation).
-*   **PROCESSING:** `bridge-cli` observes the local Git worktree and standard out/error streams of the test runner to gather `Evidence`. It reconciles the `Evidence` against the `Commitment`.
-*   **OUTPUT:** A local JSON/SQLite ledger of `Verified` and `Superseded` commitments, which acts as the strict contextual filter for the next agent session.
-*   **USER VALUE:** Agent B picks up exactly where Agent A left off, without hallucinating discarded code paths, reading zero unverified conversational noise.
+*   **INPUT:** An agent initiates an action that conflicts with another agent or established state.
+*   **PROCESSING:** `bridge-cli` queries existing authority sources (Git, local IAM, assigned tasks) to compute the `EffectiveStanding` of the acting agent.
+*   **OUTPUT:** An arbitration decision (e.g., "Agent A has dominant standing over Agent B for this file due to recent commit history").
+*   **USER VALUE:** Automated resolution of agent conflicts without requiring a centralized, synchronized "Project Truth" database.
 
-*No GUI, no cloud sync, no enterprise control plane.*
+*No GUI, no cloud sync, no custom policy engine, no standalone ledger.*
 
 ---
 
@@ -121,28 +119,27 @@ To survive as a foundational infrastructure layer, Bridge must aggressively refu
 5.  **Cloud-First Sync:** The MVP must work entirely on `localhost` within an air-gapped corporate network. 
 6.  **Autonomous Swarm Engine:** Bridge does not *orchestrate* agents (it doesn't tell them what to do). It *reconciles* them (it tells them what is true).
 7.  **Generic Workflow Builder:** We are not a low-code/no-code pipeline tool.
-8.  **Replacing Git/Jira/IAM:** We wrap them. We do not replace them.
-9.  **Giant Ontology:** Do not attempt to map every concept in computer science. Track commitments, diffs, and tests.
+8.  **Replacing Git/Jira/IAM:** We wrap them. We do not replace them. We compute standing *from* them.
+9.  **A Standalone "Project Truth" Ledger:** We do not store an omniscient truth. We compute comparative authority on demand.
 10. **Enterprise Control Plane (Too Early):** No RBAC, no SSO, no billing engine until the local open-source primitive is ubiquitous.
 
 ---
 
 ## MISSION 7 — FAILURE-RESILIENT ARCHITECTURE
 
-How does Bridge prevent itself from becoming a source of false project state?
+How does Bridge prevent itself from becoming a bottleneck?
 
-*   **If an agent disappears:** The `Commitment` remains in `PROPOSED` or `IMPLEMENTED` state, but never reaches `VERIFIED`. The next agent sees it as incomplete work.
-*   **If memory is stale / agents disagree:** The reconciliation engine relies purely on deterministic evidence. If Agent A claims a feature is complete, but the CI evidence is `exit code 1`, the claim is overridden.
-*   **If Git contradicts documentation:** **Git wins.** Bridge establishes a strict epistemological hierarchy: `Deterministic Reality (Git/CI) > Verified Commitment > Agent Claim`.
-*   **If a tool lies:** This is the hardest failure mode. Bridge must eventually rely on cryptographic provenance (e.g., SPIFFE identities for build tools) to ensure evidence cannot be spoofed by a rogue agent payload.
+*   **If an authority source is down:** Bridge falls back to the most recent cached graph or degrades to peer standing (requiring human arbitration).
+*   **If agents disagree:** The arbitration engine relies purely on computed standing from external systems of record.
+*   **If Git contradicts Bridge:** **Git wins.** Bridge does not own the ledger. It computes standing based on Git's absolute reality.
 
 ---
 
 ## FINAL DELIVERABLES SUMMARY
 
-1.  **What should Bridge own?** The reconciliation lifecycle between an agent's commitment (intent) and deterministic reality (evidence).
-2.  **What should Bridge not own?** Agent orchestration, transport protocols, semantic storage engines, or source code versioning.
-3.  **What is the smallest canonical Bridge object?** The `Commitment` (Agent Intent + Expected Evidence + Actual Evidence $\to$ State).
-4.  **What is the minimum viable product?** A local, CLI-based SQLite daemon that intercepts agent intent and verifies it against local Git/test outcomes.
-5.  **What should the first production architecture look like?** A local MCP server exposing verified `Commitments` as context to standard IDEs and agent CLI tools.
-6.  **What architectural decision must wait for empirical evidence?** Whether token-reduction alone justifies the overhead of structured state transfer, or if explicit negative constraints (pruning superseded hypotheses) are required to prevent agent hallucination loops. This is exactly what EXP-001 will measure.
+1.  **What should Bridge own?** The dynamic computation of Effective Standing (authority arbitration) across heterogeneous agents.
+2.  **What should Bridge not own?** The ledger, the system of record, policy engines, reconciliation engines, or agent orchestration.
+3.  **What is the smallest canonical Bridge object?** `EffectiveStanding` (Agent Identity + Context + Authority Sources $\to$ Standing).
+4.  **What is the minimum viable product?** A local daemon that computes standing from local Git/Jira/IAM to resolve agent conflicts.
+5.  **What should the first production architecture look like?** A local MCP server exposing computed authority graphs to standard IDEs and agent CLI tools.
+6.  **What architectural decision must wait for empirical evidence?** EXP-001 will measure work-transfer baseline, setting the stage for evaluating how effective standing reduces multi-agent friction.
