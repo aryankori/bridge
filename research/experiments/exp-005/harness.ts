@@ -7,6 +7,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import * as crypto from 'node:crypto';
 import process from 'node:process';
 import { execSync } from 'node:child_process';
 import type {
@@ -31,6 +32,13 @@ export const EXP005_WORKTREES_ROOT = path.resolve(
   'exp-005',
   'worktrees'
 );
+
+/**
+ * Computes SHA-256 hash of payload text for traceability.
+ */
+export function hashPayload(payloadText: string): string {
+  return crypto.createHash('sha256').update(payloadText, 'utf-8').digest('hex');
+}
 
 /**
  * Ensures clean setup of an ephemeral worktree directory for a trial.
@@ -138,12 +146,23 @@ export function cleanupTrialWorktree(worktreePath: string): void {
 export async function runTrial(
   scenario: LiveAgentScenario,
   condition: ExperimentCondition,
-  options: { timeoutMs?: number; preserveWorktree?: boolean } = {}
+  options: {
+    replicationIndex?: number;
+    trialOrderIndex?: number;
+    randomizationSeed?: number;
+    timeoutMs?: number;
+    preserveWorktree?: boolean;
+  } = {}
 ): Promise<TrialTelemetry> {
-  const trialId = `trial-${scenario.scenarioId}-${condition}-${Date.now()}`;
+  const repIndex = options.replicationIndex ?? 1;
+  const orderIndex = options.trialOrderIndex ?? 1;
+  const seed = options.randomizationSeed ?? 42;
+
+  const trialId = `trial-${scenario.scenarioId}-${condition}-rep${repIndex}-${Date.now()}`;
   const worktreePath = setupTrialWorktree(trialId, scenario);
 
   const payload = buildConditionPayload(scenario, condition);
+  const payloadHash = hashPayload(payload.promptText);
 
   let currentCommit = 'UNKNOWN';
   try {
@@ -169,9 +188,13 @@ export async function runTrial(
     );
 
     const telemetry: TrialTelemetry = {
+      experimentId: 'EXP-005',
       trialId,
       scenarioId: scenario.scenarioId,
+      replicationIndex: repIndex,
+      trialOrderIndex: orderIndex,
       condition,
+      randomizationSeed: seed,
       model: PINNED_OPENCODE_MODEL,
       provider: PINNED_PROVIDER,
       bridgeCommit: currentCommit,
@@ -179,6 +202,7 @@ export async function runTrial(
       startingCommit: currentCommit,
       timestamp: new Date().toISOString(),
       worktreePath,
+      payloadHash,
       payload,
       execution,
       gitPatch,

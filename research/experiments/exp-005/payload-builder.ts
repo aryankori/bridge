@@ -1,10 +1,9 @@
 /**
- * BRIDGE — EXP-005: Experimental Condition Payload Builder
+ * BRIDGE — EXP-005: Experimental Condition Payload Builder (Parity & Neutrality Hardened)
  *
- * Constructs the exact prompt payloads for:
- * - Condition A: RAW (complete conflicting instruction environment)
- * - Condition B: HUMAN (environment + independent gold resolution)
- * - Condition C: BRIDGE (environment + frozen Bridge effective directive)
+ * Implements:
+ * - Correction 1: Directive Phrasing Parity (Human and Bridge blocks structurally equivalent: Status, Directive, Rationale, Evidence)
+ * - Correction 2: Condition A Neutrality (Identical neutral framing and closing across all conditions)
  */
 
 import { resolveEffectiveDirective } from '../../../src/effective-directive/resolver.js';
@@ -26,11 +25,23 @@ export function formatRawSourcesBlock(scenario: LiveAgentScenario): string {
 }
 
 /**
- * Build Condition A: RAW Payload
+ * Common neutral prompt assembler ensuring zero differential task framing.
+ */
+function assemblePrompt(
+  sourcesBlock: string,
+  directiveBlock: string | null,
+  taskPrompt: string
+): string {
+  const middle = directiveBlock ? `\n\n${directiveBlock}` : '';
+  return `${sourcesBlock}${middle}\n\n==================================================\nTASK OBJECTIVE\n==================================================\n${taskPrompt}\n\nPlease proceed to implement and verify this task.`;
+}
+
+/**
+ * Build Condition A: RAW Payload (Neutral Baseline)
  */
 export function buildRawPayload(scenario: LiveAgentScenario): ConditionPayload {
   const sourcesBlock = formatRawSourcesBlock(scenario);
-  const promptText = `${sourcesBlock}\n\n==================================================\nTASK OBJECTIVE\n==================================================\n${scenario.taskPrompt}\n\nPlease proceed to implement and verify this task.`;
+  const promptText = assemblePrompt(sourcesBlock, null, scenario.taskPrompt);
 
   return {
     scenarioId: scenario.scenarioId,
@@ -41,7 +52,7 @@ export function buildRawPayload(scenario: LiveAgentScenario): ConditionPayload {
 }
 
 /**
- * Build Condition B: HUMAN Payload
+ * Build Condition B: HUMAN Payload (Parity with Bridge)
  */
 export function buildHumanPayload(scenario: LiveAgentScenario): ConditionPayload {
   const gold = EXP005_GOLD_STANDARDS[scenario.scenarioId];
@@ -50,9 +61,22 @@ export function buildHumanPayload(scenario: LiveAgentScenario): ConditionPayload
   }
 
   const sourcesBlock = formatRawSourcesBlock(scenario);
-  const humanBlock = `==================================================\nAUTHORITATIVE DIRECTIVE (HUMAN ADJUDICATION)\n==================================================\n${gold.humanDirectiveText}\n\nAdjudicator Rationale: ${gold.goldRationale}`;
 
-  const promptText = `${sourcesBlock}\n\n${humanBlock}\n\n==================================================\nTASK OBJECTIVE\n==================================================\n${scenario.taskPrompt}\n\nPlease follow the authoritative directive to implement and verify this task.`;
+  const evidenceLines = [
+    ...gold.permittedActions.map((a) => `- Permitted: ${a}`),
+    ...gold.prohibitedActions.map((a) => `- Prohibited: ${a}`),
+  ].join('\n');
+
+  const humanBlock = `==================================================
+AUTHORITATIVE DIRECTIVE (HUMAN ADJUDICATION)
+==================================================
+Status: ${gold.goldResolution}
+Directive: ${gold.humanDirectiveText}
+Rationale: ${gold.goldRationale}
+Evidence:
+${evidenceLines}`;
+
+  const promptText = assemblePrompt(sourcesBlock, humanBlock, scenario.taskPrompt);
 
   return {
     scenarioId: scenario.scenarioId,
@@ -60,16 +84,16 @@ export function buildHumanPayload(scenario: LiveAgentScenario): ConditionPayload
     promptText,
     metadata: {
       isHumanGold: true,
-      injectedDirectives: gold.humanDirectiveText,
+      injectedDirectives: humanBlock,
     },
   };
 }
 
 /**
- * Build Condition C: BRIDGE Payload
+ * Build Condition C: BRIDGE Payload (Parity with Human)
  */
 export function buildBridgePayload(scenario: LiveAgentScenario): ConditionPayload {
-  // Execute the frozen resolver blindly on raw sources and action spec
+  // Execute frozen resolver blindly
   const directive = resolveEffectiveDirective({
     action: {
       id: scenario.actionSpec.id,
@@ -100,16 +124,12 @@ BRIDGE EFFECTIVE DIRECTIVE (AUTOMATED RESOLUTION)
 [Objective Truth Claim: false]
 ==================================================
 Status: ${directive.status}
-Governing Tier: ${directive.governingDirective?.sourceTier ?? 'NONE'}
-Conflicts Detected: ${directive.conflicts.length}
-
-Resolution Summary:
-${directive.explanation}
-
-Evidence Trail:
+Directive: ${directive.effectiveDecision || directive.explanation}
+Rationale: ${directive.explanation}
+Evidence:
 ${citations || 'No specific citation trail.'}`;
 
-  const promptText = `${sourcesBlock}\n\n${bridgeBlock}\n\n==================================================\nTASK OBJECTIVE\n==================================================\n${scenario.taskPrompt}\n\nPlease follow the effective directive to implement and verify this task.`;
+  const promptText = assemblePrompt(sourcesBlock, bridgeBlock, scenario.taskPrompt);
 
   return {
     scenarioId: scenario.scenarioId,
@@ -123,7 +143,7 @@ ${citations || 'No specific citation trail.'}`;
 }
 
 /**
- * Main dispatcher to build payload for any condition.
+ * Dispatcher to build payload for any condition.
  */
 export function buildConditionPayload(
   scenario: LiveAgentScenario,

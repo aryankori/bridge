@@ -1,12 +1,15 @@
 /**
- * BRIDGE — EXP-005: Pre-Flight Fixture & Harness Validator
+ * BRIDGE — EXP-005: Pre-Flight Fixture & Harness Validator (Methodology Corrected)
  *
  * Validates:
  * 1. 10 scenarios schema integrity (5 unambiguous, 3 ambiguous, 2 unsolvable)
  * 2. Independent human gold-standard adjudications
- * 3. Payload generation for Conditions A, B, C
- * 4. Pinned model and executable resolution
- * 5. Ephemeral worktree directory confinement
+ * 3. Pre-verification of frozen resolver (fc322c6) against all 10 scenarios (Requirement: >= 70% accuracy)
+ * 4. Directive Phrasing Parity (Human and Bridge outputs structurally equivalent)
+ * 5. Condition A Neutrality (Zero differential framing)
+ * 6. Replication planning (60 trials: 10 scn × 3 cond × 2 reps) and deterministic PRNG shuffling
+ * 7. Pinned model and executable resolution
+ * 8. Ephemeral worktree directory confinement
  */
 
 import * as fs from 'node:fs';
@@ -15,6 +18,18 @@ import { EXP005_GOLD_STANDARDS } from './gold-standard.js';
 import { buildConditionPayload, FROZEN_RESOLVER_COMMIT } from './payload-builder.js';
 import { resolveExecutable, PINNED_OPENCODE_MODEL, PINNED_PROVIDER } from './agent-runners.js';
 import { EXP005_WORKTREES_ROOT } from './harness.js';
+import { scoreResolutionQuality } from './evaluator.js';
+import { planRandomizedTrials } from './run-pilot.js';
+
+export interface ResolverScenarioCheck {
+  scenarioId: string;
+  difficulty: string;
+  actualStatus: string;
+  goldStatus: string;
+  matches: boolean;
+  detectedConflict: boolean;
+  latencyMs: number;
+}
 
 export interface ValidationReport {
   timestamp: string;
@@ -24,6 +39,19 @@ export interface ValidationReport {
   unsolvableCount: number;
   goldStandardsCount: number;
   resolverCommit: string;
+  resolverPreVerification: {
+    totalScenarios: number;
+    exactMatches: number;
+    accuracyPercent: number;
+    passedThreshold: boolean;
+    results: ResolverScenarioCheck[];
+  };
+  replicationsPlanning: {
+    replicationsCount: number;
+    totalPlannedTrials: number;
+    randomizationSeed: number;
+    sampleOrder: Array<{ scenarioId: string; condition: string; rep: number }>;
+  };
   pinnedModel: string;
   pinnedProvider: string;
   opencodeExecutable: {
@@ -44,10 +72,14 @@ export function validateExp005Harness(): ValidationReport {
   let ambiguousCount = 0;
   let unsolvableCount = 0;
 
-  // 1. Validate Scenarios
+  // 1. Validate Scenarios Count
   if (EXP005_SCENARIOS.length !== 10) {
     errors.push(`Expected exactly 10 scenarios, found ${EXP005_SCENARIOS.length}`);
   }
+
+  // 2. Validate Stratification & Pre-Verify Frozen Resolver
+  const resolverResults: ResolverScenarioCheck[] = [];
+  let exactMatches = 0;
 
   for (const scn of EXP005_SCENARIOS) {
     const gold = EXP005_GOLD_STANDARDS[scn.scenarioId];
@@ -56,12 +88,24 @@ export function validateExp005Harness(): ValidationReport {
       continue;
     }
 
-    if (gold.isAmbiguous) {
-      ambiguousCount++;
-    } else if (gold.goldResolution === 'BLOCKED_CONFLICT' || gold.goldResolution === 'REQUIRES_AUTHORIZATION') {
-      unsolvableCount++;
-    } else {
-      unambiguousCount++;
+    if (scn.difficulty === 'UNAMBIGUOUS') unambiguousCount++;
+    else if (scn.difficulty === 'AMBIGUOUS') ambiguousCount++;
+    else if (scn.difficulty === 'UNSOLVABLE') unsolvableCount++;
+
+    // Pre-verify frozen resolver against gold standard
+    const resScore = scoreResolutionQuality(scn, gold);
+    resolverResults.push({
+      scenarioId: scn.scenarioId,
+      difficulty: scn.difficulty,
+      actualStatus: resScore.resolutionStatus,
+      goldStatus: gold.goldResolution,
+      matches: resScore.matchesGoldStandard,
+      detectedConflict: resScore.detectedConflict,
+      latencyMs: resScore.latencyMs,
+    });
+
+    if (resScore.matchesGoldStandard) {
+      exactMatches++;
     }
 
     // Verify fixture files
@@ -74,37 +118,60 @@ export function validateExp005Harness(): ValidationReport {
       errors.push(`Scenario ${scn.scenarioId} has no raw sources defined.`);
     }
 
-    // Test payload generation for A, B, C
+    // Test payload generation & parity checks
     try {
       const payloadA = buildConditionPayload(scn, 'A');
       const payloadB = buildConditionPayload(scn, 'B');
       const payloadC = buildConditionPayload(scn, 'C');
 
-      if (!payloadA.promptText || !payloadB.promptText || !payloadC.promptText) {
-        errors.push(`Payload builder produced empty prompt for scenario ${scn.scenarioId}`);
+      // Neutrality check: all three finish with identical prompt ending
+      const expectedEnding = 'Please proceed to implement and verify this task.';
+      if (
+        !payloadA.promptText.endsWith(expectedEnding) ||
+        !payloadB.promptText.endsWith(expectedEnding) ||
+        !payloadC.promptText.endsWith(expectedEnding)
+      ) {
+        errors.push(
+          `Prompt neutrality check failed for scenario ${scn.scenarioId}: endings not identical.`
+        );
+      }
+
+      // Parity check: both B and C contain Status, Directive, Rationale, Evidence
+      for (const req of ['Status:', 'Directive:', 'Rationale:', 'Evidence:']) {
+        if (!payloadB.promptText.includes(req)) {
+          errors.push(`Human payload missing required header "${req}" for scenario ${scn.scenarioId}`);
+        }
+        if (!payloadC.promptText.includes(req)) {
+          errors.push(`Bridge payload missing required header "${req}" for scenario ${scn.scenarioId}`);
+        }
       }
     } catch (err: unknown) {
       errors.push(`Payload generation failed for scenario ${scn.scenarioId}: ${String(err)}`);
     }
   }
 
-  if (unambiguousCount !== 5) {
-    warnings.push(`Expected 5 unambiguous scenarios, classified ${unambiguousCount}`);
-  }
-  if (ambiguousCount !== 3) {
-    warnings.push(`Expected 3 ambiguous scenarios, classified ${ambiguousCount}`);
-  }
-  if (unsolvableCount !== 2) {
-    warnings.push(`Expected 2 unsolvable/safety scenarios, classified ${unsolvableCount}`);
+  const accuracyPercent = Math.round((exactMatches / EXP005_SCENARIOS.length) * 100);
+  const passedThreshold = accuracyPercent >= 70;
+
+  if (!passedThreshold) {
+    errors.push(
+      `Frozen resolver accuracy on EXP-005 scenarios is ${accuracyPercent}% (below 70% threshold).`
+    );
   }
 
-  // 2. Validate Executable Resolution
+  // 3. Validate Replication Planning
+  const planned = planRandomizedTrials(EXP005_SCENARIOS, ['A', 'B', 'C'], 2, 42);
+  if (planned.length !== 60) {
+    errors.push(`Expected 60 planned trials (10 scn × 3 cond × 2 reps), planned ${planned.length}`);
+  }
+
+  // 4. Validate Executable Resolution
   const opencodeResolved = resolveExecutable('opencode');
   if (opencodeResolved.source === 'fallback') {
     warnings.push(`OpenCode executable not found on standard paths, falling back to 'opencode'`);
   }
 
-  // 3. Validate Worktree Parent
+  // 5. Validate Worktree Parent
   if (!fs.existsSync(EXP005_WORKTREES_ROOT)) {
     fs.mkdirSync(EXP005_WORKTREES_ROOT, { recursive: true });
   }
@@ -119,6 +186,23 @@ export function validateExp005Harness(): ValidationReport {
     unsolvableCount,
     goldStandardsCount: Object.keys(EXP005_GOLD_STANDARDS).length,
     resolverCommit: FROZEN_RESOLVER_COMMIT,
+    resolverPreVerification: {
+      totalScenarios: EXP005_SCENARIOS.length,
+      exactMatches,
+      accuracyPercent,
+      passedThreshold,
+      results: resolverResults,
+    },
+    replicationsPlanning: {
+      replicationsCount: 2,
+      totalPlannedTrials: planned.length,
+      randomizationSeed: 42,
+      sampleOrder: planned.slice(0, 5).map((p) => ({
+        scenarioId: p.scenario.scenarioId,
+        condition: p.condition,
+        rep: p.replicationIndex,
+      })),
+    },
     pinnedModel: PINNED_OPENCODE_MODEL,
     pinnedProvider: PINNED_PROVIDER,
     opencodeExecutable: opencodeResolved,

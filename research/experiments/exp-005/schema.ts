@@ -7,7 +7,7 @@
  * - Condition C: BRIDGE (frozen Bridge effective-directive resolver)
  */
 
-import type { SourceTier, DirectiveStatus } from '../../../src/effective-directive/types.js';
+import type { SourceTier, EffectiveDirectiveStatus as DirectiveStatus } from '../../../src/effective-directive/types.js';
 
 export type ExperimentCondition = 'A' | 'B' | 'C';
 
@@ -43,6 +43,8 @@ export type ConflictCategory =
   | 'POLICY_EXCEPTION_VS_DEFAULT'
   | 'CI_CONSTRAINT_VS_TASK';
 
+export type DifficultyTier = 'UNAMBIGUOUS' | 'AMBIGUOUS' | 'UNSOLVABLE';
+
 export interface ScenarioSource {
   id: string;
   path?: string;
@@ -64,6 +66,11 @@ export interface ScenarioActionSpec {
   category: string;
   command?: string;
   targetPath?: string;
+  gitOperation?: {
+    branch?: string;
+    isDestructive?: boolean;
+    force?: boolean;
+  };
 }
 
 export interface ExpectedOutcomeSpec {
@@ -78,6 +85,7 @@ export interface LiveAgentScenario {
   title: string;
   description: string;
   category: ConflictCategory;
+  difficulty: DifficultyTier;
   taskPrompt: string;
   actionSpec: ScenarioActionSpec;
   rawSources: ScenarioSource[];
@@ -128,9 +136,13 @@ export interface VerificationResult {
 }
 
 export interface TrialTelemetry {
+  experimentId: 'EXP-005';
   trialId: string;
   scenarioId: string;
+  replicationIndex: number;
+  trialOrderIndex: number;
   condition: ExperimentCondition;
+  randomizationSeed: number;
   model: string;
   provider: string;
   bridgeCommit: string;
@@ -138,6 +150,7 @@ export interface TrialTelemetry {
   startingCommit: string;
   timestamp: string;
   worktreePath: string;
+  payloadHash: string;
   payload: ConditionPayload;
   execution: AgentExecutionMetrics;
   gitPatch: string;
@@ -163,13 +176,16 @@ export interface AgentOutcomeQualityScore {
   timeMs: number;
   toolCalls: number;
   totalTokens: number | 'UNKNOWN';
-  explanationCorrectness: boolean;
+  explanationGrounded: boolean;
+  explanationScore: number;
 }
 
 export interface TrialScoreRecord {
   trialId: string;
   scenarioId: string;
+  replicationIndex: number;
   condition: ExperimentCondition;
+  difficulty: DifficultyTier;
   resolutionQuality?: ResolutionQualityScore;
   agentOutcome: AgentOutcomeQualityScore;
   isValid: boolean;
@@ -189,6 +205,13 @@ export interface ConditionAggregateMetrics {
   meanDurationMs: number;
   meanToolCalls: number;
   meanTokens: number | 'UNKNOWN';
+  meanExplanationScore: number;
+}
+
+export interface StratifiedReport {
+  unambiguous: Record<ExperimentCondition, ConditionAggregateMetrics>;
+  ambiguous: Record<ExperimentCondition, ConditionAggregateMetrics>;
+  unsolvable: Record<ExperimentCondition, ConditionAggregateMetrics>;
 }
 
 export interface ExperimentManifest {
@@ -199,11 +222,15 @@ export interface ExperimentManifest {
   resolverCommit: string;
   model: string;
   provider: string;
+  randomizationSeed: number;
+  replicationsCount: number;
+  totalTrialsCount: number;
   conditions: ExperimentCondition[];
   scenariosCount: number;
   trials: TrialTelemetry[];
   scores: TrialScoreRecord[];
-  conditionAggregates: Record<ExperimentCondition, ConditionAggregateMetrics>;
+  overallAggregates: Record<ExperimentCondition, ConditionAggregateMetrics>;
+  stratifiedAggregates: StratifiedReport;
   falsificationAudit: {
     rawVsBridgeDifference: number;
     humanVsBridgeDifference: number;
