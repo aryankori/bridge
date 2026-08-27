@@ -1,0 +1,74 @@
+\documentclass[sigconf,review,anonymous]{acmart}
+
+\usepackage{booktabs} % For formal tables
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\usepackage{balance}
+
+% Custom commands for empirical state tracking (Rule: No fabricated results)
+\newcommand{\pendingdata}[1]{\textbf{[EMPIRICAL RESULTS PENDING: #1]}}
+
+\setcopyright{none}
+\acmJournal{TOSEM}
+\acmYear{2026}
+
+\begin{document}
+
+\title{From Ephemeral Context to Project Truth: Reconciling State Across Interoperable Software Engineering Agents}
+
+\author{Anonymous Authors}
+\affiliation{%
+  \institution{Institution}
+  \city{City}
+  \country{Country}
+}
+
+\begin{abstract}
+As artificial intelligence software engineering agents become increasingly interoperable, a critical failure mode emerges at the boundary of cross-agent handoffs and multi-session persistence. Current systems treat agent-generated output as generic "memory" or "context," failing to distinguish between exploratory proposals, verified code implementations, and superseded decisions. This paper empirically investigates the required state, evidence, and governance primitives necessary to preserve continuity and accountability across heterogeneous agents (e.g., Claude Code, OpenCode). We propose the transition from passive agent memory to formal \textit{Project Truth}---an authoritative, reconciled state model grounded in version control and test outcomes. Through a series of controlled experiments (\pendingdata{EXP-001 reference} and \pendingdata{EXP-002 reference}), we evaluate whether structured work-state transfer and persistent project intelligence significantly reduce rework, hallucination, and contradiction rates compared to raw transcript replay. Our conceptual framework defines the lifecycle of agentic claims from proposal to verification, demonstrating that effective multi-agent engineering requires reconciliation and commitment control rather than mere context retrieval. \pendingdata{Final conclusion summary pending empirical data.}
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10011007.10011074.10011092</concept_id>
+       <concept_desc>Software and its engineering~Software development techniques</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10010147.10010178.10010219.10010220</concept_id>
+       <concept_desc>Computing methodologies~Multi-agent systems</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~Software development techniques}
+\ccsdesc[500]{Computing methodologies~Multi-agent systems}
+
+\keywords{AI Agents, Software Engineering, Multi-Agent Systems, Context Transfer, Agent Interoperability, Project State}
+
+\maketitle
+
+\input{sections/01_introduction}
+\input{sections/02_problem_definition}
+\input{sections/03_background}
+\input{sections/04_research_questions}
+\input{sections/05_experimental_methodology}
+\input{sections/06_results}
+\input{sections/07_analysis}
+\input{sections/08_conceptual_framework}
+\input{sections/09_related_work}
+\input{sections/10_threats_to_validity}
+\input{sections/11_discussion}
+\input{sections/12_conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

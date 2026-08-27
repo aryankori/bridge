@@ -1,0 +1,26 @@
+\section{Conceptual Framework: Project Truth and Reconciliation}
+
+Based on the theoretical limitations of unpruned context windows and passive memory systems, we propose a governance framework for multi-agent software engineering. We hypothesize that long-term agent interoperability requires the management of state through a rigid reconciliation lifecycle.
+
+\subsection{The Deterministic Boundary}
+A fundamental principle of the Bridge architecture is the separation of deterministic facts from probabilistic inferences. 
+\begin{itemize}
+    \item \textbf{Deterministic Ground Truth:} Elements such as Git commit histories, Abstract Syntax Trees (ASTs), static typecheck results, and test suite exit codes represent absolute reality. 
+    \item \textbf{Probabilistic Claims:} Agent proposals, intent summaries, and architectural rationale represent unverified claims.
+\end{itemize}
+Project Truth is formed only when a probabilistic claim is reconciled against deterministic ground truth.
+
+\subsection{The State Lifecycle}
+We model agentic claims as transitioning through five formal states:
+\begin{enumerate}
+    \item \textbf{Proposed:} A structural change or architectural decision suggested by an agent in a conversational turn.
+    \item \textbf{Decided:} A proposal explicitly authorized or selected by a human developer or lead agent.
+    \item \textbf{Implemented:} A decision that is mathematically verifiable via a Git diff in the codebase.
+    \item \textbf{Verified:} An implementation that successfully passes the automated test suite and type boundaries.
+    \item \textbf{Superseded / Obsolete:} A previously verified state that has been logically replaced by a newer verified implementation.
+\end{enumerate}
+
+\subsection{Reconciliation and Precedence}
+When an agent is initialized for a new task, the Context Materializer must filter the project history. If an agent previously suggested an implementation that was subsequently superseded, that proposal must be actively pruned from the injection payload. We establish the following precedence rule for conflict resolution:
+\[ \text{Verified Implementation} > \text{Explicit Human Decision} > \text{Agent Proposal} \]
+This ensures that receiver agents never act upon hallucinated constraints or discarded hypotheses.

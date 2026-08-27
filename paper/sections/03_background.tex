@@ -1,0 +1,15 @@
+\section{Background}
+
+\subsection{The Evolution of Agent Interoperability}
+The development of AI-assisted software engineering has followed a recognizable architectural trajectory:
+\begin{enumerate}
+    \item \textbf{Multi-Agent UIs:} Early approaches provided unified interfaces to interact with multiple models, acting as shallow routers without sharing persistent state.
+    \item \textbf{Context Transfer:} Emerging standards like the Agent-to-Agent (A2A) protocol \cite{a2a2025} defined JSON-RPC mechanisms for agents to hand off task instructions, though often relying on unpruned transcripts.
+    \item \textbf{Project Memory:} Platforms (e.g., \cite{honcho2026, mem02026}) introduced cross-session semantic storage, embedding and retrieving agent conversations to approximate long-term memory.
+\end{enumerate}
+
+\subsection{Knowledge Graphs and Code Intelligence}
+Recent frameworks have begun bridging the gap between natural language agent memory and deterministic code structure. Graph-based memories \cite{cognee2026} attempt to construct entity relationships from code syntax trees (ASTs). The Model Context Protocol (MCP) \cite{mcp2025} standardizes the extraction of local filesystem and tool context. While these systems provide robust ingestion of \textit{facts} (e.g., ``File X contains function Y''), they do not govern \textit{intent} or \textit{decisions} (e.g., ``Function Y was deprecated because it causes memory leaks'').
+
+\subsection{Commitment Protocols}
+In distributed multi-agent systems literature, coordination is often modeled through \textit{commitments} \cite{singh1999commit}. A commitment is a normative relationship between agents, establishing obligations and expectations. Applying this to LLM-driven software engineering requires mapping natural language proposals to verifiable codebase alterations, establishing a rigid chain of provenance from agent hypothesis to test-verified reality.

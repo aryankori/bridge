@@ -1,0 +1,13 @@
+\section{Problem Definition}
+
+The core problem in continuous, multi-agent software engineering is the degradation of shared state fidelity across the interoperability boundary. When work transitions between agents (e.g., from an analysis agent to an execution agent) or between sessions of the same agent, the transfer mechanism fundamentally shapes the likelihood of downstream success.
+
+We define three primary dimensions of state degradation:
+
+\begin{enumerate}
+    \item \textbf{The Token Inefficiency Problem:} Standard agent interfaces transmit state via raw conversational transcripts. As transcripts grow, they consume substantial token budgets and increase generation latency, while simultaneously diluting critical task constraints with intermediate conversational noise.
+    \item \textbf{The Rework Anti-Pattern:} Receiver agents, lacking explicit structured metadata regarding what has already been attempted or discarded, frequently re-explore identical failure paths. This results in circular debugging loops and elevated API costs.
+    \item \textbf{The Memory Contamination Vulnerability:} When systems attempt to persist state across sessions by indexing all conversational output (Phase 2: Project Memory), they invariably index hallucinations and superseded proposals. Without a formal reconciliation mechanism to invalidate obsolete claims, agents retrieve and act upon contradictory ``facts.''
+\end{enumerate}
+
+Fundamentally, current architectures lack a \textit{governed state primitive} \cite{nist2023airmf, spiffe2026} capable of differentiating between what an agent \textit{said} and what the project \textit{is}.

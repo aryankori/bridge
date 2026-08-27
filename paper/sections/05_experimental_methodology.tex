@@ -1,0 +1,30 @@
+\section{Experimental Methodology}
+
+To answer the research questions, we designed a reproducible empirical program executing isolated agentic software engineering tasks within a deterministic harness. 
+
+\subsection{Environment and Control Mechanics}
+To prevent cross-trial contamination and ensure determinism:
+\begin{itemize}
+    \item \textbf{Isolated Worktrees:} Every trial executes in a freshly cloned, ephemeral Git worktree initialized at a strict base commit hash.
+    \item \textbf{Model Pinning:} The receiver agent (OpenCode) is strictly pinned to a specific, verified model endpoint (\pendingdata{e.g., nvidia/nvidia/nemotron-3-super-120b-a12b}) invoked via NDJSON streaming to prevent UI-layer non-determinism.
+    \item \textbf{Metrics Collection:} The experimental harness automatically extracts and validates outcome metrics without LLM-based summary hallucination. Measurements include token consumption, exit codes, task duration, and automated test suite status.
+\end{itemize}
+
+\subsection{EXP-001: Cross-Agent Work Transfer}
+EXP-001 isolates the single-hop transmission boundary. A primary analysis agent (Claude Code) initiates a task, and upon interruption or delegation, the state is transferred to a receiver agent (OpenCode) across three controlled conditions:
+\begin{itemize}
+    \item \textbf{Condition A (Baseline):} The receiver agent receives the raw task prompt with zero prior context.
+    \item \textbf{Condition B (Transcript Transfer):} The receiver agent receives the raw, unpruned conversation transcript of the primary agent, capped at 8KB.
+    \item \textbf{Condition C (Structured Transfer):} The receiver agent receives a JSON-RPC compliant \texttt{ExperimentalWorkTransfer} payload containing distilled metadata, verified facts, and unresolved hypotheses extracted via the Bridge logic layer.
+\end{itemize}
+All conditions are evaluated against a standardized refactoring task.
+
+\subsection{EXP-002: Persistent Project Intelligence}
+\pendingdata{Pending justification from EXP-001}. Assuming structured transfer provides empirical gains, EXP-002 evaluates longitudinal persistence.
+\begin{itemize}
+    \item \textbf{Condition A:} A sequence of three interconnected coding sessions executed by an agent with zero persistence between sessions.
+    \item \textbf{Condition B:} The identical sequence executed with Bridge project intelligence injected as initial context in Sessions 2 and 3.
+\end{itemize}
+
+\subsection{Metrics and Primary Outcomes}
+The primary outcomes measured across all experiments are correctness, automated test success rates, and successful task completion. Secondary outcomes include token consumption, execution duration, payload size, and the rate of manual human intervention required to resolve agent deadlocks.

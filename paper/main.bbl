@@ -1,0 +1,144 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{8}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[{A2A Project}(2025)]%
+        {a2a2025}
+\bibfield{author}{\bibinfo{person}{{A2A Project}}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{A2A: Agent-to-Agent Communication
+  Specification}}.
+\newblock
+\urldef\tempurl%
+\url{https://github.com/a2aproject/A2A/blob/main/docs/specification.md}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Anthropic}(2025)]%
+        {mcp2025}
+\bibfield{author}{\bibinfo{person}{{Anthropic}}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Model Context Protocol (MCP)
+  Specification}}.
+\newblock
+\urldef\tempurl%
+\url{https://modelcontextprotocol.io}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Cloud Native Computing Foundation}(2026)]%
+        {spiffe2026}
+\bibfield{author}{\bibinfo{person}{{Cloud Native Computing Foundation}}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{SPIFFE: Secure Production Identity
+  Framework for Everyone}}.
+\newblock
+\urldef\tempurl%
+\url{https://spiffe.io/docs/latest/spiffe-specs/}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Cognee}(2026)]%
+        {cognee2026}
+\bibfield{author}{\bibinfo{person}{{Cognee}}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Cognee: Framework for Graph-Based AI Agent
+  Memory}}.
+\newblock
+\urldef\tempurl%
+\url{https://github.com/topoteretes/cognee}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Honcho AI}(2026)]%
+        {honcho2026}
+\bibfield{author}{\bibinfo{person}{{Honcho AI}}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Honcho: Developer Platform for State and
+  Memory in AI Applications}}.
+\newblock
+\urldef\tempurl%
+\url{https://honcho.dev}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Mem0}(2026)]%
+        {mem02026}
+\bibfield{author}{\bibinfo{person}{{Mem0}}.} \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Mem0: The Memory Layer for AI Agents}}.
+\newblock
+\urldef\tempurl%
+\url{https://mem0.ai}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{National Institute of Standards and Technology}(2023)]%
+        {nist2023airmf}
+\bibfield{author}{\bibinfo{person}{{National Institute of Standards and
+  Technology}}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Artificial Intelligence Risk Management
+  Framework (AI RMF 1.0)}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport} NIST AI 100-1.
+  \bibinfo{institution}{U.S. Department of Commerce}.
+\newblock
+\urldef\tempurl%
+\url{https://airc.nist.gov/airmf-resources/airmf/3-sec-characteristics/}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Singh(1999)]%
+        {singh1999commit}
+\bibfield{author}{\bibinfo{person}{Munindar~P. Singh}.}
+  \bibinfo{year}{1999}\natexlab{}.
+\newblock \showarticletitle{An Ontology for Commitments in Multiagent Systems}.
+\newblock \bibinfo{journal}{\emph{Artificial Intelligence and Law}}
+  \bibinfo{volume}{7}, \bibinfo{number}{1} (\bibinfo{year}{1999}),
+  \bibinfo{pages}{97--113}.
+\newblock
+\urldef\tempurl%
+\url{https://www.csc2.ncsu.edu/faculty/mpsingh/papers/mas/commit.pdf}
+\showURL{%
+\tempurl}
+
+
+\end{thebibliography}

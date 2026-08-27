@@ -1,0 +1,10 @@
+\section{Threats to Validity}
+
+\subsection{Internal Validity}
+The primary threat to internal validity in our experimental design is the stochastic nature of LLM generation. To mitigate this, we pinned the execution agent (OpenCode) to a specific deterministic model configuration (\pendingdata{Model Identifier}) and utilized a structured JSON output format. However, inherent variance in how the model interprets the structured vs. unstructured context payloads may still influence the rework and correctness metrics.
+
+\subsection{External Validity}
+Our findings are currently limited to the specific tasks defined in the experimental harness (\pendingdata{Task description}). While the refactoring tasks are representative of typical software engineering workflows, the scalability of structured transfer payloads for highly complex, multi-repository architectural overhauls remains untested. Furthermore, our evaluation utilized specific agents (Claude Code and OpenCode); different LLM architectures may exhibit varying sensitivities to structured metadata versus raw transcripts.
+
+\subsection{Construct Validity}
+We measure \textit{efficiency} primarily through task duration, token consumption, and automated test pass rates. These metrics proxy true engineering efficiency but may not capture the cognitive load required by a human supervisor to verify the agent's final implementation.

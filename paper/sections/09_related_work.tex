@@ -1,0 +1,10 @@
+\section{Related Work}
+
+\subsection{Agent Memory and Context Storage}
+The challenge of agent memory has seen significant commercial and open-source development. Platforms such as Mem0 \cite{mem02026} and Honcho \cite{honcho2026} provide API layers for cross-session semantic storage, allowing developers to inject historical chat context into new sessions. While effective for personal assistants, these systems generally treat all stored text equally, lacking the structural differentiation between a proposed idea and a verified implementation necessary for robust software engineering.
+
+\subsection{Codebase Knowledge Graphs}
+Frameworks like Cognee \cite{cognee2026} bridge the gap between LLMs and deterministic codebases by constructing graph relationships from Abstract Syntax Trees (ASTs). The Model Context Protocol (MCP) \cite{mcp2025} further standardizes how agents extract local filesystem states. Our approach builds upon these deterministic extraction methods but introduces a higher-order reconciliation layer that binds natural language intent to these syntactic nodes.
+
+\subsection{Multi-Agent Coordination and Governance}
+The Agent-to-Agent (A2A) protocol \cite{a2a2025} represents early standardization efforts for JSON-RPC handoffs between heterogeneous agents. However, A2A primarily addresses transport, not state governance. The conceptual foundation for our reconciliation layer draws from classical multi-agent systems literature on commitment protocols \cite{singh1999commit}, adapting normative obligations to the lifecycle of LLM-generated software artifacts. The requirement for governed, authoritative state also aligns with emerging security frameworks such as SPIFFE \cite{spiffe2026} and the NIST AI RMF \cite{nist2023airmf}, which emphasize verifiable identity and provenance in automated systems.
