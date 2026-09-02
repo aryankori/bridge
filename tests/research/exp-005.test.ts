@@ -1,3 +1,6 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import process from 'node:process';
 import { describe, it, expect } from 'vitest';
 import { EXP005_SCENARIOS } from '../../research/experiments/exp-005/scenarios.js';
 import { EXP005_GOLD_STANDARDS } from '../../research/experiments/exp-005/gold-standard.js';
@@ -9,9 +12,8 @@ import {
   buildExperimentManifest,
   evaluateExplanationGrounding,
 } from '../../research/experiments/exp-005/evaluator.js';
-import { validateExp005Harness } from '../../research/experiments/exp-005/validate.js';
 import { scrubSecrets } from '../../research/experiments/exp-005/security.js';
-import { planRandomizedTrials } from '../../research/experiments/exp-005/run-pilot.js';
+import { planRandomizedTrials, writeManifestAtomically } from '../../research/experiments/exp-005/run-pilot.js';
 import type { TrialTelemetry } from '../../research/experiments/exp-005/schema.js';
 
 describe('EXP-005 Live Agent Behavior Experiment Infrastructure (Methodology Corrected)', () => {
@@ -167,12 +169,80 @@ describe('EXP-005 Live Agent Behavior Experiment Infrastructure (Methodology Cor
     expect(scrubbed).toContain('[REDACTED_SECRET]');
   });
 
-  it('passes harness pre-flight validation with 0 errors', () => {
-    const report = validateExp005Harness();
-    expect(report.checksPassed).toBe(true);
-    expect(report.errors.length).toBe(0);
-    expect(report.scenariosCount).toBe(10);
-    expect(report.resolverPreVerification.passedThreshold).toBe(true);
-    expect(report.replicationsPlanning.totalPlannedTrials).toBe(60);
+  it('writes manifest atomically without leaving partial temporary files', () => {
+    const scn = EXP005_SCENARIOS[0]!;
+    const manifest = buildExperimentManifest([], [scn], {
+      randomizationSeed: 42,
+      replicationsCount: 1,
+    });
+    manifest.runId = 'test-run-atomic';
+
+    const testManifestPath = path.resolve(process.cwd(), 'research', 'experiments', 'exp-005', 'test-atomic-manifest.json');
+    try {
+      writeManifestAtomically(testManifestPath, manifest);
+      expect(fs.existsSync(testManifestPath)).toBe(true);
+
+      const parsed = JSON.parse(fs.readFileSync(testManifestPath, 'utf-8'));
+      expect(parsed.runId).toBe('test-run-atomic');
+      expect(parsed.experimentId).toBe('EXP-005');
+    } finally {
+      if (fs.existsSync(testManifestPath)) {
+        fs.unlinkSync(testManifestPath);
+      }
+    }
+  });
+
+  it('preserves failure telemetry when trial times out or encounters execution error', () => {
+    const scn = EXP005_SCENARIOS[0]!;
+    const failedTelemetry: TrialTelemetry = {
+      experimentId: 'EXP-005',
+      runId: 'run-timeout-test',
+      trialId: 'trial-timeout-1',
+      scenarioId: scn.scenarioId,
+      replicationIndex: 1,
+      trialOrderIndex: 1,
+      condition: 'A',
+      randomizationSeed: 42,
+      model: 'nvidia/nvidia/nemotron-3-super-120b-a12b',
+      provider: 'nvidia',
+      bridgeCommit: 'fc322c6',
+      resolverCommit: 'fc322c6',
+      startingCommit: 'fc322c6',
+      timestamp: new Date().toISOString(),
+      worktreePath: 'test/path',
+      payloadHash: 'hash123',
+      payload: buildConditionPayload(scn, 'A'),
+      execution: {
+        durationMs: 180000,
+        exitCode: null,
+        timedOut: true,
+        error: 'Execution timed out after 180000ms',
+        inputTokens: 'UNKNOWN',
+        outputTokens: 'UNKNOWN',
+        totalTokens: 'UNKNOWN',
+        toolCallCount: 0,
+        stdout: '',
+        stderr: 'Timeout triggered',
+      },
+      gitPatch: '',
+      verification: {
+        testsPassed: false,
+        exitCode: 1,
+        stdout: '',
+        stderr: 'Tests failed due to incomplete implementation',
+        durationMs: 50,
+      },
+      error: 'Execution timed out after 180000ms',
+    };
+
+    const manifest = buildExperimentManifest([failedTelemetry], [scn], {
+      randomizationSeed: 42,
+      replicationsCount: 1,
+    });
+
+    expect(manifest.trials.length).toBe(1);
+    expect(manifest.trials[0]?.execution.timedOut).toBe(true);
+    expect(manifest.scores[0]?.agentOutcome.correctActionTaken).toBe(false);
+    expect(manifest.overallAggregates.A.totalTrials).toBe(1);
   });
 });

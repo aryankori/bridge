@@ -123,6 +123,22 @@ export function resolveExecutable(name: 'opencode' | 'claude'): ResolvedExecutab
 }
 
 /**
+ * Safely terminates a process and its child subprocess tree.
+ */
+export function killProcessTree(pid: number | undefined): void {
+  if (!pid) return;
+  try {
+    if (process.platform === 'win32') {
+      execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore' });
+    } else {
+      process.kill(-pid, 'SIGKILL');
+    }
+  } catch {
+    // Process may have already exited
+  }
+}
+
+/**
  * Execute OpenCode against a designated worktree.
  */
 export async function executeOpenCodeTrial(
@@ -155,22 +171,52 @@ export async function executeOpenCodeTrial(
     worktreePath,
   ];
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let timer: NodeJS.Timeout;
+    let settled = false;
 
-    const child = spawn(resolved.command, args, {
-      cwd: worktreePath,
-      env: getExecutionEnv(),
-      stdio: ['ignore', 'pipe', 'pipe'],
-      shell: false,
-    });
+    let child: ReturnType<typeof spawn>;
+    try {
+      child = spawn(resolved.command, args, {
+        cwd: worktreePath,
+        env: getExecutionEnv(),
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: false,
+      });
+    } catch (spawnErr) {
+      return resolve({
+        durationMs: Math.round(performance.now() - startTime),
+        exitCode: 1,
+        error: `Spawn failed: ${String(spawnErr)}`,
+        inputTokens: 'UNKNOWN',
+        outputTokens: 'UNKNOWN',
+        totalTokens: 'UNKNOWN',
+        toolCallCount: 0,
+        stdout: '',
+        stderr: String(spawnErr),
+      });
+    }
 
     timer = setTimeout(() => {
-      child.kill('SIGKILL');
-      reject(new Error(`OpenCode execution timed out after ${timeoutMs}ms`));
+      if (settled) return;
+      settled = true;
+      killProcessTree(child.pid);
+      const durationMs = Math.round(performance.now() - startTime);
+      resolve({
+        durationMs,
+        exitCode: null,
+        timedOut: true,
+        error: `OpenCode execution timed out after ${timeoutMs}ms`,
+        inputTokens,
+        outputTokens,
+        totalTokens,
+        toolCallCount,
+        stdout: scrubSecrets(stdoutAcc),
+        stderr: scrubSecrets(stderrAcc),
+      });
     }, timeoutMs);
 
-    child.stdout.on('data', (chunk: Buffer) => {
+    child.stdout?.on('data', (chunk: Buffer) => {
       const text = chunk.toString('utf-8');
       stdoutAcc += text;
 
@@ -198,16 +244,31 @@ export async function executeOpenCodeTrial(
       }
     });
 
-    child.stderr.on('data', (chunk: Buffer) => {
+    child.stderr?.on('data', (chunk: Buffer) => {
       stderrAcc += chunk.toString('utf-8');
     });
 
     child.on('error', (err) => {
+      if (settled) return;
+      settled = true;
       clearTimeout(timer);
-      reject(err);
+      const durationMs = Math.round(performance.now() - startTime);
+      resolve({
+        durationMs,
+        exitCode: 1,
+        error: `Process error: ${String(err)}`,
+        inputTokens,
+        outputTokens,
+        totalTokens,
+        toolCallCount,
+        stdout: scrubSecrets(stdoutAcc),
+        stderr: scrubSecrets(stderrAcc),
+      });
     });
 
     child.on('close', (code) => {
+      if (settled) return;
+      settled = true;
       clearTimeout(timer);
       const durationMs = Math.round(performance.now() - startTime);
       resolve({

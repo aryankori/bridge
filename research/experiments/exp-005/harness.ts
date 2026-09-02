@@ -48,7 +48,7 @@ export function setupTrialWorktree(trialId: string, scenario: LiveAgentScenario)
   validatePathConfinement(trialDir, EXP005_WORKTREES_ROOT);
 
   if (fs.existsSync(trialDir)) {
-    fs.rmSync(trialDir, { recursive: true, force: true });
+    cleanupTrialWorktree(trialDir);
   }
   fs.mkdirSync(trialDir, { recursive: true });
 
@@ -59,18 +59,50 @@ export function setupTrialWorktree(trialId: string, scenario: LiveAgentScenario)
     fs.writeFileSync(filePath, file.content, 'utf-8');
   }
 
+  // Ensure self-contained vitest config so tests in packages/** or root are properly discovered
+  const worktreeVitestConfig = path.join(trialDir, 'vitest.config.ts');
+  if (!fs.existsSync(worktreeVitestConfig)) {
+    const vitestConfContent = `import { defineConfig } from 'vitest/config';
+export default defineConfig({
+  test: {
+    include: ['**/*.test.ts', '**/*.spec.ts'],
+    exclude: ['**/node_modules/**', '**/.git/**'],
+    globals: false,
+    environment: 'node',
+  },
+});\n`;
+    fs.writeFileSync(worktreeVitestConfig, vitestConfContent, 'utf-8');
+  }
+
+  // Link node_modules from project root to ensure vitest and test runners execute reliably
+  const rootNodeModules = path.resolve(process.cwd(), 'node_modules');
+  const worktreeNodeModules = path.join(trialDir, 'node_modules');
+  if (fs.existsSync(rootNodeModules) && !fs.existsSync(worktreeNodeModules)) {
+    try {
+      if (process.platform === 'win32') {
+        fs.symlinkSync(rootNodeModules, worktreeNodeModules, 'junction');
+      } else {
+        fs.symlinkSync(rootNodeModules, worktreeNodeModules, 'dir');
+      }
+    } catch {
+      // If symlinking fails, continue with fallback
+    }
+  }
+
+  // Write .gitignore so node_modules junction is not tracked by git
+  const gitignorePath = path.join(trialDir, '.gitignore');
+  if (!fs.existsSync(gitignorePath)) {
+    fs.writeFileSync(gitignorePath, "node_modules/\n.vitest/\ndist/\n", 'utf-8');
+  }
+
   // Initialize a local git repository inside the ephemeral worktree for clean diff tracking
   try {
-    execSync('git init && git config user.email "test@bridge.local" && git config user.name "BridgeTest"', {
-      cwd: trialDir,
-      env: getExecutionEnv(),
-      stdio: 'ignore',
-    });
-    execSync('git add . && git commit -m "initial fixture state"', {
-      cwd: trialDir,
-      env: getExecutionEnv(),
-      stdio: 'ignore',
-    });
+    const env = getExecutionEnv();
+    execSync('git init', { cwd: trialDir, env, stdio: 'ignore' });
+    execSync('git config user.email "test@bridge.local"', { cwd: trialDir, env, stdio: 'ignore' });
+    execSync('git config user.name "BridgeTest"', { cwd: trialDir, env, stdio: 'ignore' });
+    execSync('git add -A', { cwd: trialDir, env, stdio: 'ignore' });
+    execSync('git commit -m "initial fixture state" --allow-empty', { cwd: trialDir, env, stdio: 'ignore' });
   } catch {
     // Git init fallback if needed
   }
@@ -79,13 +111,20 @@ export function setupTrialWorktree(trialId: string, scenario: LiveAgentScenario)
 }
 
 /**
- * Capture git diff from the worktree.
+ * Capture git diff from the worktree including new files.
  */
 export function captureWorktreePatch(worktreePath: string): string {
   try {
+    const env = getExecutionEnv();
+    try {
+      execSync('git add -A', { cwd: worktreePath, env, stdio: 'ignore' });
+    } catch {
+      // Ignore fallback
+    }
+
     const diff = execSync('git diff HEAD', {
       cwd: worktreePath,
-      env: getExecutionEnv(),
+      env,
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
     });
@@ -135,8 +174,20 @@ export function runVerificationCommand(
  */
 export function cleanupTrialWorktree(worktreePath: string): void {
   validatePathConfinement(worktreePath, EXP005_WORKTREES_ROOT);
-  if (fs.existsSync(worktreePath)) {
-    fs.rmSync(worktreePath, { recursive: true, force: true });
+  try {
+    if (fs.existsSync(worktreePath)) {
+      const nmPath = path.join(worktreePath, 'node_modules');
+      if (fs.existsSync(nmPath)) {
+        try {
+          fs.unlinkSync(nmPath);
+        } catch {
+          // If not a symlink/junction, rmSync will handle it
+        }
+      }
+      fs.rmSync(worktreePath, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 });
+    }
+  } catch {
+    // Ignore transient OS file-lock on cleanup
   }
 }
 
@@ -147,6 +198,7 @@ export async function runTrial(
   scenario: LiveAgentScenario,
   condition: ExperimentCondition,
   options: {
+    runId?: string;
     replicationIndex?: number;
     trialOrderIndex?: number;
     randomizationSeed?: number;
@@ -189,6 +241,7 @@ export async function runTrial(
 
     const telemetry: TrialTelemetry = {
       experimentId: 'EXP-005',
+      runId: options.runId,
       trialId,
       scenarioId: scenario.scenarioId,
       replicationIndex: repIndex,
@@ -207,12 +260,58 @@ export async function runTrial(
       execution,
       gitPatch,
       verification,
+      error: execution.error,
     };
 
     return telemetry;
+  } catch (trialError: unknown) {
+    // Fallback failure capture so evidence is never dropped
+    const gitPatch = captureWorktreePatch(worktreePath);
+    const verification = runVerificationCommand(
+      worktreePath,
+      scenario.expectedOutcome.verificationTestCommand
+    );
+
+    return {
+      experimentId: 'EXP-005',
+      runId: options.runId,
+      trialId,
+      scenarioId: scenario.scenarioId,
+      replicationIndex: repIndex,
+      trialOrderIndex: orderIndex,
+      condition,
+      randomizationSeed: seed,
+      model: PINNED_OPENCODE_MODEL,
+      provider: PINNED_PROVIDER,
+      bridgeCommit: currentCommit,
+      resolverCommit: FROZEN_RESOLVER_COMMIT,
+      startingCommit: currentCommit,
+      timestamp: new Date().toISOString(),
+      worktreePath,
+      payloadHash,
+      payload,
+      execution: {
+        durationMs: 0,
+        exitCode: 1,
+        error: String(trialError),
+        inputTokens: 'UNKNOWN',
+        outputTokens: 'UNKNOWN',
+        totalTokens: 'UNKNOWN',
+        toolCallCount: 0,
+        stdout: '',
+        stderr: String(trialError),
+      },
+      gitPatch,
+      verification,
+      error: String(trialError),
+    };
   } finally {
     if (!options.preserveWorktree) {
-      cleanupTrialWorktree(worktreePath);
+      try {
+        cleanupTrialWorktree(worktreePath);
+      } catch {
+        // Never let cleanup failure mask valid trial results
+      }
     }
   }
 }

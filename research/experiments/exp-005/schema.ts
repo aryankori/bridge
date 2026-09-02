@@ -118,7 +118,9 @@ export interface ConditionPayload {
 
 export interface AgentExecutionMetrics {
   durationMs: number;
-  exitCode: number;
+  exitCode: number | null;
+  timedOut?: boolean;
+  error?: string;
   inputTokens: number | 'UNKNOWN';
   outputTokens: number | 'UNKNOWN';
   totalTokens: number | 'UNKNOWN';
@@ -137,6 +139,7 @@ export interface VerificationResult {
 
 export interface TrialTelemetry {
   experimentId: 'EXP-005';
+  runId?: string;
   trialId: string;
   scenarioId: string;
   replicationIndex: number;
@@ -155,6 +158,7 @@ export interface TrialTelemetry {
   execution: AgentExecutionMetrics;
   gitPatch: string;
   verification: VerificationResult;
+  error?: string;
 }
 
 export interface ResolutionQualityScore {
@@ -216,6 +220,7 @@ export interface StratifiedReport {
 
 export interface ExperimentManifest {
   experimentId: 'EXP-005';
+  runId?: string;
   title: string;
   generatedAt: string;
   bridgeCommit: string;
@@ -225,6 +230,7 @@ export interface ExperimentManifest {
   randomizationSeed: number;
   replicationsCount: number;
   totalTrialsCount: number;
+  completedTrialsCount?: number;
   conditions: ExperimentCondition[];
   scenariosCount: number;
   trials: TrialTelemetry[];

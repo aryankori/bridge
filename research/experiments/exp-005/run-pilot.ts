@@ -76,13 +76,28 @@ export function planRandomizedTrials(
   return deterministicShuffle(plan, prng);
 }
 
+/**
+ * Writes an experiment manifest atomically using a temporary file and rename.
+ */
+export function writeManifestAtomically(filePath: string, manifest: ExperimentManifest): void {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const tmpPath = `${filePath}.tmp.${Date.now()}.${Math.random().toString(36).slice(2, 8)}`;
+  fs.writeFileSync(tmpPath, JSON.stringify(manifest, null, 2), 'utf-8');
+  fs.renameSync(tmpPath, filePath);
+}
+
 export async function executeLivePilot(options: {
+  runId?: string;
   scenarioIds?: string[];
   conditions?: ExperimentCondition[];
   replications?: number;
   seed?: number;
   outputJsonPath?: string;
   timeoutMs?: number;
+  resumeFromManifest?: boolean | string;
 } = {}): Promise<ExperimentManifest> {
   const targetScenarios = options.scenarioIds
     ? EXP005_SCENARIOS.filter((s) => options.scenarioIds?.includes(s.scenarioId))
@@ -91,6 +106,11 @@ export async function executeLivePilot(options: {
   const targetConditions: ExperimentCondition[] = options.conditions ?? ['A', 'B', 'C'];
   const replicationsCount = options.replications ?? 2;
   const seed = options.seed ?? 42;
+  const runId = options.runId ?? `run-exp005-${Date.now()}`;
+
+  const outputPath =
+    options.outputJsonPath ??
+    path.join(process.cwd(), 'research', 'experiments', 'exp-005', 'exp005-manifest.json');
 
   const scheduledTrials = planRandomizedTrials(
     targetScenarios,
@@ -100,14 +120,45 @@ export async function executeLivePilot(options: {
   );
 
   console.log(
-    `[EXP-005] Planned ${scheduledTrials.length} trials (${targetScenarios.length} scenarios × ${targetConditions.length} conditions × ${replicationsCount} replications, Seed: ${seed})`
+    `[EXP-005] Run ID: ${runId} | Planned ${scheduledTrials.length} trials (${targetScenarios.length} scenarios × ${targetConditions.length} conditions × ${replicationsCount} replications, Seed: ${seed})`
   );
 
   const trials: TrialTelemetry[] = [];
+  const completedKeys = new Set<string>();
+
+  // Safe resume logic
+  if (options.resumeFromManifest) {
+    const resumePath =
+      typeof options.resumeFromManifest === 'string'
+        ? options.resumeFromManifest
+        : outputPath;
+    if (fs.existsSync(resumePath)) {
+      try {
+        const existing = JSON.parse(fs.readFileSync(resumePath, 'utf-8')) as ExperimentManifest;
+        if (existing && Array.isArray(existing.trials)) {
+          for (const t of existing.trials) {
+            trials.push(t);
+            completedKeys.add(`${t.scenarioId}-${t.condition}-${t.replicationIndex}`);
+          }
+          console.log(`[EXP-005] Resumed ${trials.length} existing trials from ${resumePath}`);
+        }
+      } catch (resumeErr) {
+        console.warn(`[EXP-005] Could not load resume manifest from ${resumePath}:`, resumeErr);
+      }
+    }
+  }
 
   for (let idx = 0; idx < scheduledTrials.length; idx++) {
     const item = scheduledTrials[idx]!;
     const orderIndex = idx + 1;
+    const key = `${item.scenario.scenarioId}-${item.condition}-${item.replicationIndex}`;
+
+    if (completedKeys.has(key)) {
+      console.log(
+        `[EXP-005] [${orderIndex}/${scheduledTrials.length}] Skipping already completed trial: ${key}`
+      );
+      continue;
+    }
 
     console.log(
       `[EXP-005] [${orderIndex}/${scheduledTrials.length}] Executing ${item.scenario.scenarioId} [Condition ${item.condition}, Rep ${item.replicationIndex}]...`
@@ -115,15 +166,26 @@ export async function executeLivePilot(options: {
 
     try {
       const telemetry = await runTrial(item.scenario, item.condition, {
+        runId,
         replicationIndex: item.replicationIndex,
         trialOrderIndex: orderIndex,
         randomizationSeed: seed,
         timeoutMs: options.timeoutMs,
       });
       trials.push(telemetry);
+      completedKeys.add(key);
+
+      // Save progressive manifest checkpoint atomically after each trial
+      const intermediateManifest = buildExperimentManifest(trials, targetScenarios, {
+        randomizationSeed: seed,
+        replicationsCount,
+      });
+      intermediateManifest.runId = runId;
+      intermediateManifest.completedTrialsCount = trials.length;
+      writeManifestAtomically(outputPath, intermediateManifest);
     } catch (err: unknown) {
       console.error(
-        `[EXP-005 ERROR] Trial ${orderIndex} failed for ${item.scenario.scenarioId} [${item.condition}]:`,
+        `[EXP-005 ERROR] Trial ${orderIndex} encountered unhandled runner error for ${item.scenario.scenarioId} [${item.condition}]:`,
         err
       );
     }
@@ -133,14 +195,44 @@ export async function executeLivePilot(options: {
     randomizationSeed: seed,
     replicationsCount,
   });
+  manifest.runId = runId;
+  manifest.completedTrialsCount = trials.length;
 
-  const outputPath =
-    options.outputJsonPath ??
-    path.join(process.cwd(), 'research', 'experiments', 'exp-005', 'exp005-manifest.json');
-  fs.writeFileSync(outputPath, JSON.stringify(manifest, null, 2), 'utf-8');
+  writeManifestAtomically(outputPath, manifest);
 
   console.log(
-    `[EXP-005] Completed ${trials.length} trials. Manifest written to ${outputPath}`
+    `[EXP-005] Completed ${trials.length}/${scheduledTrials.length} trials. Manifest written to ${outputPath}`
   );
   return manifest;
 }
+
+// CLI runner
+const proc = (globalThis as unknown as { process?: { argv?: string[] } }).process;
+if (proc?.argv?.[1]?.endsWith('run-pilot.ts') || proc?.argv?.[1]?.endsWith('run-pilot.js')) {
+  const args = proc.argv.slice(2);
+  let replications = 2;
+  let seed = 42;
+  let resume = false;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--replications' && args[i + 1]) {
+      replications = parseInt(args[i + 1]!, 10);
+      i++;
+    } else if (args[i] === '--seed' && args[i + 1]) {
+      seed = parseInt(args[i + 1]!, 10);
+      i++;
+    } else if (args[i] === '--resume') {
+      resume = true;
+    }
+  }
+
+  executeLivePilot({ replications, seed, resumeFromManifest: resume })
+    .then(() => {
+      console.log('[EXP-005] Pilot Execution Succeeded.');
+    })
+    .catch((err) => {
+      console.error('[EXP-005 FATAL] Pilot Execution Failed:', err);
+      process.exit(1);
+    });
+}
+

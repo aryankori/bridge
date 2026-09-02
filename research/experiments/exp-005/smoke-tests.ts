@@ -8,7 +8,6 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import process from 'node:process';
 import { executeOpenCodeTrial, PINNED_OPENCODE_MODEL, resolveExecutable } from './agent-runners.js';
 import { EXP005_WORKTREES_ROOT } from './harness.js';
 
@@ -28,7 +27,7 @@ export async function runOpenCodeSmokeTest(timeoutMs: number = 60_000): Promise<
   }
   fs.mkdirSync(smokeDir, { recursive: true });
 
-  const resolved = resolveExecutable('opencode');
+  resolveExecutable('opencode');
 
   try {
     const metrics = await executeOpenCodeTrial(
@@ -60,4 +59,15 @@ export async function runOpenCodeSmokeTest(timeoutMs: number = 60_000): Promise<
       fs.rmSync(smokeDir, { recursive: true, force: true });
     }
   }
+}
+
+// CLI runner
+const proc = (globalThis as unknown as { process?: { argv?: string[] } }).process;
+if (proc?.argv?.[1]?.endsWith('smoke-tests.ts') || proc?.argv?.[1]?.endsWith('smoke-tests.js')) {
+  runOpenCodeSmokeTest().then((report) => {
+    console.log(JSON.stringify(report, null, 2));
+    if (!report.passed) {
+      throw new Error(`Smoke Test Failed: ${report.error}`);
+    }
+  });
 }
