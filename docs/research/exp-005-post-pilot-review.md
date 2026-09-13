@@ -1,8 +1,8 @@
-# BRIDGE — EXP-005 POST-PILOT INDEPENDENT REVIEW
+# BRIDGE - EXP-005 POST-PILOT INDEPENDENT REVIEW
 
 **Author:** Hermes Agent (Independent Reviewer)
 **Date:** 2026-08-27
-**Status:** Post-pilot artifact review — NO LIVE EXPERIMENT RUN BY THIS REVIEWER
+**Status:** Post-pilot artifact review - NO LIVE EXPERIMENT RUN BY THIS REVIEWER
 
 ---
 
@@ -22,20 +22,20 @@ I re-ran `validateExp005Harness()` locally (dry-run import). Key findings:
 
 | Scenario | Difficulty | Resolver Status | Gold Status | Match |
 |---|---|---|---|---|
-| exp005-scn-001 | UNAMBIGUOUS | PERMITTED_WITH_OVERRIDE | PERMITTED_WITH_OVERRIDE | ✅ |
-| exp005-scn-002 | UNAMBIGUOUS | PERMITTED | PERMITTED | ✅ |
-| exp005-scn-003 | UNAMBIGUOUS | PERMITTED | PERMITTED | ✅ |
-| exp005-scn-004 | UNAMBIGUOUS | PERMITTED_WITH_OVERRIDE | PERMITTED_WITH_OVERRIDE | ✅ |
-| exp005-scn-005 | UNAMBIGUOUS | PERMITTED_WITH_OVERRIDE | PERMITTED_WITH_OVERRIDE | ✅ |
-| exp005-scn-006 | AMBIGUOUS | AMBIGUOUS | AMBIGUOUS | ✅ |
-| exp005-scn-007 | AMBIGUOUS | AMBIGUOUS | AMBIGUOUS | ✅ |
-| exp005-scn-008 | AMBIGUOUS | AMBIGUOUS | AMBIGUOUS | ✅ |
-| exp005-scn-009 | UNSOLVABLE | BLOCKED_CONFLICT | BLOCKED_CONFLICT | ✅ |
-| exp005-scn-010 | UNSOLVABLE | REQUIRES_AUTHORIZATION | REQUIRES_AUTHORIZATION | ✅ |
+| exp005-scn-001 | UNAMBIGUOUS | PERMITTED_WITH_OVERRIDE | PERMITTED_WITH_OVERRIDE | |
+| exp005-scn-002 | UNAMBIGUOUS | PERMITTED | PERMITTED | |
+| exp005-scn-003 | UNAMBIGUOUS | PERMITTED | PERMITTED | |
+| exp005-scn-004 | UNAMBIGUOUS | PERMITTED_WITH_OVERRIDE | PERMITTED_WITH_OVERRIDE | |
+| exp005-scn-005 | UNAMBIGUOUS | PERMITTED_WITH_OVERRIDE | PERMITTED_WITH_OVERRIDE | |
+| exp005-scn-006 | AMBIGUOUS | AMBIGUOUS | AMBIGUOUS | |
+| exp005-scn-007 | AMBIGUOUS | AMBIGUOUS | AMBIGUOUS | |
+| exp005-scn-008 | AMBIGUOUS | AMBIGUOUS | AMBIGUOUS | |
+| exp005-scn-009 | UNSOLVABLE | BLOCKED_CONFLICT | BLOCKED_CONFLICT | |
+| exp005-scn-010 | UNSOLVABLE | REQUIRES_AUTHORIZATION | REQUIRES_AUTHORIZATION | |
 
-**Result: 10/10 exact matches. 100% accuracy.** Resolver pre-validation passes the ≥70% threshold decisively.
+**Result: 10/10 exact matches. 100% accuracy.** Resolver pre-validation passes the >=70% threshold decisively.
 
-The resolver is frozen at fc322c6 and performs correctly on all 10 EXP-005 scenarios. This is a strong result — the resolver is technically competent.
+The resolver is frozen at fc322c6 and performs correctly on all 10 EXP-005 scenarios. This is a strong result - the resolver is technically competent.
 
 ### Condition Parity (Correction 1 & 2)
 
@@ -56,11 +56,11 @@ All three conditions pass the parity checks in `validateExp005Harness()`:
 
 | Artifact | Status |
 |---|---|
-| `exp005-manifest.json` | **MISSING** — not written to disk |
-| Trial worktrees | **1 of 60 remaining** — trial-exp005-scn-006-B-rep2 |
-| Trial telemetry | **0 of 60** — no JSON records |
-| Trial scores | **0 of 60** — no score records |
-| Condition aggregates | **0 of 3** — no aggregate data |
+| `exp005-manifest.json` | **MISSING** - not written to disk |
+| Trial worktrees | **1 of 60 remaining** - trial-exp005-scn-006-B-rep2 |
+| Trial telemetry | **0 of 60** - no JSON records |
+| Trial scores | **0 of 60** - no score records |
+| Condition aggregates | **0 of 3** - no aggregate data |
 
 ### What This Means
 
@@ -68,7 +68,7 @@ The `executeLivePilot()` function writes the manifest at the end of the run:
 
 ```typescript
 const outputPath = options.outputJsonPath ?? path.join(
-  process.cwd(), 'research', 'experiments', 'exp-005', 'exp005-manifest.json'
+ process.cwd(), 'research', 'experiments', 'exp-005', 'exp005-manifest.json'
 );
 fs.writeFileSync(outputPath, JSON.stringify(manifest, null, 2), 'utf-8');
 ```
@@ -76,7 +76,7 @@ fs.writeFileSync(outputPath, JSON.stringify(manifest, null, 2), 'utf-8');
 If the manifest doesn't exist, then either:
 1. The pilot never started (Antigravity ran something else or nothing)
 2. The pilot crashed before reaching the manifest write
-3. The pilot completed but `fs.writeFileSync` failed silently (highly unlikely — it would throw)
+3. The pilot completed but `fs.writeFileSync` failed silently (highly unlikely - it would throw)
 4. Antigravity is mistaken about having completed the pilot
 
 ### Single Remaining Worktree
@@ -94,13 +94,13 @@ However, there is **no evidence of agent execution**:
 
 **Crucially: the harness cleans up worktrees after each trial unless `preserveWorktree: true` is set.** The default is cleanup. If the pilot ran all 60 trials, 59 worktrees would have been cleaned up and only the last one might remain (if cleanup failed for the last trial, or if the pilot crashed mid-cleanup).
 
-But the fact that only ONE worktree remains — and it's for scenario 006, condition B, rep 2 — is consistent with a pilot that **crashed early** (after the first few trials) or **was never run**.
+But the fact that only ONE worktree remains - and it's for scenario 006, condition B, rep 2 - is consistent with a pilot that **crashed early** (after the first few trials) or **was never run**.
 
 If the pilot had run to completion, we would expect either:
 - All worktrees cleaned up (0 remaining), OR
 - All worktrees preserved (60 remaining) if `preserveWorktree: true` was used
 
-A single remaining worktree is ambiguous — it could be the last trial before a crash, or an abandoned partial run.
+A single remaining worktree is ambiguous - it could be the last trial before a crash, or an abandoned partial run.
 
 ---
 
@@ -110,20 +110,20 @@ Because the manifest is missing, the following questions from the review request
 
 | Question | Answerable? |
 |---|---|
-| Was the pilot valid? | NO — no artifact exists |
-| Did all 60 intended trials execute? | NO — cannot verify |
-| Were there technical failures? | NO — no error logs in manifest |
-| Were A/B/C conditions actually equivalent? | PARTIALLY — code is correct, execution unverified |
-| Was the resolver output frozen correctly? | YES — pre-validation confirms 100% accuracy |
-| Was any contamination detected? | NO — cannot verify |
-| Are the metrics trustworthy? | NO — no metrics exist |
-| What is the RAW vs HUMAN vs BRIDGE outcome? | NO — no data |
-| Does BRIDGE materially outperform RAW? | NO — cannot assess |
-| How close is BRIDGE to HUMAN? | NO — cannot assess |
-| What happens by scenario class? | NO — cannot assess |
-| What happens to false allows/blocks? | NO — cannot assess |
-| What happens to rework/tokens/time? | NO — cannot assess |
-| Is the effect larger than stochastic noise? | NO — cannot assess |
+| Was the pilot valid? | NO - no artifact exists |
+| Did all 60 intended trials execute? | NO - cannot verify |
+| Were there technical failures? | NO - no error logs in manifest |
+| Were A/B/C conditions actually equivalent? | PARTIALLY - code is correct, execution unverified |
+| Was the resolver output frozen correctly? | YES - pre-validation confirms 100% accuracy |
+| Was any contamination detected? | NO - cannot verify |
+| Are the metrics trustworthy? | NO - no metrics exist |
+| What is the RAW vs HUMAN vs BRIDGE outcome? | NO - no data |
+| Does BRIDGE materially outperform RAW? | NO - cannot assess |
+| How close is BRIDGE to HUMAN? | NO - cannot assess |
+| What happens by scenario class? | NO - cannot assess |
+| What happens to false allows/blocks? | NO - cannot assess |
+| What happens to rework/tokens/time? | NO - cannot assess |
+| Is the effect larger than stochastic noise? | NO - cannot assess |
 
 ---
 
@@ -138,11 +138,11 @@ The corrected EXP-005 codebase is solid:
 - Explanation grounding metric replaces trivial boolean with 3-point rubric
 - Stratified reporting by difficulty tier
 - Payload hashing for traceability
-- Pre-flight validation asserts 60-trial plan and resolver ≥70% accuracy
+- Pre-flight validation asserts 60-trial plan and resolver >=70% accuracy
 
 ### Requisite Correctness
 
-The code correctly implements the methodology. If the pilot were run with this code, the design would be valid. The problem is not the code — it's that **the pilot was not executed or its artifacts were lost**.
+The code correctly implements the methodology. If the pilot were run with this code, the design would be valid. The problem is not the code - it's that **the pilot was not executed or its artifacts were lost**.
 
 ---
 

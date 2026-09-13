@@ -1,4 +1,4 @@
-# BRIDGE — EXP-004 METHODOLOGY RED TEAM
+# BRIDGE - EXP-004 METHODOLOGY RED TEAM
 
 **Author:** Hermes Agent (Independent Red Team Reviewer)
 **Date:** 2026-08-27
@@ -33,7 +33,7 @@ If the resolver was designed using assumptions about what the correct answer loo
 **How to break the circle:**
 
 - Scenarios must be constructed by a **different team** than the resolver design team.
-- Scenarios must include cases where the resolver's designed rules would give the **wrong** answer — to test whether the resolver detects and reports the conflict rather than forcing a resolution.
+- Scenarios must include cases where the resolver's designed rules would give the **wrong** answer - to test whether the resolver detects and reports the conflict rather than forcing a resolution.
 - The gold standard must be created **before** the resolver is run, by annotators who have not seen the resolver's output.
 
 **Minimum protection:** Gold standard annotators must be blind to resolver output. Scenario authors must not be resolver designers.
@@ -50,9 +50,9 @@ Who creates the gold standard? If the gold standard was created by the resolver 
 
 Scenario: "Use double quotes for JSX attributes" (AGENTS.md) vs "Use single quotes for strings" (CLAUDE.md).
 
-Gold standard created by resolver team says: "AGENTS.md wins — more specific rule."
+Gold standard created by resolver team says: "AGENTS.md wins - more specific rule."
 
-But a reasonable alternative adjudication: "CLAUDE.md wins — it's the Claude-specific file, and the AGENTS.md rule is for a different tool. For Claude Code sessions, CLAUDE.md's quote rule is the operative one, even for JSX."
+But a reasonable alternative adjudication: "CLAUDE.md wins - it's the Claude-specific file, and the AGENTS.md rule is for a different tool. For Claude Code sessions, CLAUDE.md's quote rule is the operative one, even for JSX."
 
 If the gold standard encodes one adjudication and penalizes the other, accuracy is artificially inflated.
 
@@ -68,7 +68,7 @@ If the gold standard encodes one adjudication and penalizes the other, accuracy 
 
 **The Problem:**
 
-The resolver presumably encodes specific precedence rules (e.g., "hard gate > soft request," "specific > general," "nearest file > root file"). If the benchmark scenarios are designed to test those specific rules, the resolver is being evaluated on whether it implements its own rules correctly — not on whether those rules are correct.
+The resolver presumably encodes specific precedence rules (e.g., "hard gate > soft request," "specific > general," "nearest file > root file"). If the benchmark scenarios are designed to test those specific rules, the resolver is being evaluated on whether it implements its own rules correctly - not on whether those rules are correct.
 
 **Example:**
 
@@ -111,8 +111,8 @@ If the resolver always treats CI as hard gate, it's wrong in cases where CI is a
 
 **How to break the bias:**
 
-- Scenario set must include a **known proportion of ambiguous cases** — cases where even expert adjudicators disagree.
-- Scenario set must include **unsolvable cases** — cases where no resolution is possible without additional information not available to the resolver.
+- Scenario set must include a **known proportion of ambiguous cases** - cases where even expert adjudicators disagree.
+- Scenario set must include **unsolvable cases** - cases where no resolution is possible without additional information not available to the resolver.
 - Scenario set must include **edge cases** from real developer experiences (GitHub discussions, Reddit, blog reports).
 
 ---
@@ -133,7 +133,7 @@ Real-world usage involves:
 **How to break the confounding:**
 
 - Scenario set must include **instruction volume variation**: 2 files, 5 files, 10+ files, long files (200+ lines), short files.
-- Resolver accuracy should be reported **stratified by instruction volume** — does accuracy degrade as volume increases?
+- Resolver accuracy should be reported **stratified by instruction volume** - does accuracy degrade as volume increases?
 - If accuracy drops with volume, the resolver is not robust to real-world usage.
 
 ---
@@ -148,12 +148,12 @@ The resolver's accuracy may depend on which model is being used to generate the 
 
 - Resolver accuracy is measured against gold standard created by Claude 4.
 - If gold standard creator has Claude 4 biases (e.g., "CLAUDE.md always wins"), gold standard encodes those biases.
-- Resolver tested against gold standard. If resolver agrees with Claude 4 biases, accuracy is high. If resolver disagrees (e.g., "AGENTS.md wins for specific cases"), accuracy is lower — not because resolver is wrong, but because gold standard is biased.
+- Resolver tested against gold standard. If resolver agrees with Claude 4 biases, accuracy is high. If resolver disagrees (e.g., "AGENTS.md wins for specific cases"), accuracy is lower - not because resolver is wrong, but because gold standard is biased.
 
 **How to break the bias:**
 
 - Gold standard must be created by **multiple models** or by **humans** (not a single model).
-- If using model-based gold standard, report **model-specific accuracy** — does resolver accuracy vary by which model created the gold standard?
+- If using model-based gold standard, report **model-specific accuracy** - does resolver accuracy vary by which model created the gold standard?
 - If resolver accuracy is high only against Claude 4 gold standard but low against GPT-4 gold standard, the resolver is biased, not robust.
 
 ---
@@ -166,7 +166,7 @@ The resolver's accuracy may be specific to Claude Code's instruction resolution 
 
 **Why this matters:**
 
-- Claude Code concatenates instructions in a specific order (managed policy → user → project → local).
+- Claude Code concatenates instructions in a specific order (managed policy -> user -> project -> local).
 - Codex merges AGENTS.md files with deepest-wins rule and 32KB cap.
 - Copilot prioritizes personal > repo > org.
 - OpenCode may have a different resolution order.
@@ -175,8 +175,8 @@ If the resolver is designed to output the effective directive **for Claude Code*
 
 **How to break the bias:**
 
-- Benchmark must include **multi-agent scenarios** — same instruction set, different agents (Claude Code, Codex, Copilot, OpenCode).
-- Resolver output should be **agent-aware** — the effective directive depends on which agent is acting (because different agents resolve conflicts differently).
+- Benchmark must include **multi-agent scenarios** - same instruction set, different agents (Claude Code, Codex, Copilot, OpenCode).
+- Resolver output should be **agent-aware** - the effective directive depends on which agent is acting (because different agents resolve conflicts differently).
 - If resolver always outputs the same directive regardless of agent, it's not agent-aware and may be wrong for some agents.
 
 ---
@@ -196,7 +196,7 @@ If the resolver's output is evaluated by a model or human that has seen the reso
 
 **How to break the leakage:**
 
-- Evaluator must be **blind to resolver output** — evaluate gold standard first, then resolver output, without seeing resolver output during gold standard creation.
+- Evaluator must be **blind to resolver output** - evaluate gold standard first, then resolver output, without seeing resolver output during gold standard creation.
 - Alternatively, use **automated evaluation** against a fixed gold standard that was created before resolver was run.
 - If human evaluation, use **multiple blinded evaluators** and report inter-annotator agreement.
 
@@ -206,13 +206,13 @@ If the resolver's output is evaluated by a model or human that has seen the reso
 
 **The Problem:**
 
-The resolver is designed to resolve conflicts — to pick a winner. But some cases have no clear winner. Forcing a resolution in ambiguous cases produces false positives (resolver picks a winner when it should report ambiguity).
+The resolver is designed to resolve conflicts - to pick a winner. But some cases have no clear winner. Forcing a resolution in ambiguous cases produces false positives (resolver picks a winner when it should report ambiguity).
 
 **Example:**
 
 "Developer A says use library X. Developer B says use library Y. Both are senior engineers. No organizational policy says whose preference wins."
 
-Resolver picks one. Gold standard says resolver is wrong (no clear winner). But resolver was designed to pick a winner — it's doing what it was designed to do.
+Resolver picks one. Gold standard says resolver is wrong (no clear winner). But resolver was designed to pick a winner - it's doing what it was designed to do.
 
 **The real test:** How often does the resolver correctly identify ambiguity and report it, rather than forcing a resolution?
 
@@ -236,13 +236,13 @@ Resolver accuracy treats false positives and false negatives as equally bad. But
 **Which is worse?**
 
 Depends on use case:
-- For safety-critical actions (production deploy, security change), false positive is worse — agent makes dangerous error.
-- For low-stakes actions (style, naming), false negative is worse — agent wastes time asking human.
+- For safety-critical actions (production deploy, security change), false positive is worse - agent makes dangerous error.
+- For low-stakes actions (style, naming), false negative is worse - agent wastes time asking human.
 
 **How to account for asymmetry:**
 
 - Report **false positive rate** and **false negative rate** separately.
-- Weight errors by **action severity** — safety-critical errors count more than style errors.
+- Weight errors by **action severity** - safety-critical errors count more than style errors.
 - Primary outcome should be **severity-weighted accuracy**, not raw accuracy.
 
 ---
@@ -338,7 +338,7 @@ The 100% accuracy on 6 internally constructed scenarios is **consistent with mul
 
 - Single gold standard = single perspective = gold-standard bias.
 - Multiple adjudicators = measure of genuine ambiguity.
-- Disagreements are informative — they tell you which cases are genuinely ambiguous.
+- Disagreements are informative - they tell you which cases are genuinely ambiguous.
 
 ### How Should Disagreements Be Represented?
 
@@ -350,25 +350,25 @@ For each scenario, report:
 - Range of defensible resolutions.
 - Inter-annotator agreement score.
 
-If resolver agrees with 3/5 adjudicators, that's different from 5/5 — report both.
+If resolver agrees with 3/5 adjudicators, that's different from 5/5 - report both.
 
 ### Should the Resolver Be Deterministic?
 
 **Debatable.**
 
-**Pro-deterministic:** Reproducible, debuggable, predictable. Same input → same output.
+**Pro-deterministic:** Reproducible, debuggable, predictable. Same input -> same output.
 
 **Anti-deterministic:** Real authority resolution is sometimes ambiguous. Forcing determinism in ambiguous cases produces false confidence.
 
-**Recommendation:** Resolver should be **deterministic for unambiguous cases** (same input → same output), but should return **AMBIGUOUS with probability distribution** for ambiguous cases. The probability distribution reflects the range of defensible resolutions, not a forced choice.
+**Recommendation:** Resolver should be **deterministic for unambiguous cases** (same input -> same output), but should return **AMBIGUOUS with probability distribution** for ambiguous cases. The probability distribution reflects the range of defensible resolutions, not a forced choice.
 
 ### When Should It Return AMBIGUOUS Instead of Choosing?
 
-**When inter-annotator agreement is low** — if adjudicators disagree, the case is ambiguous, and the resolver should reflect that.
+**When inter-annotator agreement is low** - if adjudicators disagree, the case is ambiguous, and the resolver should reflect that.
 
-**When the resolver's confidence is below a threshold** — if the resolver's internal confidence (based on authority strength, specificity, recency, etc.) is below threshold, return AMBIGUOUS.
+**When the resolver's confidence is below a threshold** - if the resolver's internal confidence (based on authority strength, specificity, recency, etc.) is below threshold, return AMBIGUOUS.
 
-**When critical information is missing** — if the resolver needs information not available (e.g., constraint type unknown, authority source unknown), return AMBIGUOUS with "missing information: X."
+**When critical information is missing** - if the resolver needs information not available (e.g., constraint type unknown, authority source unknown), return AMBIGUOUS with "missing information: X."
 
 **Threshold for AMBIGUOUS:** Should be set such that false-positive rate (forcing resolution when ambiguous) is acceptably low for the use case. For safety-critical actions, threshold should be low (return AMBIGUOUS more readily). For low-stakes actions, threshold can be higher (resolve more readily).
 
@@ -384,17 +384,17 @@ If resolver agrees with 3/5 adjudicators, that's different from 5/5 — report b
 | **False-negative rate** | Proportion of unambiguous cases where resolver incorrectly returns AMBIGUOUS. |
 | **Stratified accuracy** | Accuracy broken down by instruction volume, conflict type, action severity, agent. |
 
-**Primary outcome should be severity-weighted accuracy** because it captures the real cost of errors — a resolution error on a production deploy is much worse than on a style choice.
+**Primary outcome should be severity-weighted accuracy** because it captures the real cost of errors - a resolution error on a production deploy is much worse than on a style choice.
 
 ### What Result Would Genuinely Support the Effective Directive Thesis?
 
 **Support requires:**
 
-1. **Severity-weighted accuracy ≥ 85%** on 30-stratum benchmark, with inter-annotator agreement ≥ 0.6.
-2. **Ambiguity detection rate ≥ 70%** — resolver correctly identifies ambiguous cases at least 70% of the time.
-3. **False-positive rate ≤ 15%** — resolver forces resolution on ambiguous cases ≤ 15% of the time.
+1. **Severity-weighted accuracy >= 85%** on 30-stratum benchmark, with inter-annotator agreement >= 0.6.
+2. **Ambiguity detection rate >= 70%** - resolver correctly identifies ambiguous cases at least 70% of the time.
+3. **False-positive rate <= 15%** - resolver forces resolution on ambiguous cases <= 15% of the time.
 4. **No significant accuracy degradation** with increasing instruction volume (accuracy on 2-file cases ≈ accuracy on 10+ file cases, within 10%).
-5. **No significant agent-specific bias** — accuracy similar across Claude Code, Codex, Copilot, OpenCode scenarios.
+5. **No significant agent-specific bias** - accuracy similar across Claude Code, Codex, Copilot, OpenCode scenarios.
 
 **This would support the thesis:** The resolver computes effective directives accurately across a range of real-world conditions, correctly identifies ambiguity, and doesn't overfit to specific agents or instruction volumes.
 
@@ -402,11 +402,11 @@ If resolver agrees with 3/5 adjudicators, that's different from 5/5 — report b
 
 **Falsification requires:**
 
-1. **Severity-weighted accuracy < 70%** — resolver makes too many errors to be useful.
-2. **Ambiguity detection rate < 50%** — resolver misses most ambiguous cases, producing false confidence.
-3. **Significant accuracy degradation with instruction volume** — accuracy drops > 20% from 2-file to 10+ file cases.
-4. **Significant agent-specific bias** — accuracy varies > 20% across agents.
-5. **Training accuracy >> test accuracy** — overfitting to development scenarios.
+1. **Severity-weighted accuracy < 70%** - resolver makes too many errors to be useful.
+2. **Ambiguity detection rate < 50%** - resolver misses most ambiguous cases, producing false confidence.
+3. **Significant accuracy degradation with instruction volume** - accuracy drops > 20% from 2-file to 10+ file cases.
+4. **Significant agent-specific bias** - accuracy varies > 20% across agents.
+5. **Training accuracy >> test accuracy** - overfitting to development scenarios.
 
 **This would falsify the thesis:** The resolver does not generalize beyond the specific conditions it was designed for, and is not ready for production use.
 
@@ -430,9 +430,9 @@ For each of 30 scenarios, run three conditions:
 
 **Outcome measures:**
 
-1. **Agent error rate** — does the agent follow the effective directive? (measured by agent's actions vs directive)
-2. **Directive correctness** — is the effective directive correct? (measured against gold standard)
-3. ** agent compliance** — does the agent comply with the directive it's given? (RAW: does agent follow its own resolution? HUMAN: does agent follow human directive? BRIDGE: does agent follow Bridge directive?)
+1. **Agent error rate** - does the agent follow the effective directive? (measured by agent's actions vs directive)
+2. **Directive correctness** - is the effective directive correct? (measured against gold standard)
+3. ** agent compliance** - does the agent comply with the directive it's given? (RAW: does agent follow its own resolution? HUMAN: does agent follow human directive? BRIDGE: does agent follow Bridge directive?)
 
 **Isolating the value sources:**
 
@@ -474,7 +474,7 @@ For each of 30 scenarios, run three conditions:
 
 ### Option C: Benchmark Only
 
-**Pros:** Establishes a benchmark for future resolver versions. Enables comparison across resolver iterations. Does not require running agents — just computing directives and comparing to gold standard.
+**Pros:** Establishes a benchmark for future resolver versions. Enables comparison across resolver iterations. Does not require running agents - just computing directives and comparing to gold standard.
 
 **Cons:** Doesn't test whether agents actually follow the resolved directive. Doesn't test whether resolved directive improves agent performance. Purely computational, not empirical.
 
@@ -494,7 +494,7 @@ For each of 30 scenarios, run three conditions:
 2. Run resolver on all 30 scenarios.
 3. Compare resolver output to gold standard.
 4. Report severity-weighted accuracy, ambiguity detection rate, false-positive rate, false-negative rate, stratified accuracy.
-5. If severity-weighted accuracy ≥ 85% and ambiguity detection ≥ 70%: proceed to Phase 2.
+5. If severity-weighted accuracy >= 85% and ambiguity detection >= 70%: proceed to Phase 2.
 6. If below thresholds: refine resolver, iterate benchmark, or abandon.
 
 **Phase 2: Sub-Experiment (agent execution, nested in EXP-002 or EXP-003)**

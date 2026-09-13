@@ -1,4 +1,4 @@
-# BRIDGE — Final Falsification: Kill All 7 Theses
+# BRIDGE - Final Falsification: Kill All 7 Theses
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -30,11 +30,11 @@
 
 ## THESIS 2: STRUCTURED STATE MATTERS
 
-**Thesis:** Projects benefit from structured, queryable, persistent state about their instructions, decisions, and authority — as opposed to unstructured files, chat logs, and human memory.
+**Thesis:** Projects benefit from structured, queryable, persistent state about their instructions, decisions, and authority - as opposed to unstructured files, chat logs, and human memory.
 
 **Strongest evidence that would invalidate:**
 
-1. **Developers don't query state:** If developers never query standing records, authority graphs, or decision logs — if they just read the files and follow their best judgment — structured state is infrastructure without users.
+1. **Developers don't query state:** If developers never query standing records, authority graphs, or decision logs - if they just read the files and follow their best judgment - structured state is infrastructure without users.
 
 2. **Unstructured works fine:** If developers are productive with unstructured state (AGENTS.md files, chat logs, PR descriptions, human memory), the marginal value of structure is small.
 
@@ -66,7 +66,7 @@
 
 5. **Model-internal resolution catches up:** If model providers (OpenAI, Anthropic) ship instruction hierarchy that resolves conflicts as well as Bridge's resolver, external resolution is redundant.
 
-**Assessment:** This is the critical thesis. EXP-005 is the test. If it's negative, the entire Bridge thesis collapses at the behavioral level. The resolver works at the computation level (EXP-004: 76% accuracy) — but if the agent doesn't act on the directive, the resolver is a solution to a problem that doesn't affect outcomes.
+**Assessment:** This is the critical thesis. EXP-005 is the test. If it's negative, the entire Bridge thesis collapses at the behavioral level. The resolver works at the computation level (EXP-004: 76% accuracy) - but if the agent doesn't act on the directive, the resolver is a solution to a problem that doesn't affect outcomes.
 
 **Most likely invalidation:** EXP-005 shows no significant difference between RAW and BRIDGE. The agent either already resolves conflicts well, or ignores the directive, or the directive doesn't change behavior enough to matter. The resolver is a computational curiosity, not a behavioral intervention.
 
@@ -74,7 +74,7 @@
 
 ## THESIS 4: EFFECTIVE STANDING MATTERS
 
-**Thesis:** Computing effective standing — which claim is effective for which action, under what authority, at what time — is valuable for projects, agents, and enterprises, and generalizes beyond single-action directive resolution.
+**Thesis:** Computing effective standing - which claim is effective for which action, under what authority, at what time - is valuable for projects, agents, and enterprises, and generalizes beyond single-action directive resolution.
 
 **Strongest evidence that would invalidate:**
 
@@ -102,7 +102,7 @@
 
 1. **Single-agent dominance:** If one agent platform (Codex, Claude Code) achieves decisive market dominance and most developers use it exclusively, cross-agent consistency is not a problem.
 
-2. **Platform vendors solve cross-agent:** If platform vendors (OpenAI, Anthropic) provide cross-agent standing as a service (e.g., "use Codex or Claude — our standing layer works for both"), the neutral layer is unnecessary.
+2. **Platform vendors solve cross-agent:** If platform vendors (OpenAI, Anthropic) provide cross-agent standing as a service (e.g., "use Codex or Claude - our standing layer works for both"), the neutral layer is unnecessary.
 
 3. **Developers don't use multiple agents:** If developers use one agent per project (or per task), and don't mix agents, the cross-agent layer is solving a problem that doesn't exist at scale.
 
@@ -140,7 +140,7 @@
 
 ## THESIS 7: BRIDGE CAN BECOME A DURABLE COMPANY
 
-**Thesis:** Bridge can build a durable company — recurring revenue, defensible position, growth potential, sustainable competitive advantage — around the standing computation / institutional state thesis.
+**Thesis:** Bridge can build a durable company - recurring revenue, defensible position, growth potential, sustainable competitive advantage - around the standing computation / institutional state thesis.
 
 **Strongest evidence that would invalidate:**
 
@@ -154,7 +154,7 @@
 
 5. **Revenue is insufficient:** Even if Bridge finds customers, the revenue is too small to sustain a company. Developer subscriptions are low-ARPU. Enterprise sales are slow and expensive. The unit economics don't work.
 
-**Assessment:** This is the ultimate thesis, and it's the hardest to defend. A durable company requires a large market, a defensible moat, and a distribution advantage. Bridge's current position has none of these clearly established. The potential moat (accumulated standing records, category definition) is potential, not current. The market (standing computation) is not yet a market — it's a hypothesis.
+**Assessment:** This is the ultimate thesis, and it's the hardest to defend. A durable company requires a large market, a defensible moat, and a distribution advantage. Bridge's current position has none of these clearly established. The potential moat (accumulated standing records, category definition) is potential, not current. The market (standing computation) is not yet a market - it's a hypothesis.
 
 **Most likely invalidation:** Bridge is a useful tool with a niche audience. It generates some revenue (developer subscriptions, a few enterprise contracts) but not enough to be a durable company. It remains a small business, gets acquired as a feature, or shuts down. The institutional state vision never materializes as a category.
 
@@ -174,11 +174,11 @@
 
 **The critical path through the theses:**
 
-1. EXP-005 positive → Directive resolution matters (Thesis 3 survives)
-2. EXP-006 + EXP-007 positive → Standing generalizes (Thesis 4 survives)
-3. Multi-agent development common + platforms don't solve cross-agent → Neutral layer necessary (Thesis 5 survives)
-4. Developers pay + enterprise budgets exist + category recognized → Standalone product viable (Thesis 6 survives)
-5. Accumulation creates moat + market grows + competition held off → Durable company viable (Thesis 7 survives)
+1. EXP-005 positive -> Directive resolution matters (Thesis 3 survives)
+2. EXP-006 + EXP-007 positive -> Standing generalizes (Thesis 4 survives)
+3. Multi-agent development common + platforms don't solve cross-agent -> Neutral layer necessary (Thesis 5 survives)
+4. Developers pay + enterprise budgets exist + category recognized -> Standalone product viable (Thesis 6 survives)
+5. Accumulation creates moat + market grows + competition held off -> Durable company viable (Thesis 7 survives)
 
 **If any step in the chain fails, the theses above it become uncertain and the theses below it become unlikely.**
 

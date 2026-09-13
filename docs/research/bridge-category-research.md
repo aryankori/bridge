@@ -1,4 +1,4 @@
-# BRIDGE — Category Research: What Should Bridge Become?
+# BRIDGE - Category Research: What Should Bridge Become?
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -8,7 +8,7 @@
 
 ## 1. THE FUNDAMENTAL PROBLEM (REFORMULATED)
 
-Multiple legitimate actors (humans, agents, systems, documents) make claims about what state an action should produce. The system must determine, for each action, which claim is effective — accounting for authority, staleness, scope, conflict, and evidence — and produce an auditable record of the determination.
+Multiple legitimate actors (humans, agents, systems, documents) make claims about what state an action should produce. The system must determine, for each action, which claim is effective - accounting for authority, staleness, scope, conflict, and evidence - and produce an auditable record of the determination.
 
 This is not:
 - Consensus (all actors agree)
@@ -21,7 +21,7 @@ This IS:
 
 ---
 
-## 2. CANDIDATE CATEGORIES — EVALUATION
+## 2. CANDIDATE CATEGORIES - EVALUATION
 
 ### Category A: Agent Coordination
 
@@ -35,7 +35,7 @@ This IS:
 
 ### Category B: Context Infrastructure
 
-**What it sounds like:** Bridge manages the context that agents see — what files, what instructions, what memory.
+**What it sounds like:** Bridge manages the context that agents see - what files, what instructions, what memory.
 
 **What it actually is:** Bridge doesn't manage context. It reads instruction sources (which are one type of context) and computes standing. Context management is broader (conversation history, tool outputs, memory). Bridge is narrower (standing computation from instruction sources).
 
@@ -45,9 +45,9 @@ This IS:
 
 ### Category C: Project Intelligence
 
-**What it sounds like:** Bridge makes projects smarter — it understands the project and guides agents accordingly.
+**What it sounds like:** Bridge makes projects smarter - it understands the project and guides agents accordingly.
 
-**What it actually is:** Bridge doesn't make the project smarter. It computes standing from the project's own instruction sources. "Intelligence" implies understanding, reasoning, learning — Bridge is deterministic computation, not intelligence.
+**What it actually is:** Bridge doesn't make the project smarter. It computes standing from the project's own instruction sources. "Intelligence" implies understanding, reasoning, learning - Bridge is deterministic computation, not intelligence.
 
 **Verdict:** WRONG CATEGORY. Too vague and anthropomorphic. "Project intelligence" sounds like AI understanding the project. Bridge is authority evaluation, not intelligence.
 
@@ -55,7 +55,7 @@ This IS:
 
 ### Category D: Decision Infrastructure
 
-**What it sounds like:** Bridge is infrastructure for making and recording decisions — who decided what, why, with what authority.
+**What it sounds like:** Bridge is infrastructure for making and recording decisions - who decided what, why, with what authority.
 
 **What it actually is:** This is closer. Standing computation produces decisions (effective directives) and records them. But "decision infrastructure" is broad (any decision-making system). Bridge is specifically about standing from instruction sources, not general decision infrastructure.
 
@@ -65,9 +65,9 @@ This IS:
 
 ### Category E: Authority Infrastructure
 
-**What it sounds like:** Bridge is infrastructure for authority — who has authority, how it's exercised, how it's recorded.
+**What it sounds like:** Bridge is infrastructure for authority - who has authority, how it's exercised, how it's recorded.
 
-**What it actually is:** Closer. Standing is a property of authority (which authority governs this action?). But "authority infrastructure" is also broad (RBAC, IAM, policy engines all deal with authority). Bridge's specific contribution is action-specific, temporally-aware, claim-based standing — not generic authority.
+**What it actually is:** Closer. Standing is a property of authority (which authority governs this action?). But "authority infrastructure" is also broad (RBAC, IAM, policy engines all deal with authority). Bridge's specific contribution is action-specific, temporally-aware, claim-based standing - not generic authority.
 
 **Verdict:** CLOSER, but still too broad. Authority infrastructure already exists (OPA, Cedar, IAM). Bridge's differentiation is standing (dynamic, action-specific, claim-based), not authority itself.
 
@@ -75,7 +75,7 @@ This IS:
 
 ### Category F: Policy Resolution
 
-**What it sounds like:** Bridge resolves policy conflicts — which policy applies, how conflicts are resolved.
+**What it sounds like:** Bridge resolves policy conflicts - which policy applies, how conflicts are resolved.
 
 **What it actually is:** Bridge doesn't resolve policy conflicts. It resolves instruction conflicts. Policy engines (OPA, Cedar) evaluate policies. Bridge evaluates claims from instruction sources against an authority framework. The "policy" in "policy resolution" suggests a fixed rule set, not competing claims with authority tiers.
 
@@ -85,11 +85,11 @@ This IS:
 
 ### Category G: Agent Governance
 
-**What it sounds like:** Bridge governs agent behavior — what agents can do, what they should do, with what constraints.
+**What it sounds like:** Bridge governs agent behavior - what agents can do, what they should do, with what constraints.
 
 **What it actually is:** Bridge doesn't govern agents (it doesn't enforce, block, or control). It produces directives that agents may follow or ignore. Governance platforms (AWS AgentCore, Databricks Unity Gateway) enforce. Bridge recommends with authority.
 
-**Verdict:** WRONG CATEGORY for enforcement. Right category for standing computation as a component of governance. But Bridge is not a governance platform — it's a standing computation layer that governance platforms could use.
+**Verdict:** WRONG CATEGORY for enforcement. Right category for standing computation as a component of governance. But Bridge is not a governance platform - it's a standing computation layer that governance platforms could use.
 
 ---
 
@@ -104,7 +104,7 @@ This IS:
 - The institution's standing records (what was determined, with what authority, when)
 - The institution's precedent (how past standing influences future standing)
 
-**What it implies:** Bridge is not a developer tool, not an agent platform, not a policy engine. It's institutional intelligence infrastructure — the computational layer that makes an institution's decision model queryable, computable, and usable by any actor.
+**What it implies:** Bridge is not a developer tool, not an agent platform, not a policy engine. It's institutional intelligence infrastructure - the computational layer that makes an institution's decision model queryable, computable, and usable by any actor.
 
 **Verdict:** STRONGEST CATEGORY CANDIDATE. It captures the scope (beyond single directives, beyond developer tools), the function (computation of institutional decision state), and the differentiation (no existing system does this). But it's abstract and may not resonate as a market category.
 
@@ -112,7 +112,7 @@ This IS:
 
 ### Category I: Effective Authority
 
-**What it sounds like:** Bridge computes effective authority — which authority is effective for which action, under what conditions.
+**What it sounds like:** Bridge computes effective authority - which authority is effective for which action, under what conditions.
 
 **What it actually is:** This is the most precise category name. "Effective authority" captures:
 - Authority (the framework of who has standing)
@@ -121,13 +121,13 @@ This IS:
 
 **What it implies:** Bridge is not about static authority (RBAC) or dynamic policy (OPA) or agent memory. It's about which authority is effective right now, for this action, given all the claims and the authority framework.
 
-**Verdict:** MOST PRECISE CATEGORY NAME. It's specific, technically accurate, and differentiated from existing categories. But "effective authority" may not resonate with buyers — it sounds like a compliance term, not a developer tool.
+**Verdict:** MOST PRECISE CATEGORY NAME. It's specific, technically accurate, and differentiated from existing categories. But "effective authority" may not resonate with buyers - it sounds like a compliance term, not a developer tool.
 
 ---
 
 ### Category J: Standing Computation
 
-**What it sounds like:** Bridge computes standing — which claim is effective, with what authority, under what conditions.
+**What it sounds like:** Bridge computes standing - which claim is effective, with what authority, under what conditions.
 
 **What it actually is:** This is what Bridge actually does. Standing is the property. Computation is the function.
 
@@ -137,17 +137,17 @@ This IS:
 
 ---
 
-## 3. CATEGORY SELECTION — THE HONEST ANSWER
+## 3. CATEGORY SELECTION - THE HONEST ANSWER
 
 **The most precise category is standing computation.**
 
 Bridge computes standing: for any proposed action, under the current institutional context, which claim is effective, with what authority, with what record.
 
-This is not a marketing category. It's a technical category. It's precise. It's differentiable. It's defensible. But it may not be a market category — buyers may not recognize "standing computation" as a problem they have.
+This is not a marketing category. It's a technical category. It's precise. It's differentiable. It's defensible. But it may not be a market category - buyers may not recognize "standing computation" as a problem they have.
 
 **The most resonant category is institutional intelligence.**
 
-"Institutional intelligence" captures the broader vision: Bridge makes the institution's decision model — its claims, authority, standing, precedent, and accepted state — computable and queryable. This is a broader, more aspirational category that encompasses standing computation as its core function.
+"Institutional intelligence" captures the broader vision: Bridge makes the institution's decision model - its claims, authority, standing, precedent, and accepted state - computable and queryable. This is a broader, more aspirational category that encompasses standing computation as its core function.
 
 **The most useful category for the developer wedge is effective directive resolution.**
 
@@ -159,9 +159,9 @@ Enterprises care about: "our agents operate across multiple systems with multipl
 
 ---
 
-## 4. THE BRIDGE CATEGORY — FINAL ANSWER
+## 4. THE BRIDGE CATEGORY - FINAL ANSWER
 
-**Bridge's category is standing computation — delivered as effective directives for developers and institutional intelligence for enterprises.**
+**Bridge's category is standing computation - delivered as effective directives for developers and institutional intelligence for enterprises.**
 
 This is not a single category name. It's a layered category:
 
@@ -177,7 +177,7 @@ This is not a single category name. It's a layered category:
 
 **The enterprise category is the expansion.** Institutional intelligence / governance infrastructure is where Bridge goes if standing computation proves valuable beyond the developer wedge.
 
-**The recommendation:** Use "standing computation" as the internal category (what Bridge is). Use "effective directive resolution" as the developer-facing category (what developers buy). Use "institutional intelligence" as the enterprise-facing category (what enterprises buy). Don't force a single category name — different audiences need different framing.
+**The recommendation:** Use "standing computation" as the internal category (what Bridge is). Use "effective directive resolution" as the developer-facing category (what developers buy). Use "institutional intelligence" as the enterprise-facing category (what enterprises buy). Don't force a single category name - different audiences need different framing.
 
 ---
 

@@ -1,26 +1,26 @@
-# BRIDGE — FINAL THESIS FALSIFICATION
+# BRIDGE - FINAL THESIS FALSIFICATION
 
 **Author:** Hermes Agent (Independent Falsification Reviewer)
 **Date:** 2026-08-27
-**Status:** Definitive falsification analysis — stop here before building
+**Status:** Definitive falsification analysis - stop here before building
 
 ---
 
-## MISSION 1 — LITERATURE GAP
+## MISSION 1 - LITERATURE GAP
 
 ### Existing Systems Already Solve
 
 | System | What It Solves | Primary Source |
 |---|---|---|
-| **A2A** | Agent identity, discovery, task lifecycle, messaging, streaming, push notifications | A2A Specification v1.0 (2026) — Section 1.1, 2.2, 3.1 |
-| **MCP** | Agent-to-tool communication, context ingestion, structured tool invocation | MCP Specification 2026-07-28 — Overview |
-| **SPIFFE** | Workload identity, authentication, attestation, trust domains | SPIFFE ID Spec — Section 2, 3 |
+| **A2A** | Agent identity, discovery, task lifecycle, messaging, streaming, push notifications | A2A Specification v1.0 (2026) - Section 1.1, 2.2, 3.1 |
+| **MCP** | Agent-to-tool communication, context ingestion, structured tool invocation | MCP Specification 2026-07-28 - Overview |
+| **SPIFFE** | Workload identity, authentication, attestation, trust domains | SPIFFE ID Spec - Section 2, 3 |
 | **InterSAGE** | Persistent identity, discovery, trust negotiation, accountability for agent interoperability | InterSAGE paper (arxiv 2608.13030) |
-| **Honcho** | Cross-session memory, user modeling, continual learning | Honcho docs — plastic-labs/honcho |
-| **Mem0** | Managed memory API, user/session/agent scopes, graph memory | Mem0 docs — app.mem0.ai |
-| **Cognee** | Codebase knowledge graph, AST parsing, MCP-native querying | Cognee docs — topoteretes/cognee |
-| **IBM Trace Layer** | Action accountability, trace layer for agent actions | IBM Think (2026) — "Action accountability" |
-| **NIST AI RMF** | Governance requirements: accountability, transparency, traceability, human oversight | NIST AI RMF 1.0 — Section 3 |
+| **Honcho** | Cross-session memory, user modeling, continual learning | Honcho docs - plastic-labs/honcho |
+| **Mem0** | Managed memory API, user/session/agent scopes, graph memory | Mem0 docs - app.mem0.ai |
+| **Cognee** | Codebase knowledge graph, AST parsing, MCP-native querying | Cognee docs - topoteretes/cognee |
+| **IBM Trace Layer** | Action accountability, trace layer for agent actions | IBM Think (2026) - "Action accountability" |
+| **NIST AI RMF** | Governance requirements: accountability, transparency, traceability, human oversight | NIST AI RMF 1.0 - Section 3 |
 | **Git** | Code state, commit DAG, authorship, immutability | Git internals |
 | **CI/CD** | Verification (tests, builds, deployment gates) | GitHub Actions, etc. |
 | **IAM/OIDC** | Authorization, permissions, access control | OAuth2, SPIFFE + OPA |
@@ -30,9 +30,9 @@
 
 | System | Gap |
 |---|---|
-| **A2A** | Authority, acceptance criteria, commitments, obligations, verification criteria, supersession, revocation, institutional state. Explicitly: "Opaque Execution" — agents don't share internal state. (Section 1.2) |
+| **A2A** | Authority, acceptance criteria, commitments, obligations, verification criteria, supersession, revocation, institutional state. Explicitly: "Opaque Execution" - agents don't share internal state. (Section 1.2) |
 | **MCP** | Only connects agents to tools, not agents to each other or to project state |
-| **SPIFFE** | Explicitly: "does not include an authentication handshake or authenticating token" — only identity, not authorization or commitment |
+| **SPIFFE** | Explicitly: "does not include an authentication handshake or authenticating token" - only identity, not authorization or commitment |
 | **Honcho** | User-centric, not project-centric; no contradiction detection |
 | **Mem0** | Memory API, not reconciliation engine; stores facts, doesn't verify them |
 | **Cognee** | Ingestion-focused, not acceptance/reconciliation-focused |
@@ -44,7 +44,7 @@
 
 > **Existing systems solve communication (A2A), tool access (MCP), identity (SPIFFE), memory (Honcho/Mem0/Cognee), and verification (CI/CD).**
 >
-> **The remaining gap is: the binding between agent-generated proposals and accepted, evidence-backed, consequential project state — including commitment lifecycle (proposed → decided → implemented → verified → superseded), human ratification, and contradiction resolution.**
+> **The remaining gap is: the binding between agent-generated proposals and accepted, evidence-backed, consequential project state - including commitment lifecycle (proposed -> decided -> implemented -> verified -> superseded), human ratification, and contradiction resolution.**
 
 This gap is technically meaningful because:
 1. A2A explicitly leaves it open (Section 1.2: "Opaque Execution")
@@ -54,7 +54,7 @@ This gap is technically meaningful because:
 
 ---
 
-## MISSION 2 — FIND THE TRUE Gap
+## MISSION 2 - FIND THE TRUE Gap
 
 **EXISTING SYSTEMS ALREADY SOLVE:**
 - Agent-to-agent communication (A2A)
@@ -69,7 +69,7 @@ This gap is technically meaningful because:
 
 **THE REMAINING GAP IS:**
 
-> **A model-neutral commitment layer that binds agent-generated proposals to human-accepted, evidence-backed project state, with a formal lifecycle (proposed → decided → implemented → verified → superseded), contradiction detection, and resolution protocols.**
+> **A model-neutral commitment layer that binds agent-generated proposals to human-accepted, evidence-backed project state, with a formal lifecycle (proposed -> decided -> implemented -> verified -> superseded), contradiction detection, and resolution protocols.**
 
 This gap is:
 1. **Concrete:** It can be implemented as a commitment state machine with evidence binding
@@ -78,7 +78,7 @@ This gap is:
 
 ---
 
-## MISSION 3 — ATTACK THE BUSINESS
+## MISSION 3 - ATTACK THE BUSINESS
 
 ### Why Would Vendors NOT Absorb It?
 
@@ -108,7 +108,7 @@ This is what takes years to reproduce: not the code, but the data of what a proj
 
 ---
 
-## MISSION 4 — ATTACK THE PRODUCT
+## MISSION 4 - ATTACK THE PRODUCT
 
 ### The Strongest Developer Objection
 
@@ -130,43 +130,43 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 ---
 
-## MISSION 5 — ATTACK THE COMMITMENT CONTROL THESIS
+## MISSION 5 - ATTACK THE COMMITMENT CONTROL THESIS
 
 ### Is "Commitment Control Plane" Actually Different?
 
 | Existing Concept | Overlap with Commitment Control | Verdict |
 |---|---|---|
-| **Workflow engine** | Both have state machines, transitions, conditions | SERIOUS overlap — but workflows are mechanical; commitments are social |
-| **Policy engine** | Both have rules, enforcement, violation detection | MANAGEABLE — policies are static; commitments are dynamic and conditional |
-| **IAM** | Both have authorization, permissions | WEAK — IAM is technical; commitments are semantic |
-| **Orchestration** | Both coordinate agents, manage state | MANAGEABLE — orchestration is execution; commitments are binding |
-| **Provenance system** | Both track origins, evidence | MANAGEABLE — provenance is retrospective; commitments are prospective (bind future action) |
-| **Audit log** | Both record actions, evidence | WEAK — audit logs are passive; commitments are active (govern behavior) |
-| **Systems-of-record federation** | Both integrate Git, Jira, CI/CD | WEAK — federation connects systems; commitments govern transitions |
+| **Workflow engine** | Both have state machines, transitions, conditions | SERIOUS overlap - but workflows are mechanical; commitments are social |
+| **Policy engine** | Both have rules, enforcement, violation detection | MANAGEABLE - policies are static; commitments are dynamic and conditional |
+| **IAM** | Both have authorization, permissions | WEAK - IAM is technical; commitments are semantic |
+| **Orchestration** | Both coordinate agents, manage state | MANAGEABLE - orchestration is execution; commitments are binding |
+| **Provenance system** | Both track origins, evidence | MANAGEABLE - provenance is retrospective; commitments are prospective (bind future action) |
+| **Audit log** | Both record actions, evidence | WEAK - audit logs are passive; commitments are active (govern behavior) |
+| **Systems-of-record federation** | Both integrate Git, Jira, CI/CD | WEAK - federation connects systems; commitments govern transitions |
 
 ### The Critical Distinction
 
 **Commitment** is different because it is:
-1. **Conditional** ("if X, then Y") — unlike workflow (unconditional "do X, then Y")
-2. **Social** (exists between agents/humans) — unlike policy (exists inside a system)
-3. **Prospective** (binds future action) — unlike provenance (records past action)
-4. **Violatable** (can be broken) — unlike audit log (just records)
+1. **Conditional** ("if X, then Y") - unlike workflow (unconditional "do X, then Y")
+2. **Social** (exists between agents/humans) - unlike policy (exists inside a system)
+3. **Prospective** (binds future action) - unlike provenance (records past action)
+4. **Violatable** (can be broken) - unlike audit log (just records)
 
 **Verdict:** "Commitment Control Plane" is a defensible abstraction, but it must be narrowed to avoid becoming "everything governance-related."
 
 ---
 
-## MISSION 6 — ATTACK PROJECT TRUTH
+## MISSION 6 - ATTACK PROJECT TRUTH
 
 ### Is "Project Truth" Technically Precise?
 
 **No.** Here's why:
 
-1. **"Truth" implies omniscience.** Bridge cannot know truth — it can only track claims, evidence, and verification status. A test passing today doesn't mean the code is correct; it means the tests didn't catch a bug.
+1. **"Truth" implies omniscience.** Bridge cannot know truth - it can only track claims, evidence, and verification status. A test passing today doesn't mean the code is correct; it means the tests didn't catch a bug.
 
 2. **"Truth" is unverifiable.** How do you know Bridge's "truth" is true? You'd need a meta-Bridge to verify Bridge's truth, leading to infinite regress.
 
-3. **"Truth" overlaps with Git.** Git already owns code state. If Bridge claims to own "truth" about code, it's competing with Git — a losing battle.
+3. **"Truth" overlaps with Git.** Git already owns code state. If Bridge claims to own "truth" about code, it's competing with Git - a losing battle.
 
 4. **"Truth" creates false confidence.** Developers might trust Bridge's "truth" and stop thinking critically.
 
@@ -187,7 +187,7 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 ---
 
-## MISSION 7 — FALSIFICATION
+## MISSION 7 - FALSIFICATION
 
 ### Explicit Falsification Criteria
 
@@ -219,7 +219,7 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 ---
 
-## MISSION 8 — FINAL THESIS
+## MISSION 8 - FINAL THESIS
 
 ### Verdict: REFRAME PROJECTTRUTH
 
@@ -231,13 +231,13 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 ### Final Statements
 
-> **Bridge should own:** The commitment lifecycle — binding agent-generated proposals to human-ratified, evidence-backed, consequential project state.
+> **Bridge should own:** The commitment lifecycle - binding agent-generated proposals to human-ratified, evidence-backed, consequential project state.
 
 > **Bridge should NOT own:** Agent communication (A2A), code state (Git), test execution (CI/CD), or work tracking (Jira/Linear).
 
-> **Bridge's defensible boundary is:** Intent ↔ Acceptance — the smallest boundary between agent execution and human judgment that isn't owned by existing systems.
+> **Bridge's defensible boundary is:** Intent <-> Acceptance - the smallest boundary between agent execution and human judgment that isn't owned by existing systems.
 
-> **The first product that proves this is:** Commitment context injection — a system that reduces contradictory agent output by ≥50% by materializing active commitments (with evidence status) into agent prompts.
+> **The first product that proves this is:** Commitment context injection - a system that reduces contradictory agent output by >=50% by materializing active commitments (with evidence status) into agent prompts.
 
 > **The single experiment required before building it is:** EXP-002: Commitment-aware agent vs. baseline on a task that contradicts a prior architectural decision. Measure: contradictory output, rework, time to first useful output, human interventions.
 
@@ -247,7 +247,7 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 ---
 
-## MISSION 9 — RESEARCH PAPER IMPLICATION
+## MISSION 9 - RESEARCH PAPER IMPLICATION
 
 ### What the Paper Should Actually Argue
 
@@ -283,14 +283,14 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 | Thesis | Verdict | Action |
 |---|---|---|
-| T1: Agent interoperability | ❌ REJECT | Commoditized by A2A |
-| T2: Work-state transfer | ⚠️ CONDITIONAL | EXP-001 will validate |
-| T3: Project memory | ❌ REJECT | Commoditized by Mem0/Honcho/Cognee |
-| T4: Project intelligence | ⚠️ CONDITIONAL | Needs reconciliation |
-| T5: Project truth | ⚠️ REFRAME | Too strong; use "Commitment Status" |
-| T6: Commitment control | ✅ KEEP (narrowed) | Strongest surviving thesis |
-| T7: Accountability | ⚠️ CONDITIONAL | Governance validates need, not product |
-| T8: No additional layer | ⚠️ CONDITIONAL | Could prove correct |
+| T1: Agent interoperability | REJECT | Commoditized by A2A |
+| T2: Work-state transfer | CONDITIONAL | EXP-001 will validate |
+| T3: Project memory | REJECT | Commoditized by Mem0/Honcho/Cognee |
+| T4: Project intelligence | CONDITIONAL | Needs reconciliation |
+| T5: Project truth | REFRAME | Too strong; use "Commitment Status" |
+| T6: Commitment control | KEEP (narrowed) | Strongest surviving thesis |
+| T7: Accountability | CONDITIONAL | Governance validates need, not product |
+| T8: No additional layer | CONDITIONAL | Could prove correct |
 
 ### Final Recommendation
 
@@ -298,11 +298,11 @@ Because those systems don't talk to each other about **decisions**. Git knows wh
 
 **BRIDGE IS NOT:** A memory system, an interoperability protocol, or a source of truth.
 
-**BRIDGE SHOULD OWN:** The commitment lifecycle (proposed → decided → implemented → verified → superseded), human ratification gates, and contradiction detection.
+**BRIDGE SHOULD OWN:** The commitment lifecycle (proposed -> decided -> implemented -> verified -> superseded), human ratification gates, and contradiction detection.
 
 **BRIDGE SHOULD NOT OWN:** Agent communication, code state, test execution, or work tracking.
 
-**THE FIRST THING WE MUST PROVE:** That commitment context injection reduces agent rework by ≥50% (EXP-002).
+**THE FIRST THING WE MUST PROVE:** That commitment context injection reduces agent rework by >=50% (EXP-002).
 
 **THE BIGGEST REASON THIS COULD FAIL:** Developers solve this adequately with existing tools (CLAUDE.md + Git + discipline).
 

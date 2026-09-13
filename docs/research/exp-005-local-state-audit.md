@@ -1,9 +1,9 @@
 # EXP-005 Forensic Local State Audit & Reconciliation Report
 
-**Author:** Antigravity (Execution Lead / Local Engineering / Experiment Runtime)  
-**Date:** 2026-09-02  
-**Target Repository:** `bridge` (`C:\Users\aryan\Documents\AI and ML\bridge`)  
-**Status:** FORENSIC RECONCILIATION COMPLETE  
+**Author:** Antigravity (Execution Lead / Local Engineering / Experiment Runtime) 
+**Date:** 2026-09-02 
+**Target Repository:** `bridge` (`C:\Users\aryan\Documents\AI and ML\bridge`) 
+**Status:** FORENSIC RECONCILIATION COMPLETE 
 
 ---
 
@@ -13,10 +13,10 @@ A comprehensive forensic audit of the `research/experiments/exp-005/` directory,
 
 - **Conflict Under Investigation:** 45/60 (or 41/60) reported progress vs. 25 manifest entries vs. 24 surviving worktrees on disk.
 - **Root Cause Identified:** The runner executed trials sequentially according to a deterministic PRNG shuffle (Mulberry32 seed 42) up to **Trial Order Index 48**. Of those 48 attempted trials:
-  1. **25 trials succeeded** without throwing unhandled exceptions and were progressively serialized to `exp005-manifest.json`.
-  2. **23 trials encountered runtime timeouts or failures** (e.g., agent timeout >180s, vitest command resolution failure due to unlinked `node_modules` in isolated worktrees). In `run-pilot.ts`, the catch block logged errors to stderr but skipped `trials.push(telemetry)`, leaving those 23 trials omitted from the manifest file.
-  3. **24 worktrees survived on disk** in `research/experiments/exp-005/worktrees/` because `preserveWorktree: true` was enabled during the pilot run and Windows process file-locks prevented automatic deletion of specific error directories.
-  4. **Trials 49 through 60 were never started** because the background runner process stopped at 2026-08-27T15:41:15 UTC (21:11:15 IST).
+ 1. **25 trials succeeded** without throwing unhandled exceptions and were progressively serialized to `exp005-manifest.json`.
+ 2. **23 trials encountered runtime timeouts or failures** (e.g., agent timeout >180s, vitest command resolution failure due to unlinked `node_modules` in isolated worktrees). In `run-pilot.ts`, the catch block logged errors to stderr but skipped `trials.push(telemetry)`, leaving those 23 trials omitted from the manifest file.
+ 3. **24 worktrees survived on disk** in `research/experiments/exp-005/worktrees/` because `preserveWorktree: true` was enabled during the pilot run and Windows process file-locks prevented automatic deletion of specific error directories.
+ 4. **Trials 49 through 60 were never started** because the background runner process stopped at 2026-08-27T15:41:15 UTC (21:11:15 IST).
 
 No active runner processes remain running on the host. Historical evidence is fully preserved and uncorrupted.
 
@@ -86,16 +86,16 @@ Under `research/experiments/exp-005/worktrees/`, exactly 24 directories exist:
 Forensic inspection of verification outputs across trials revealed two primary execution defects:
 
 1. **Missing `node_modules` in Ephemeral Worktrees:**
-   When `runVerificationCommand()` ran `pnpm test` (or `vitest run`) inside the isolated worktree directory, it returned:
+ When `runVerificationCommand()` ran `pnpm test` (or `vitest run`) inside the isolated worktree directory, it returned:
 
-   ```text
-   'vitest' is not recognized as an internal or external command, operable program or batch file.
-   WARN Local package.json exists, but node_modules missing, did you mean to install?
-   ```
+ ```text
+ 'vitest' is not recognized as an internal or external command, operable program or batch file.
+ WARN Local package.json exists, but node_modules missing, did you mean to install?
+ ```
 
-   The ephemeral setup wrote `package.json` and test files, but did not link `node_modules` from the root repo, preventing the test runner from executing.
+ The ephemeral setup wrote `package.json` and test files, but did not link `node_modules` from the root repo, preventing the test runner from executing.
 2. **Timeout Rejection Handling in Runner:**
-   In `agent-runners.ts`, `executeOpenCodeTrial()` rejected the promise on timeout (`timeoutMs: 180000`). This caused `runTrial()` to throw, triggering the `catch` block in `run-pilot.ts`, which skipped manifest recording.
+ In `agent-runners.ts`, `executeOpenCodeTrial()` rejected the promise on timeout (`timeoutMs: 180000`). This caused `runTrial()` to throw, triggering the `catch` block in `run-pilot.ts`, which skipped manifest recording.
 
 ---
 
@@ -104,13 +104,13 @@ Forensic inspection of verification outputs across trials revealed two primary e
 To ensure the harness satisfies all rigorous experimental engineering standards:
 
 1. **Failure & Timeout Capture:**
-   Update `executeOpenCodeTrial` and `runTrial` to treat timeouts and errors as first-class telemetry objects rather than unhandled promise rejections. Record duration, partial stdout/stderr, git diff, and set `timedOut: true` or `error: string`.
+ Update `executeOpenCodeTrial` and `runTrial` to treat timeouts and errors as first-class telemetry objects rather than unhandled promise rejections. Record duration, partial stdout/stderr, git diff, and set `timedOut: true` or `error: string`.
 2. **Atomic Manifest Writes:**
-   Write intermediate checkpoint manifests to a temporary file (`.tmp`) and atomically rename to `exp005-manifest.json` to prevent partial write corruption.
+ Write intermediate checkpoint manifests to a temporary file (`.tmp`) and atomically rename to `exp005-manifest.json` to prevent partial write corruption.
 3. **Worktree Dependency Linking:**
-   In `setupTrialWorktree`, create a directory junction to `node_modules` from the project root (`fs.symlinkSync(rootNodeModules, worktreeNodeModules, 'junction')`) so `vitest` and dependencies are instantly available in all ephemeral environments without network requests or disk bloat.
+ In `setupTrialWorktree`, create a directory junction to `node_modules` from the project root (`fs.symlinkSync(rootNodeModules, worktreeNodeModules, 'junction')`) so `vitest` and dependencies are instantly available in all ephemeral environments without network requests or disk bloat.
 4. **Safe Run Resumption & Immutability:**
-   Tag every run with an immutable `runId` and allow clean resumption from the last recorded order index.
+ Tag every run with an immutable `runId` and allow clean resumption from the last recorded order index.
 
 ---
 

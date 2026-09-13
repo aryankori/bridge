@@ -1,37 +1,37 @@
 image: node:20
 
 stages:
-  - test
-  - build
+ - test
+ - build
 
 default:
-  before_script:
-    - corepack enable
-    - corepack prepare pnpm@9.15.4 --activate
-    - pnpm config set store-dir .pnpm-store
-    - pnpm install --frozen-lockfile
+ before_script:
+ - corepack enable
+ - corepack prepare pnpm@9.15.4 --activate
+ - pnpm config set store-dir .pnpm-store
+ - pnpm install --frozen-lockfile
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .pnpm-store
-    - node_modules/
+ key: ${CI_COMMIT_REF_SLUG}
+ paths:
+ - .pnpm-store
+ - node_modules/
 
 typecheck:
-  stage: test
-  script:
-    - pnpm typecheck
+ stage: test
+ script:
+ - pnpm typecheck
 
 unit-tests:
-  stage: test
-  script:
-    - pnpm test
+ stage: test
+ script:
+ - pnpm test
 
 build:
-  stage: build
-  script:
-    - pnpm build
-  artifacts:
-    paths:
-      - dist/
-    expire_in: 1 week
+ stage: build
+ script:
+ - pnpm build
+ artifacts:
+ paths:
+ - dist/
+ expire_in: 1 week

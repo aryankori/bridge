@@ -1,4 +1,4 @@
-# BRIDGE — NOVELTY AUDIT
+# BRIDGE - NOVELTY AUDIT
 
 **Author:** Hermes Agent (Independent Novelty Auditor)
 **Date:** 2026-08-27
@@ -10,14 +10,14 @@
 
 | Proposed Contribution | Existing Work | Remaining Difference | Defensible? |
 |---|---|---|---|
-| **Agent interoperability layer** | A2A (2026), MCP (2024–2026), ACP (2025), InterSAGE (2026) | None. A2A standardizes identity, discovery, tasks, lifecycle, streaming, push notifications. MCP standardizes tool access. | ❌ **NOT DEFENSIBLE** — commoditized |
-| **Persistent project memory** | Honcho (2026), Mem0 (2025–2026), Cognee (2025–2026), agentmemory (2026) | None. These systems store cross-session memory, extract facts, and retrieve context. | ❌ **NOT DEFENSIBLE** — commoditized |
-| **Work-state transfer schema** | EXP-001 (Bridge, 2026) | The `ExperimentalWorkTransfer` v0.2.0 schema is novel, but the concept of "transfer structured state between agents" is trivially obvious and likely independently discovered. | ⚠️ **WEAKLY DEFENSIBLE** — schema is novel, concept is obvious |
-| **Project intelligence (lifecycle-aware facts)** | Cognee (knowledge graphs + AST), Mem0 (graph memory) | Bridge proposes explicit lifecycle states (`proposed` → `decided` → `implemented` → `verified` → `superseded`). This is more formal than existing systems. | ⚠️ **PARTIALLY DEFENSIBLE** — lifecycle formalization is novel |
-| **Project truth / reconciliation** | Git (code state), CI/CD (verification), Jira (work state) | No existing system reconciles contradictions between agent claims and verified project state. This is the strongest novelty claim. | ✅ **DEFENSIBLE** — if narrowed to "commitment reconciliation" |
-| **Commitment control plane** | Workflow engines (Temporal, Airflow), policy engines (OPA), IAM (OIDC/SPIFFE) | Commitment theory (Singh 1996, Yolum & Singh 2002) formalizes social commitments, but no existing system implements a commitment lifecycle for AI agents. | ✅ **DEFENSIBLE** — if distinguished from workflow/policy |
-| **Accountability layer** | NIST AI RMF (2023), IBM trace layer (2026), InterSAGE accountability (2026) | NIST requires accountability; IBM proposes trace layers. Bridge's contribution would be *operationalizing* accountability for agents, but the concept is not novel. | ⚠️ **PARTIALLY DEFENSIBLE** — implementation is novel, concept is not |
-| **Governed state transitions** | A2A (task lifecycle), Git (commit DAG), CI/CD (pipeline stages) | Bridge proposes a *semantic* state machine (commitment lifecycle) that sits above mechanical state machines. This is a novel positioning. | ✅ **DEFENSIBLE** — if positioned above existing systems |
+| **Agent interoperability layer** | A2A (2026), MCP (2024-2026), ACP (2025), InterSAGE (2026) | None. A2A standardizes identity, discovery, tasks, lifecycle, streaming, push notifications. MCP standardizes tool access. | **NOT DEFENSIBLE** - commoditized |
+| **Persistent project memory** | Honcho (2026), Mem0 (2025-2026), Cognee (2025-2026), agentmemory (2026) | None. These systems store cross-session memory, extract facts, and retrieve context. | **NOT DEFENSIBLE** - commoditized |
+| **Work-state transfer schema** | EXP-001 (Bridge, 2026) | The `ExperimentalWorkTransfer` v0.2.0 schema is novel, but the concept of "transfer structured state between agents" is trivially obvious and likely independently discovered. | **WEAKLY DEFENSIBLE** - schema is novel, concept is obvious |
+| **Project intelligence (lifecycle-aware facts)** | Cognee (knowledge graphs + AST), Mem0 (graph memory) | Bridge proposes explicit lifecycle states (`proposed` -> `decided` -> `implemented` -> `verified` -> `superseded`). This is more formal than existing systems. | **PARTIALLY DEFENSIBLE** - lifecycle formalization is novel |
+| **Project truth / reconciliation** | Git (code state), CI/CD (verification), Jira (work state) | No existing system reconciles contradictions between agent claims and verified project state. This is the strongest novelty claim. | **DEFENSIBLE** - if narrowed to "commitment reconciliation" |
+| **Commitment control plane** | Workflow engines (Temporal, Airflow), policy engines (OPA), IAM (OIDC/SPIFFE) | Commitment theory (Singh 1996, Yolum & Singh 2002) formalizes social commitments, but no existing system implements a commitment lifecycle for AI agents. | **DEFENSIBLE** - if distinguished from workflow/policy |
+| **Accountability layer** | NIST AI RMF (2023), IBM trace layer (2026), InterSAGE accountability (2026) | NIST requires accountability; IBM proposes trace layers. Bridge's contribution would be *operationalizing* accountability for agents, but the concept is not novel. | **PARTIALLY DEFENSIBLE** - implementation is novel, concept is not |
+| **Governed state transitions** | A2A (task lifecycle), Git (commit DAG), CI/CD (pipeline stages) | Bridge proposes a *semantic* state machine (commitment lifecycle) that sits above mechanical state machines. This is a novel positioning. | **DEFENSIBLE** - if positioned above existing systems |
 
 ---
 
@@ -36,7 +36,7 @@
 **What it explicitly leaves open:**
 > "Agents collaborate based on declared capabilities and exchanged information, **without needing access to each other's internal state, memory, or tool implementations**." (Section 1.2)
 
-**Bridge opportunity:** The semantic layer above tasks — authority, acceptance, commitments, supersession.
+**Bridge opportunity:** The semantic layer above tasks - authority, acceptance, commitments, supersession.
 
 ### SPIFFE Specification (2026)
 
@@ -49,14 +49,14 @@
 **What it explicitly leaves open:**
 > "The SPIFFE Workload API... **explicitly does not include an authentication handshake** or authenticating token from the workload." (Workload API Spec)
 
-**Bridge opportunity:** Everything above identity — authorization, authority, delegation, commitment, accountability.
+**Bridge opportunity:** Everything above identity - authorization, authority, delegation, commitment, accountability.
 
 ### Commitment Theory (Singh 1996)
 
 **What it formalizes:**
 - **S-commitments (social):** Exist between agents. "The commiter is liable for not acting up on them." (Section 2)
 - **P-commitments (psychological):** Exist within agents. "Intentions are taken to be causes of actions." (Section 2.1)
-- **Commitment lifecycle:** Adopt → Fulfill / Violate → Revoke
+- **Commitment lifecycle:** Adopt -> Fulfill / Violate -> Revoke
 - **Delegation:** "Transferring commitment to another agent" (Section 2.3)
 - **Nonmonotonic commitment machines:** Allow commitments to be revised (Yolum & Singh 2002)
 
@@ -97,9 +97,9 @@
 ### Novelty Survival Strategy
 
 To survive these threats, Bridge must:
-1. **Be model-neutral** — work across Claude, Codex, Gemini, OpenCode (vendors won't do this)
-2. **Be project-specific** — accumulate commitment history that migrates across agents (vendors can't copy this)
-3. **Be theoretically grounded** — cite commitment theory (Singh 1996) to establish prior art and novelty
+1. **Be model-neutral** - work across Claude, Codex, Gemini, OpenCode (vendors won't do this)
+2. **Be project-specific** - accumulate commitment history that migrates across agents (vendors can't copy this)
+3. **Be theoretically grounded** - cite commitment theory (Singh 1996) to establish prior art and novelty
 
 ---
 
@@ -107,13 +107,13 @@ To survive these threats, Bridge must:
 
 | Claim | Novelty Confidence | Notes |
 |---|---|---|
-| Agent interoperability | ❌ **NONE** | A2A owns this |
-| Project memory | ❌ **NONE** | Honcho/Mem0/Cognee own this |
-| Work-state transfer schema | ⚠️ **LOW** | Schema is novel, concept is obvious |
-| Lifecycle-aware project intelligence | ⚠️ **MEDIUM** | Formalization is novel, concept is intuitive |
-| Commitment reconciliation | ✅ **HIGH** | No existing system implements this |
-| Commitment control plane | ✅ **MEDIUM-HIGH** | Theory exists (Singh), implementation doesn't |
-| Accountability layer | ⚠️ **LOW** | NIST/IBM/InterSAGE already propose this |
+| Agent interoperability | **NONE** | A2A owns this |
+| Project memory | **NONE** | Honcho/Mem0/Cognee own this |
+| Work-state transfer schema | **LOW** | Schema is novel, concept is obvious |
+| Lifecycle-aware project intelligence | **MEDIUM** | Formalization is novel, concept is intuitive |
+| Commitment reconciliation | **HIGH** | No existing system implements this |
+| Commitment control plane | **MEDIUM-HIGH** | Theory exists (Singh), implementation doesn't |
+| Accountability layer | **LOW** | NIST/IBM/InterSAGE already propose this |
 
 ---
 
@@ -127,7 +127,7 @@ This is:
 3. **Defensible** against vendor absorption (requires model neutrality)
 4. **Empirically testable** via EXP-002
 
-**Bridge's weakest claims are: agent interoperability, project memory, and accountability layer — all commoditized or proposed by others.**
+**Bridge's weakest claims are: agent interoperability, project memory, and accountability layer - all commoditized or proposed by others.**
 
 ---
 

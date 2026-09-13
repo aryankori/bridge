@@ -1,8 +1,8 @@
 # EXP-005: Live Agent Behavior Experiment
 
-**Status:** Experiment Harness Ready & Frozen (Awaiting Live Run Authorization)  
-**Target Pinned Model:** `nvidia/nvidia/nemotron-3-super-120b-a12b` (via OpenCode)  
-**Frozen Resolver Commit:** `fc322c6`  
+**Status:** Experiment Harness Ready & Frozen (Awaiting Live Run Authorization) 
+**Target Pinned Model:** `nvidia/nvidia/nemotron-3-super-120b-a12b` (via OpenCode) 
+**Frozen Resolver Commit:** `fc322c6` 
 
 ---
 

@@ -1,4 +1,4 @@
-# BRIDGE — Open Standard Failure Mode: What If A2A/MCP/ACP/SPIFFE Add Standing?
+# BRIDGE - Open Standard Failure Mode: What If A2A/MCP/ACP/SPIFFE Add Standing?
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -18,7 +18,7 @@ Assume that by 2028, the major agent protocols have evolved to include:
 - **Provenance:** every claim has a verifiable origin
 - **Accepted state:** the system records which state was accepted and why
 
-**This is not implausible.** These are natural extensions of existing protocol directions. A2A is a Linux Foundation standard — it could add these. MCP could add them. OpenAI and Anthropic could add them to their respective platforms.
+**This is not implausible.** These are natural extensions of existing protocol directions. A2A is a Linux Foundation standard - it could add these. MCP could add them. OpenAI and Anthropic could add them to their respective platforms.
 
 **If they do, what is Bridge's remaining value?**
 
@@ -81,7 +81,7 @@ A protocol can standardize how authority is expressed and how claims are transmi
 
 **Bridge's remaining value:** Bridge is the institutional layer that sits on top of the A2A transport. A2A is how Bridge communicates with other agents and systems. Bridge is what knows the project's authority structure and computes standing.
 
-**Risk:** If A2A defines a default authority framework that most projects adopt, and that framework is good enough, Bridge's project-specific configuration becomes less valuable. But the default would have to handle the full diversity of project structures — which is unlikely.
+**Risk:** If A2A defines a default authority framework that most projects adopt, and that framework is good enough, Bridge's project-specific configuration becomes less valuable. But the default would have to handle the full diversity of project structures - which is unlikely.
 
 ### MCP 2.0 Adds Standing Primitives
 
@@ -116,7 +116,7 @@ A protocol can standardize how authority is expressed and how claims are transmi
 **What SPIFFE provides:** Strongly attested identities with authority claims and policy attachment points.
 
 **What remains for Bridge:**
-- SPIFFE is about identity and authentication, not instruction resolution. An identity can say "I am the tech lead with authority over coding style" — but it doesn't say "AGENTS.md overrides the root rule for data package functions."
+- SPIFFE is about identity and authentication, not instruction resolution. An identity can say "I am the tech lead with authority over coding style" - but it doesn't say "AGENTS.md overrides the root rule for data package functions."
 - SPIFFE can provide the identity layer for claims (who made this claim?). Bridge provides the resolution layer (which claim is effective?).
 
 **Bridge's remaining value:** SPIFFE is the identity substrate. Bridge is the resolution substrate. They are complementary, not competitive.

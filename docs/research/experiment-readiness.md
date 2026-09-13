@@ -1,9 +1,9 @@
 # Bridge - Phase 1E: Experiment Readiness Assessment (Post-Red-Team & Integrity Restoration)
 
-**Document ID:** `EXP-001-READINESS`  
-**Date:** 2026-08-26  
-**Status:** Phase 1E Experimental Integrity Restoration Applied  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Document ID:** `EXP-001-READINESS` 
+**Date:** 2026-08-26 
+**Status:** Phase 1E Experimental Integrity Restoration Applied 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 
@@ -45,17 +45,17 @@ To prevent invalid experimental runs from generating plausible-looking artifacts
 
 ```
 Agent A Execution (runClaudeAnalysis)
-    │
-    ├── FAIL (Missing binary, timeout, exit != 0, empty stdout)
-    │     └── ⛔ HALT EXPERIMENT → Mark Manifest & Trials as INVALID → No downstream runs
-    │
-    └── SUCCESS (Verified non-empty stdout)
-          │
-          ├── Condition B: Wrap genuine stdout (capped at 8 KB)
-          │     └── If transcript empty → ⛔ FAIL: AGENT_A_NO_TRANSCRIPT
-          │
-          └── Condition C: Extract ExperimentalWorkTransfer
-                └── If extraction fails → ⛔ FAIL: AGENT_A_TRANSFER_EXTRACTION_FAILURE
+ │
+ ├── FAIL (Missing binary, timeout, exit != 0, empty stdout)
+ │ └── HALT EXPERIMENT -> Mark Manifest & Trials as INVALID -> No downstream runs
+ │
+ └── SUCCESS (Verified non-empty stdout)
+ │
+ ├── Condition B: Wrap genuine stdout (capped at 8 KB)
+ │ └── If transcript empty -> FAIL: AGENT_A_NO_TRANSCRIPT
+ │
+ └── Condition C: Extract ExperimentalWorkTransfer
+ └── If extraction fails -> FAIL: AGENT_A_TRANSFER_EXTRACTION_FAILURE
 ```
 
 ### Failure Classifications
@@ -86,15 +86,15 @@ Tracked smoke test script: [`research/experiments/exp-001/smoke-tests.ts`](file:
 
 | Target | Command | Test Directory | Result | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **OpenCode `ox alpha`** | `opencode.exe run "Respond with OK." --auto --pure --format json --dir "<temp>"` | `tmp/smoke test workspace` (path with spaces) | ✅ **PASS** (Exit 0, 20.53s) | Created session `ses_fc1b1c31cffe3J7AdQWIvcZ6Og`, emitted NDJSON events, terminated cleanly. |
-| **Claude Code** | `claude.exe -p "Respond with OK." --output-format stream-json --verbose --no-session-persistence` | Current working directory (path with spaces) | ⚠️ **LIVE BACKEND DEPENDENT** | Binary resolved and spawned; hooked `SessionStart:start`; connects to configured endpoint (`http://localhost:8080`). Fails cleanly with timeout if backend is offline. |
+| **OpenCode `ox alpha`** | `opencode.exe run "Respond with OK." --auto --pure --format json --dir "<temp>"` | `tmp/smoke test workspace` (path with spaces) | **PASS** (Exit 0, 20.53s) | Created session `ses_fc1b1c31cffe3J7AdQWIvcZ6Og`, emitted NDJSON events, terminated cleanly. |
+| **Claude Code** | `claude.exe -p "Respond with OK." --output-format stream-json --verbose --no-session-persistence` | Current working directory (path with spaces) | **LIVE BACKEND DEPENDENT** | Binary resolved and spawned; hooked `SessionStart:start`; connects to configured endpoint (`http://localhost:8080`). Fails cleanly with timeout if backend is offline. |
 
 ---
 
 ## 7. Current State
 
-- **Typecheck:** `pnpm run typecheck` (`tsc --noEmit`) → ✅ PASSED (0 errors)
-- **Linting:** `pnpm run lint` (`eslint src/ tests/`) → ✅ PASSED (0 errors, 0 warnings)
-- **Unit Tests:** `pnpm run test` (`vitest run`) → ✅ PASSED (64/64 tests passing)
-- **Harness Validation:** `pnpm run experiment:validate` → ✅ PASSED (5/5 checks passing)
+- **Typecheck:** `pnpm run typecheck` (`tsc --noEmit`) -> PASSED (0 errors)
+- **Linting:** `pnpm run lint` (`eslint src/ tests/`) -> PASSED (0 errors, 0 warnings)
+- **Unit Tests:** `pnpm run test` (`vitest run`) -> PASSED (64/64 tests passing)
+- **Harness Validation:** `pnpm run experiment:validate` -> PASSED (5/5 checks passing)
 - **Pilot Execution:** **NOT EXECUTED.** Strictly awaiting Hermes gate recheck.

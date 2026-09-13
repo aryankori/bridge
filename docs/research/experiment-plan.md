@@ -1,10 +1,10 @@
 # Bridge - Phase 1A: Controlled Work-Transfer Experiment Plan (Revised)
 
-**Document Version:** `2.0.0-corrected`  
-**Experiment ID:** `EXP-001-WORK-TRANSFER`  
-**Date:** 2026-08-26  
-**Auditor / Engineer:** Experimental Systems Engineer (Antigravity)  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Document Version:** `2.0.0-corrected` 
+**Experiment ID:** `EXP-001-WORK-TRANSFER` 
+**Date:** 2026-08-26 
+**Auditor / Engineer:** Experimental Systems Engineer (Antigravity) 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 
@@ -30,15 +30,15 @@ The experiment evaluates three strictly isolated conditions:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           EXPERIMENTAL CONDITIONS                           │
+│ EXPERIMENTAL CONDITIONS │
 ├──────────────────────┬─────────────────────────────┬────────────────────────┤
-│ Condition A          │ Condition B                 │ Condition C            │
-│ Native Baseline      │ Transcript Transfer         │ Structured Transfer    │
+│ Condition A │ Condition B │ Condition C │
+│ Native Baseline │ Transcript Transfer │ Structured Transfer │
 ├──────────────────────┼─────────────────────────────┼────────────────────────┤
-│ Clean Fixture        │ Clean Fixture               │ Clean Fixture          │
-│ + Raw Task Prompt    │ + Raw Task Prompt           │ + Raw Task Prompt      │
-│ (No prior analysis)  │ + Unedited Claude Transcript│ + Simplified Dossier   │
-│                      │   (Capped at 8 KB)          │   (Schema v0.2.0)      │
+│ Clean Fixture │ Clean Fixture │ Clean Fixture │
+│ + Raw Task Prompt │ + Raw Task Prompt │ + Raw Task Prompt │
+│ (No prior analysis) │ + Unedited Claude Transcript│ + Simplified Dossier │
+│ │ (Capped at 8 KB) │ (Schema v0.2.0) │
 └──────────────────────┴─────────────────────────────┴────────────────────────┘
 ```
 
@@ -95,12 +95,12 @@ This measurement allows distinguishing **MORE INFORMATION** from **BETTER STRUCT
  - Agent B Input/Output tokens and cost (or `UNKNOWN` if unexposed).
 - **9. Files Changed & Diff Size:** Lines added/deleted via `git diff --stat`.
 - **10. Post-Task Transfer Fidelity (Understanding Check):**
-  After task execution, Agent B is queried in a separate turn to answer:
-  1. *What bugs existed in the original code?*
-  2. *Why did those bugs occur (root causes)?*
-  3. *What changes were made to fix them?*
-  4. *How were the changes verified?*
-  The response is recorded and scored for conceptual fidelity without modifying the repository.
+ After task execution, Agent B is queried in a separate turn to answer:
+ 1. *What bugs existed in the original code?*
+ 2. *Why did those bugs occur (root causes)?*
+ 3. *What changes were made to fix them?*
+ 4. *How were the changes verified?*
+ The response is recorded and scored for conceptual fidelity without modifying the repository.
 
 ---
 
@@ -137,14 +137,14 @@ The analysis will answer five separate research questions rather than collapsing
 In Phase 1D, the experiment harness enforces strict zero-knowledge isolation:
 
 1. **No Answer Key / Hardcoded Dossier:**
-  - The harness contains zero pre-written diagnostics, root causes, or line numbers.
-  - Condition C receives only what Agent A (Claude Code) discovered and emitted during its live analysis run.
+ - The harness contains zero pre-written diagnostics, root causes, or line numbers.
+ - Condition C receives only what Agent A (Claude Code) discovered and emitted during its live analysis run.
 
 2. **Live Execution & Extraction Flow:**
-  - **Step 1:** Claude Code runs non-interactively (`claude -p "<prompt>" --output-format stream-json --verbose --no-session-persistence`) against the clean fixture worktree.
-  - **Step 2:** The harness captures Claude's live stdout and streams assistant messages.
-  - **Step 3:** The parser searches for a fenced JSON block conforming to `ExperimentalWorkTransfer` (v0.2.0-simplified).
-  - **Step 4:** If valid, `validateExtractedTransfer()` validates required fields (`objective`, `diagnostics[].{id, title, rootCause, locations}`, `constraints`, `verificationCommands`).
-  - **Step 5 (Fallback):** If Claude output does not contain clean JSON, `parseProgrammaticTransfer()` extracts diagnostics heuristically from Claude's text sections without injecting any experimenter knowledge.
-  - **Step 6:** The resulting payload is scrubbed for secrets, bounded by path confinement, wrapped in untrusted data delimiters (`<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>`), and delivered to OpenCode in Condition C.
+ - **Step 1:** Claude Code runs non-interactively (`claude -p "<prompt>" --output-format stream-json --verbose --no-session-persistence`) against the clean fixture worktree.
+ - **Step 2:** The harness captures Claude's live stdout and streams assistant messages.
+ - **Step 3:** The parser searches for a fenced JSON block conforming to `ExperimentalWorkTransfer` (v0.2.0-simplified).
+ - **Step 4:** If valid, `validateExtractedTransfer()` validates required fields (`objective`, `diagnostics[].{id, title, rootCause, locations}`, `constraints`, `verificationCommands`).
+ - **Step 5 (Fallback):** If Claude output does not contain clean JSON, `parseProgrammaticTransfer()` extracts diagnostics heuristically from Claude's text sections without injecting any experimenter knowledge.
+ - **Step 6:** The resulting payload is scrubbed for secrets, bounded by path confinement, wrapped in untrusted data delimiters (`<<<UNTRUSTED_BRIDGE_WORK_TRANSFER_START>>>`), and delivered to OpenCode in Condition C.
 

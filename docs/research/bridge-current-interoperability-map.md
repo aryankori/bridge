@@ -1,7 +1,7 @@
 # Bridge Current Interoperability Map
 
-**Status:** Phase 5 — Original Bridge product assessment  
-**Generated:** Competitive landscape research + prior corpus knowledge  
+**Status:** Phase 5 - Original Bridge product assessment 
+**Generated:** Competitive landscape research + prior corpus knowledge 
 **Sources:** Tavily competitive research (see `docs/research/bridge-tavily-competitive-research.md` for full source list), Bridge prior research corpus, Hermes product knowledge
 
 ---
@@ -10,7 +10,7 @@
 
 How far is Bridge from:
 
-> ONE PLACE → MULTIPLE AI AGENTS → SHARED PROJECT → AUTOMATIC WORK TRANSFER → NO MANUAL COPY/PASTE
+> ONE PLACE -> MULTIPLE AI AGENTS -> SHARED PROJECT -> AUTOMATIC WORK TRANSFER -> NO MANUAL COPY/PASTE
 
 This map assesses the current state of each component in that chain, across the relevant tooling ecosystem.
 
@@ -31,7 +31,7 @@ This map assesses the current state of each component in that chain, across the 
 
 **Bridge must build:** Nothing for basic access. The unsolved problem is coordination and transfer, not access.
 
-### 2.2 Work Transfer (agent A's output → agent B's input)
+### 2.2 Work Transfer (agent A's output -> agent B's input)
 
 | Capability | Status | Notes |
 |---|---|---|
@@ -67,7 +67,7 @@ This map assesses the current state of each component in that chain, across the 
 |---|---|---|
 | Human-in-the-loop coordination | **ALREADY SOLVED** | Humans can direct agents sequentially. This is the current default. |
 | Subagent delegation within one agent | **ALREADY SOLVED** | Claude Code, Codex, and others support subagent/spawn patterns within a single agent session. |
-| Multi-agent orchestration across different agent types | **BRIDGE MUST BUILD** | No tool coordinates heterogeneous agents (Claude → Codex → Gemini) in a shared project with automatic work transfer. |
+| Multi-agent orchestration across different agent types | **BRIDGE MUST BUILD** | No tool coordinates heterogeneous agents (Claude -> Codex -> Gemini) in a shared project with automatic work transfer. |
 | Dependency-aware scheduling | **BRIDGE MUST BUILD** | If agent B depends on agent A's output, the system should know this and sequence accordingly. No existing tool does this across heterogeneous agents. |
 | Conflict detection/resolution between agents | **BRIDGE MUST BUILD** | If two agents edit the same file, who wins? No cross-agent conflict resolution exists. |
 
@@ -115,7 +115,7 @@ These are Bridge research discoveries. Their product relevance depends on experi
 Claude Code is the most complete individual tool in the ecosystem:
 
 - **Project access:** Full read/write/edit across CLI, VS Code, Desktop, web
-- **Session transfer:** Between surfaces (CLI ↔ VS Code ↔ Desktop ↔ web)
+- **Session transfer:** Between surfaces (CLI <-> VS Code <-> Desktop <-> web)
 - **Memory:** CLAUDE.md for project-level persistent memory
 - **Hooks/plugins:** Local plugins with hooks, monitors, MCP server components
 - **Background execution:** `&` and `/teleport` for long-running tasks
@@ -165,21 +165,21 @@ If Claude Code adds native multi-agent handoff, or if A2A standards mature to co
 
 | Development | Impact on Bridge | Likelihood |
 |---|---|---|
-| Claude Code adds native cross-agent work transfer | High — eliminates need for Bridge as intermediary | Medium-term (Claude Code is rapidly evolving) |
-| A2A standard covers structured work transfer | High — makes Bridge a protocol implementer, not a unique product | Medium-term (standards are emerging but incomplete) |
-| Git + CLAUDE.md + hooks become sufficient for multi-agent work | Medium — simplifies the problem but doesn't solve coordination | Already partially true |
-| All agents converge on a single platform (e.g., everyone uses Claude Code) | High — eliminates heterogeneous agent problem | Low (market is fragmented) |
-| AI IDEs (Cursor, Copilot, etc.) add cross-agent orchestration | Medium-High — competes with Bridge's coordination value prop | Medium-term |
+| Claude Code adds native cross-agent work transfer | High - eliminates need for Bridge as intermediary | Medium-term (Claude Code is rapidly evolving) |
+| A2A standard covers structured work transfer | High - makes Bridge a protocol implementer, not a unique product | Medium-term (standards are emerging but incomplete) |
+| Git + CLAUDE.md + hooks become sufficient for multi-agent work | Medium - simplifies the problem but doesn't solve coordination | Already partially true |
+| All agents converge on a single platform (e.g., everyone uses Claude Code) | High - eliminates heterogeneous agent problem | Low (market is fragmented) |
+| AI IDEs (Cursor, Copilot, etc.) add cross-agent orchestration | Medium-High - competes with Bridge's coordination value prop | Medium-term |
 
 ### 4.3 What Bridge still needs to do (even if above happen)
 
 Even if Claude Code adds handoff, or A2A matures, Bridge may still need to:
 
-1. **Coordinate heterogeneous agents** — Claude Code handoff to Codex is not the same as Claude Code handoff to Claude Code
-2. **Define a work transfer standard** — if no standard exists, someone needs to define one; Bridge can be that someone
-3. **Provide project-level coordination** — beyond pairwise handoff, agents need to know about each other's work, dependencies, conflicts
-4. **Track decisions and provenance** — for auditability, accountability, and reproducibility
-5. **Handle conflict resolution** — when agents disagree, who resolves it?
+1. **Coordinate heterogeneous agents** - Claude Code handoff to Codex is not the same as Claude Code handoff to Claude Code
+2. **Define a work transfer standard** - if no standard exists, someone needs to define one; Bridge can be that someone
+3. **Provide project-level coordination** - beyond pairwise handoff, agents need to know about each other's work, dependencies, conflicts
+4. **Track decisions and provenance** - for auditability, accountability, and reproducibility
+5. **Handle conflict resolution** - when agents disagree, who resolves it?
 
 ---
 
@@ -187,7 +187,7 @@ Even if Claude Code adds handoff, or A2A matures, Bridge may still need to:
 
 ### 5.1 What is genuinely unique about Bridge
 
-1. **Heterogeneous agent work transfer:** No existing tool transfers structured work between different agent types (Claude → Codex → Gemini) automatically
+1. **Heterogeneous agent work transfer:** No existing tool transfers structured work between different agent types (Claude -> Codex -> Gemini) automatically
 2. **Project-level coordination:** No existing tool provides project-level orchestration across multiple agents from different providers
 3. **WorkTransfer object:** A standardized, machine-readable handoff format does not exist in any tool today
 4. **Conflict resolution across agents:** No tool resolves conflicts between agents from different providers
@@ -202,7 +202,7 @@ Even if Claude Code adds handoff, or A2A matures, Bridge may still need to:
 
 ### 5.3 The wedge
 
-Bridge's wedge is **heterogeneous agent coordination** — the problem that arises when you use Claude for one task, Codex for another, and Gemini for a third, and they all need to work on the same project without manual copy/paste between them.
+Bridge's wedge is **heterogeneous agent coordination** - the problem that arises when you use Claude for one task, Codex for another, and Gemini for a third, and they all need to work on the same project without manual copy/paste between them.
 
 This is a real problem today. It is not solved by any existing tool. It is not obviously going to be solved by any single vendor (because it requires cross-vendor interoperability).
 
@@ -223,18 +223,18 @@ This is a real problem today. It is not solved by any existing tool. It is not o
 
 ### 6.2 PARTIALLY SOLVED (bridge may add value)
 
-- Multi-agent orchestration within a single ecosystem (Cursor, Copilot) — Bridge adds cross-ecosystem
-- Session continuity within one agent type — Bridge adds cross-agent-type
-- Context selection via CLAUDE.md — Bridge adds automatic relevance detection + Effective Directive
-- Protocol layers (MCP, ACP) — Bridge adds work-transfer-specific semantics
-- Agent memory — Bridge adds shared, cross-agent project memory
+- Multi-agent orchestration within a single ecosystem (Cursor, Copilot) - Bridge adds cross-ecosystem
+- Session continuity within one agent type - Bridge adds cross-agent-type
+- Context selection via CLAUDE.md - Bridge adds automatic relevance detection + Effective Directive
+- Protocol layers (MCP, ACP) - Bridge adds work-transfer-specific semantics
+- Agent memory - Bridge adds shared, cross-agent project memory
 
 ### 6.3 BRIDGE MUST BUILD (no existing solution)
 
 - **WorkTransfer object:** Standardized, machine-readable handoff format capturing objective, task, changedFiles, relevantFiles, artifacts, commands, tests, results, failures, decisions, unresolvedQuestions, gitState, provenance
-- **Work transfer pipeline:** Agent A → Bridge → WorkTransfer → Agent B, automatic, no manual copy/paste
+- **Work transfer pipeline:** Agent A -> Bridge -> WorkTransfer -> Agent B, automatic, no manual copy/paste
 - **Cross-agent coordination:** Dependency-aware sequencing, conflict detection, agent status tracking
-- **Heterogeneous agent support:** Claude ↔ Codex ↔ Gemini ↔ OpenCode ↔ any MCP-compatible agent
+- **Heterogeneous agent support:** Claude <-> Codex <-> Gemini <-> OpenCode <-> any MCP-compatible agent
 - **Decision log / provenance tracking:** What was decided, by whom, why, with what evidence
 
 ### 6.4 BRIDGE SHOULD NOT BUILD (over-engineered or not justified)
@@ -253,11 +253,11 @@ This is a real problem today. It is not solved by any existing tool. It is not o
 
 ### 7.1 What exists today
 
-- **One place:** Partially — a Git repo can be the "one place," but there's no unified UI or coordination layer
-- **Multiple AI agents:** Yes — Claude Code, Codex, Gemini, OpenCode, Cursor, Copilot all exist and can operate on the same project
-- **Shared project:** Yes — a Git repo is shared; agents can all read/write to it
-- **Automatic work transfer:** NO — this is the gap. No tool automatically transfers structured work from one agent to another
-- **No manual copy/paste:** NO — today, the human is the middleware, copying context between agents manually
+- **One place:** Partially - a Git repo can be the "one place," but there's no unified UI or coordination layer
+- **Multiple AI agents:** Yes - Claude Code, Codex, Gemini, OpenCode, Cursor, Copilot all exist and can operate on the same project
+- **Shared project:** Yes - a Git repo is shared; agents can all read/write to it
+- **Automatic work transfer:** NO - this is the gap. No tool automatically transfers structured work from one agent to another
+- **No manual copy/paste:** NO - today, the human is the middleware, copying context between agents manually
 
 ### 7.2 What Bridge needs to build to close the gap
 
@@ -266,7 +266,7 @@ This is a real problem today. It is not solved by any existing tool. It is not o
 1. A WorkTransfer object (schema + serialization)
 2. A mechanism for Agent A to produce a WorkTransfer (capture relevant state at the end of its work)
 3. A mechanism for Agent B to consume a WorkTransfer (receive the structured handoff and continue)
-4. A simple orchestrator that connects A → Bridge → B
+4. A simple orchestrator that connects A -> Bridge -> B
 
 **Not required for MVP:**
 
@@ -281,25 +281,25 @@ This is a real problem today. It is not solved by any existing tool. It is not o
 
 | Research concept | Product relevance | Build now or wait? |
 |---|---|---|
-| Work Transfer | Core — this IS the product | BUILD NOW |
-| Context Selection | Important — affects continuation quality | BUILD NOW (simple version), research Effective Directive for advanced version |
-| Project Continuity | Important — the goal of the product | BUILD NOW (emergent from work transfer + coordination) |
-| Effective Directive | Potentially important — could improve context selection and conflict elimination | WAIT FOR EVIDENCE (EXP-005 needed to validate agent-behavior claims; resolver has evidence from EXP-004) |
-| Authority / Precedent | Possibly important — for conflict resolution and decision tracking | WAIT FOR EVIDENCE |
-| Reconciliation | Possibly important — for conflict resolution | WAIT FOR EVIDENCE |
-| Commitment / Standing | Nice-to-have — for auditability and trust | WAIT FOR EVIDENCE (low priority for MVP) |
+| Work Transfer | Core - this IS the product | BUILD NOW |
+| Context Selection | Important - affects continuation quality | BUILD NOW (simple version), research Effective Directive for advanced version |
+| Project Continuity | Important - the goal of the product | BUILD NOW (emergent from work transfer + coordination) |
+| Effective Directive | Potentially important - could improve context selection and conflict elimination | WAIT FOR EVIDENCE (EXP-005 needed to validate agent-behavior claims; resolver has evidence from EXP-004) |
+| Authority / Precedent | Possibly important - for conflict resolution and decision tracking | WAIT FOR EVIDENCE |
+| Reconciliation | Possibly important - for conflict resolution | WAIT FOR EVIDENCE |
+| Commitment / Standing | Nice-to-have - for auditability and trust | WAIT FOR EVIDENCE (low priority for MVP) |
 
 ---
 
 ## 8. Product Verdict
 
-**Bridge is NOT made unnecessary by existing tools.** The core gap — automatic, structured work transfer between heterogeneous AI agents in a shared project — is not solved by Claude Code, Codex, OpenCode, Gemini CLI, Cursor, Copilot, MCP, ACP, or emerging A2A standards.
+**Bridge is NOT made unnecessary by existing tools.** The core gap - automatic, structured work transfer between heterogeneous AI agents in a shared project - is not solved by Claude Code, Codex, OpenCode, Gemini CLI, Cursor, Copilot, MCP, ACP, or emerging A2A standards.
 
 **Bridge's minimum viable product is well-scoped:** a WorkTransfer object + pipeline that connects Agent A to Agent B without manual copy/paste. This is buildable now with existing infrastructure (Git, file system, MCP, CLAUDE.md).
 
 **Bridge's research directions (Effective Directive, Authority, Precedent, Reconciliation) are potential differentiators, not core requirements.** They should be validated by experiment before being built into the product. EXP-005 was designed to provide that validation for the agent-behavior claims, but the data is lost. A repaired and rerun EXP-005 is needed before these concepts can be productized with confidence.
 
-**The largest product risk is not competition — it's scope creep.** The research corpus has produced many concepts (Work Transfer, Context Selection, Project Continuity, Effective Directive, Authority, Precedent, Reconciliation, Commitment, Standing). Not all of these belong in the MVP. The original product idea — ONE PLACE → MULTIPLE AGENTS → SHARED PROJECT → AUTOMATIC WORK TRANSFER — is focused and buildable. The research concepts should strengthen it, not replace it.
+**The largest product risk is not competition - it's scope creep.** The research corpus has produced many concepts (Work Transfer, Context Selection, Project Continuity, Effective Directive, Authority, Precedent, Reconciliation, Commitment, Standing). Not all of these belong in the MVP. The original product idea - ONE PLACE -> MULTIPLE AGENTS -> SHARED PROJECT -> AUTOMATIC WORK TRANSFER - is focused and buildable. The research concepts should strengthen it, not replace it.
 
 ---
 

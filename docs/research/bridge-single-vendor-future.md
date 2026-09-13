@@ -1,4 +1,4 @@
-# BRIDGE — Single-Vendor Future: Would Bridge Survive?
+# BRIDGE - Single-Vendor Future: Would Bridge Survive?
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -44,12 +44,12 @@
 | Effective directive resolution | **MAYBE** | If developers use both platforms, they need a vendor-independent way to ensure consistent standing across both. Bridge could be the neutral standing layer. |
 | Standing computation | **MAYBE** | If Codex and Claude Code compute standing differently, Bridge provides a unified standing computation that both can consult. |
 | Standing records | **YES** | Bridge's standing records are vendor-independent. Both platforms can read/write them. This is the strongest surviving function. |
-| Cross-agent standing | **YES** | Two agents, two platforms, one project — Bridge's cross-agent standing is directly valuable. |
+| Cross-agent standing | **YES** | Two agents, two platforms, one project - Bridge's cross-agent standing is directly valuable. |
 | Institutional state | **MAYBE** | Bridge's institutional state could be the shared state that both platforms read and write. |
 
-**Verdict for Scenario 2:** Bridge survives in a NARROWER form — as the neutral, vendor-independent standing layer for multi-platform environments. The resolver/ directive function may be subsumed by platform-built-in resolution, but the standing records, cross-agent consistency, and institutional state functions remain valuable.
+**Verdict for Scenario 2:** Bridge survives in a NARROWER form - as the neutral, vendor-independent standing layer for multi-platform environments. The resolver/ directive function may be subsumed by platform-built-in resolution, but the standing records, cross-agent consistency, and institutional state functions remain valuable.
 
-**Bridge's wedge in Scenario 2:** "Use Codex or Claude Code — or both. Bridge ensures your project's standing is consistent across both, with a single authority framework and a single standing record."
+**Bridge's wedge in Scenario 2:** "Use Codex or Claude Code - or both. Bridge ensures your project's standing is consistent across both, with a single authority framework and a single standing record."
 
 **Likelihood:** Moderate. Two-vendor dominance is plausible (OpenAI + Anthropic are the current leaders). But both are investing in instruction hierarchy, and either could achieve enough market share to make the single-vendor scenario reality.
 
@@ -69,7 +69,7 @@
 | Cross-agent standing | **YES (core)** | This is Bridge's strongest position. Multiple agents, one project, consistent standing, citation-backed directives. |
 | Institutional state | **YES** | Bridge's institutional state is the shared state layer that all agents read and write. This is the platform play. |
 
-**Verdict for Scenario 3:** Bridge survives AND THRIVES. This is the scenario Bridge is designed for. The dependency chain (interop → transfer → memory → intelligence → reconciliation → commitment → authority → effective directive → effective standing) only matters when there are multiple agents and platforms. In a many-vendor world, Bridge's value proposition is at its strongest.
+**Verdict for Scenario 3:** Bridge survives AND THRIVES. This is the scenario Bridge is designed for. The dependency chain (interop -> transfer -> memory -> intelligence -> reconciliation -> commitment -> authority -> effective directive -> effective standing) only matters when there are multiple agents and platforms. In a many-vendor world, Bridge's value proposition is at its strongest.
 
 **Bridge's position in Scenario 3:** Bridge is the institutional state layer that sits above all agent platforms, below all agent platforms, and between all agent platforms. It is the neutral infrastructure that makes multi-agent, multi-platform development coherent.
 
@@ -82,7 +82,7 @@
 **Sufficient condition:** Multiple agents/platforms + project-specific authority framework + need for auditable standing records + need for cross-agent consistency.
 
 **Bridge does NOT require a many-vendor world.** It requires:
-1. Multiple instruction sources (which exists in single-platform worlds — AGENTS.md, docs, prompts, manifests, policies are all "instruction sources" even if there's one agent)
+1. Multiple instruction sources (which exists in single-platform worlds - AGENTS.md, docs, prompts, manifests, policies are all "instruction sources" even if there's one agent)
 2. A resolver that computes effective standing from those sources
 3. A record of the standing determination
 

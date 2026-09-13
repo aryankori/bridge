@@ -6,10 +6,10 @@ To avoid self-referential validation and overfitted evaluation metrics, EXP-004 
 
 ```mermaid
 flowchart LR
-    A["Scenario Author\n(Writes raw sources & actions)"] -->|Blind Inputs| R["Effective Directive Resolver\n(Resolves with zero gold knowledge)"]
-    G["Independent Adjudication Panel\n(Defines Gold Standard)"] -->|Ground Truth| E["Benchmark Evaluator\n(Calculates metrics)"]
-    R -->|Resolver Output| E
-    E --> M["EXP-004 Benchmark Report"]
+ A["Scenario Author\n(Writes raw sources & actions)"] -->|Blind Inputs| R["Effective Directive Resolver\n(Resolves with zero gold knowledge)"]
+ G["Independent Adjudication Panel\n(Defines Gold Standard)"] -->|Ground Truth| E["Benchmark Evaluator\n(Calculates metrics)"]
+ R -->|Resolver Output| E
+ E --> M["EXP-004 Benchmark Report"]
 ```
 
 1. **Scenario Authors**: Construct realistic real-world developer conflict scenarios and edge cases from production repositories, git history, issue trackers, and prompt inputs.

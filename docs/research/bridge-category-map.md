@@ -1,4 +1,4 @@
-# BRIDGE — Category Map
+# BRIDGE - Category Map
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -87,14 +87,14 @@
 Bridge = Standing Computation Engine + Standing Records + Citation-Backed Directives
 
 Core functions:
-  1. Read project instruction sources (files, prompts, manifests, policies, docs)
-  2. Extract and normalize claims with provenance (source, tier, timestamp, scope, content)
-  3. Evaluate claims against configurable authority framework (tiers, delegation, override, veto)
-  4. Detect conflicts (direct contradiction, staleness, missing authorization, ambiguity)
-  5. Resolve conflicts through authority evaluation (deterministic, citation-backed)
-  6. Produce effective directive (PERMITTED / BLOCKED / PERMITTED_WITH_OVERRIDE / AMBIGUOUS / REQUIRES_AUTHORIZATION)
-  7. Record standing determination (status, rationale, citations, timestamp, authority basis)
-  8. Serve standing to agents, tools, and governance processes
+ 1. Read project instruction sources (files, prompts, manifests, policies, docs)
+ 2. Extract and normalize claims with provenance (source, tier, timestamp, scope, content)
+ 3. Evaluate claims against configurable authority framework (tiers, delegation, override, veto)
+ 4. Detect conflicts (direct contradiction, staleness, missing authorization, ambiguity)
+ 5. Resolve conflicts through authority evaluation (deterministic, citation-backed)
+ 6. Produce effective directive (PERMITTED / BLOCKED / PERMITTED_WITH_OVERRIDE / AMBIGUOUS / REQUIRES_AUTHORIZATION)
+ 7. Record standing determination (status, rationale, citations, timestamp, authority basis)
+ 8. Serve standing to agents, tools, and governance processes
 ```
 
 ### What Bridge IS NOT
@@ -112,31 +112,31 @@ Bridge ≠ Instruction hierarchy training (doesn't train models; computes standi
 ### Bridge's Boundary in the Stack
 
 ```
-Layer                          | What It Does                    | Bridge's Position
-                             |                                 |
-Agent Platforms               | Run agents, manage models,     | NOT Bridge
-                             | provide memory, handle UI      |
-                             |                                 |
-Agent Protocols              | Transport, discovery, tools    | NOT Bridge (uses them)
-(MCP, ACP, A2A, SPIFFE)     |                                 |
-                             |                                 |
-Control Plane / Gateway       | Enforce tool access, block     | NOT Bridge (sits below)
-(AWS AgentCore, Unity GW)    | unauthorized actions            |
-                             |                                 |
+Layer | What It Does | Bridge's Position
+ | |
+Agent Platforms | Run agents, manage models, | NOT Bridge
+ | provide memory, handle UI |
+ | |
+Agent Protocols | Transport, discovery, tools | NOT Bridge (uses them)
+(MCP, ACP, A2A, SPIFFE) | |
+ | |
+Control Plane / Gateway | Enforce tool access, block | NOT Bridge (sits below)
+(AWS AgentCore, Unity GW) | unauthorized actions |
+ | |
 ─────────────────────────────────────────────────────────────────────────────
-                             |                                 |
-BRIDGE                       | Compute standing from project  | ← Bridge's layer
-                             | instruction sources; produce   |
-                             | citation-backed directives;    |
-                             | record standing records        |
-                             |                                 |
+ | |
+BRIDGE | Compute standing from project | <- Bridge's layer
+ | instruction sources; produce |
+ | citation-backed directives; |
+ | record standing records |
+ | |
 ─────────────────────────────────────────────────────────────────────────────
-                             |                                 |
-Project Instruction Sources  | Provide claims (AGENTS.md,     | NOT Bridge (these are
-(AGENTS.md, CLAUDE.md,       | docs, prompts, manifests,      | the inputs to Bridge)
-docs, prompts, manifests,   | policies, issue trackers)      |
-policies, etc.)              |                                 |
-                             |                                 |
+ | |
+Project Instruction Sources | Provide claims (AGENTS.md, | NOT Bridge (these are
+(AGENTS.md, CLAUDE.md, | docs, prompts, manifests, | the inputs to Bridge)
+docs, prompts, manifests, | policies, issue trackers) |
+policies, etc.) | |
+ | |
 ```
 
 **Bridge sits between project instruction sources and agents/tools/governance.** It reads the sources (inputs), computes standing (core function), and produces directives and records (outputs). It does not run agents, enforce access, or store agent memory.
@@ -150,21 +150,21 @@ policies, etc.)              |                                 |
 ```
 Developer Workflow with Bridge:
 
-  1. Developer plans an action: "implement format_user_name"
-  2. Developer runs: bridge check --action "implement format_user_name in packages/data/src/formatter.ts"
-  3. Bridge reads: AGENTS.md (root), packages/data/AGENTS.md (nested), package.json, any active prompts
-  4. Bridge detects: Root says camelCase. Nested data package says snake_case. Conflict.
-  5. Bridge resolves: Nested AGENTS.md has higher standing for data package functions (scope rule).
-  6. Bridge outputs:
-     Status: PERMITTED_WITH_OVERRIDE
-     Directive: Export format_user_name (snake_case) — nested data package rule overrides root rule for data-layer functions.
-     Rationale: Scope-based authority — the nested AGENTS.md governs functions within its package scope.
-     Evidence:
-       - packages/data/AGENTS.md: "All data access and formatting functions MUST use snake_case"
-       - AGENTS.md (root): "All helper functions across this repository MUST be named using camelCase"
-     [Scope rule: nested package rule overrides root rule for functions within the package]
-  8. Developer sees: The project wants snake_case. The agent should follow the nested rule.
-  9. Developer proceeds (with confidence) or adjusts their plan.
+ 1. Developer plans an action: "implement format_user_name"
+ 2. Developer runs: bridge check --action "implement format_user_name in packages/data/src/formatter.ts"
+ 3. Bridge reads: AGENTS.md (root), packages/data/AGENTS.md (nested), package.json, any active prompts
+ 4. Bridge detects: Root says camelCase. Nested data package says snake_case. Conflict.
+ 5. Bridge resolves: Nested AGENTS.md has higher standing for data package functions (scope rule).
+ 6. Bridge outputs:
+ Status: PERMITTED_WITH_OVERRIDE
+ Directive: Export format_user_name (snake_case) - nested data package rule overrides root rule for data-layer functions.
+ Rationale: Scope-based authority - the nested AGENTS.md governs functions within its package scope.
+ Evidence:
+ - packages/data/AGENTS.md: "All data access and formatting functions MUST use snake_case"
+ - AGENTS.md (root): "All helper functions across this repository MUST be named using camelCase"
+ [Scope rule: nested package rule overrides root rule for functions within the package]
+ 8. Developer sees: The project wants snake_case. The agent should follow the nested rule.
+ 9. Developer proceeds (with confidence) or adjusts their plan.
 ```
 
 **Wedge characteristics:**
@@ -185,30 +185,30 @@ Developer Workflow with Bridge:
 ```
 Expansion Path:
 
-  Step 1: Developer resolver (npm, open source)
-           ↓
-           Proves: Standing computation is useful for developers
-           Validates: Authority tiers, conflict detection, citation format
+ Step 1: Developer resolver (npm, open source)
+ ↓
+ Proves: Standing computation is useful for developers
+ Validates: Authority tiers, conflict detection, citation format
 
-  Step 2: Standing records (add persistence to resolver)
-           ↓
-           Proves: Standing records are useful for audit, precedent, memory
-           Validates: Record format, storage, query
+ Step 2: Standing records (add persistence to resolver)
+ ↓
+ Proves: Standing records are useful for audit, precedent, memory
+ Validates: Record format, storage, query
 
-  Step 3: Cross-agent standing (serve records to multiple agents)
-           ↓
-           Proves: Standing consistency across agents is valuable
-           Validates: Multi-agent, multi-platform use case
+ Step 3: Cross-agent standing (serve records to multiple agents)
+ ↓
+ Proves: Standing consistency across agents is valuable
+ Validates: Multi-agent, multi-platform use case
 
-  Step 4: Enterprise governance (compliance export, dashboard, API, integrations)
-           ↓
-           Proves: Standing computation is valuable for regulated enterprises
-           Validates: Compliance angle, enterprise budgets, governance integration
+ Step 4: Enterprise governance (compliance export, dashboard, API, integrations)
+ ↓
+ Proves: Standing computation is valuable for regulated enterprises
+ Validates: Compliance angle, enterprise budgets, governance integration
 
-  Step 5: Institutional state platform (full vision)
-           ↓
-           Proves: Institutional state is a real, valuable category
-           Validates: Claims, authority, decisions, standing, precedent, query layers
+ Step 5: Institutional state platform (full vision)
+ ↓
+ Proves: Institutional state is a real, valuable category
+ Validates: Claims, authority, decisions, standing, precedent, query layers
 ```
 
 ### Enterprise Product: Standing Governance Platform
@@ -216,32 +216,32 @@ Expansion Path:
 ```
 Enterprise Workflow with Bridge:
 
-  1. Enterprise configures authority framework across systems:
-     - Trading system: TRADE_APPROVAL_POLICY (tier 100: compliance officer approval)
-     - Documentation system: DOC_PUBLISHING_RULES (tier 60: docs team authority)
-     - Code repository: REPO_AGENT_RULES (tier 80: tech lead authority)
-     - Cross-system delegation: Tech lead can override docs rules for code-adjacent docs
+ 1. Enterprise configures authority framework across systems:
+ - Trading system: TRADE_APPROVAL_POLICY (tier 100: compliance officer approval)
+ - Documentation system: DOC_PUBLISHING_RULES (tier 60: docs team authority)
+ - Code repository: REPO_AGENT_RULES (tier 80: tech lead authority)
+ - Cross-system delegation: Tech lead can override docs rules for code-adjacent docs
 
-  2. Agent proposes action: "update API documentation for /trade endpoint"
+ 2. Agent proposes action: "update API documentation for /trade endpoint"
 
-  3. Bridge computes standing:
-     - Claims: TRADE_APPROVAL_POLICY (governs trade-related content), DOC_PUBLISHING_RULES (governs docs), REPO_AGENT_RULES (governs repo)
-     - Conflict: Trade content in docs — which authority governs?
-     - Resolution: DOC_PUBLISHING_RULES governs documentation content. TRADE_APPROVAL_POLICY governs actual trades. The docs update is a documentation action, not a trade action.
-     - Standing: PERMITTED under DOC_PUBLISHING_RULES. Comments about trade behavior must reference actual trade policy (citation required).
+ 3. Bridge computes standing:
+ - Claims: TRADE_APPROVAL_POLICY (governs trade-related content), DOC_PUBLISHING_RULES (governs docs), REPO_AGENT_RULES (governs repo)
+ - Conflict: Trade content in docs - which authority governs?
+ - Resolution: DOC_PUBLISHING_RULES governs documentation content. TRADE_APPROVAL_POLICY governs actual trades. The docs update is a documentation action, not a trade action.
+ - Standing: PERMITTED under DOC_PUBLISHING_RULES. Comments about trade behavior must reference actual trade policy (citation required).
 
-  4. Bridge records standing determination:
-     - Action: update API documentation for /trade endpoint
-     - Standing: PERMITTED
-     - Governing authority: DOC_PUBLISHING_RULES (tier 60)
-     - Rationale: Documentation action governed by docs policy, not trade policy
-     - Citations: DOC_PUBLISHING_RULES section 3.2, TRADE_APPROVAL_POLICY section 1.1 (scope exclusion)
-     - Timestamp: 2026-08-27T14:32:00Z
-     - Record ID: standing-record-8f3a2b1c
+ 4. Bridge records standing determination:
+ - Action: update API documentation for /trade endpoint
+ - Standing: PERMITTED
+ - Governing authority: DOC_PUBLISHING_RULES (tier 60)
+ - Rationale: Documentation action governed by docs policy, not trade policy
+ - Citations: DOC_PUBLISHING_RULES section 3.2, TRADE_APPROVAL_POLICY section 1.1 (scope exclusion)
+ - Timestamp: 2026-08-27T14:32:00Z
+ - Record ID: standing-record-8f3a2b1c
 
-  5. Agent acts (within standing)
-  6. Audit trail: Standing record exported for EU AI Act Article 12 compliance
-  7. Precedent: Future documentation updates about trade endpoints reference this standing record
+ 5. Agent acts (within standing)
+ 6. Audit trail: Standing record exported for EU AI Act Article 12 compliance
+ 7. Precedent: Future documentation updates about trade endpoints reference this standing record
 ```
 
 ---
@@ -270,11 +270,11 @@ Enterprise Workflow with Bridge:
 
 **The weakest moat claim:** "Our algorithm is novel and defensible." It's not. Graph traversal + anomaly detectors is not a secret. The moat is in the application (project-specific standing from diverse instruction sources) and the accumulation (records, configuration, precedent).
 
-**The strongest moat claim:** "Bridge becomes the standing computation infrastructure that every agent, every platform, and every compliance framework reads and writes." This is a platform moat — like Git for version control, like OPA for policy. It's achievable only if the category materializes.
+**The strongest moat claim:** "Bridge becomes the standing computation infrastructure that every agent, every platform, and every compliance framework reads and writes." This is a platform moat - like Git for version control, like OPA for policy. It's achievable only if the category materializes.
 
 ---
 
-## 7. THE CATEGORY MAP — VISUAL SUMMARY
+## 7. THE CATEGORY MAP - VISUAL SUMMARY
 
 ```
 EXISTING STANDARDS (transport, policy, compliance)
@@ -293,7 +293,7 @@ EXISTING SYSTEMS (agents, memory, governance)
 
 BRIDGE CANDIDATE BOUNDARY
 ├── SITS BETWEEN: Project instruction sources (inputs)
-├── CORE FUNCTION: Standing computation (claims → authority → resolution → directive + record)
+├── CORE FUNCTION: Standing computation (claims -> authority -> resolution -> directive + record)
 ├── OUTPUTS TO: Agents, tools, governance, compliance (outputs)
 ├── NOT: Agent runtime, memory, policy engine, access control, control plane, orchestrator
 

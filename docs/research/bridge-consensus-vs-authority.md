@@ -1,8 +1,8 @@
-# BRIDGE — Consensus vs Authority vs Arbitration vs Policy vs Decision
+# BRIDGE - Consensus vs Authority vs Arbitration vs Policy vs Decision
 
 **Status:** Research analysis
 **Date:** 2026-08-27
-**Scope:** Formalize the distinction between consensus, authority, arbitration, policy, and decision layers. Determine which layer Bridge occupies — or should occupy.
+**Scope:** Formalize the distinction between consensus, authority, arbitration, policy, and decision layers. Determine which layer Bridge occupies - or should occupy.
 
 ---
 
@@ -24,9 +24,9 @@
 
 **Existing implementations:** Raft, Paxos, blockchain consensus (PoW, PoS, BFT), CRDT merge, Git merge (three-way merge resolves content conflict through structure, not votes)
 
-**Where consensus fits for Bridge:** Consensus is appropriate for determining *project state* when actors are symmetric (e.g., two developers editing the same file — Git's three-way merge). But Bridge's problem is not symmetric: a human developer's instruction has different standing than a stale README.
+**Where consensus fits for Bridge:** Consensus is appropriate for determining *project state* when actors are symmetric (e.g., two developers editing the same file - Git's three-way merge). But Bridge's problem is not symmetric: a human developer's instruction has different standing than a stale README.
 
-**Bridge is NOT a consensus layer.** The actors are not symmetric. The standing hierarchy means some claims are inherently more authoritative than others. Consensus would treat a README's claim ("use npm") as equal to a human developer's claim ("use pnpm for this module") — which is wrong.
+**Bridge is NOT a consensus layer.** The actors are not symmetric. The standing hierarchy means some claims are inherently more authoritative than others. Consensus would treat a README's claim ("use npm") as equal to a human developer's claim ("use pnpm for this module") - which is wrong.
 
 ---
 
@@ -40,7 +40,7 @@
 - Conflict resolution: the highest-authority claim wins; lower-authority claims are recorded but not effective
 
 **Properties:**
-- Hierarchical: authority is a partial order (not total — some actors have equal standing in some domains)
+- Hierarchical: authority is a partial order (not total - some actors have equal standing in some domains)
 - Deterministic: given the authority graph and the action, the effective authority is computable
 - Non-negotiable (within the framework): the authority structure defines the answer
 - Conflict is expected and resolved by the structure, not by agreement
@@ -93,7 +93,7 @@
 **Formal model:**
 - Policy set P = {p₁, p₂, ..., pₙ} where each policy is a rule (allow/deny/modify under conditions)
 - Request R = (principal, action, resource, context)
-- Policy evaluation: P(R) → decision ∈ {allow, deny, modify, escalate}
+- Policy evaluation: P(R) -> decision ∈ {allow, deny, modify, escalate}
 - Policies are typically authored by an administrator and applied uniformly
 
 **Properties:**
@@ -104,7 +104,7 @@
 
 **Existing implementations:** OPA/Rego, Cedar, Cerbos, AWS Verified Permissions, Kubernetes admission control, API gateways, firewall rules
 
-**Where policy fits for Bridge:** Policy is a component. Bridge needs policy to define the authority framework (tiers, veto rules, conflict rules). But Bridge is not just policy evaluation — it is claim evaluation within a policy framework.
+**Where policy fits for Bridge:** Policy is a component. Bridge needs policy to define the authority framework (tiers, veto rules, conflict rules). But Bridge is not just policy evaluation - it is claim evaluation within a policy framework.
 
 **Bridge USES a policy layer but is NOT a policy layer.** The authority tiers, the security veto rules, and the conflict detection rules are policy. The resolver is the evaluator of claims against that policy. The effective directive is the output.
 
@@ -136,40 +136,40 @@
 
 ---
 
-## LAYER STACK — HOW THEY RELATE
+## LAYER STACK - HOW THEY RELATE
 
 ```
 DECISION LAYER (output)
-  ← Standing records, decision logs, precedent
-  ← What was decided, by whom, why, when
+ <- Standing records, decision logs, precedent
+ <- What was decided, by whom, why, when
 
-  ↑ produced by
+ ↑ produced by
 
 ARBITRATION LAYER (computation)
-  ← Resolver evaluates claims against authority framework
-  ← Produces effective directive with rationale and citations
-  ← Bridge's core function
+ <- Resolver evaluates claims against authority framework
+ <- Produces effective directive with rationale and citations
+ <- Bridge's core function
 
-  ↑ uses
+ ↑ uses
 
 AUTHORITY LAYER (framework)
-  ← Standing tiers, delegation, scope, temporal rules
-  ← Defines whose claims are effective for which actions
-  ← Bridge's authority configuration
+ <- Standing tiers, delegation, scope, temporal rules
+ <- Defines whose claims are effective for which actions
+ <- Bridge's authority configuration
 
-  ↑ evaluated by
+ ↑ evaluated by
 
 POLICY LAYER (rules)
-  ← Security vetoes, conflict detection rules, override rules
-  ← Configured by project administrators
-  ← Shared with policy engines (OPA/Cedar) but action-specific
+ <- Security vetoes, conflict detection rules, override rules
+ <- Configured by project administrators
+ <- Shared with policy engines (OPA/Cedar) but action-specific
 
-  ↑ constrains
+ ↑ constrains
 
 CONSENSUS LAYER (optional, for symmetric cases)
-  ← When actors have equal standing, consensus may apply
-  ← Git merge for equal-tier file conflicts
-  ← Not Bridge's primary mode
+ <- When actors have equal standing, consensus may apply
+ <- Git merge for equal-tier file conflicts
+ <- Not Bridge's primary mode
 ```
 
 **Bridge's position:** Bridge is primarily an **ARBITRATION LAYER** that uses an **AUTHORITY LAYER** framework, configured by a **POLICY LAYER**, and produces **DECISION LAYER** outputs. It uses **CONSENSUS** only for the special case of equal-tier conflicts (which it flags as AMBIGUOUS rather than resolving by consensus).
@@ -218,7 +218,7 @@ Bridge's resolver is an arbitrator:
 
 This is not policy evaluation. It is claim arbitration within a policy framework.
 
-**The policy layer defines the rules of arbitration.** The authority tiers, the security veto, the conflict detection rules — these are policy. The resolver applies the policy to the claims. The effective directive is the arbitral award.
+**The policy layer defines the rules of arbitration.** The authority tiers, the security veto, the conflict detection rules - these are policy. The resolver applies the policy to the claims. The effective directive is the arbitral award.
 
 ---
 
@@ -238,7 +238,7 @@ The decision is what enables:
 - Memory (the project remembers what was decided)
 - Accountability (who authorized what, and why)
 
-But the decision is not the product. The product is the arbitration — the ability to compute effective standing in real time, before the agent acts.
+But the decision is not the product. The product is the arbitration - the ability to compute effective standing in real time, before the agent acts.
 
 ---
 

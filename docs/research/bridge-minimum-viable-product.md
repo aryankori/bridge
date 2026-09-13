@@ -1,4 +1,4 @@
-# BRIDGE — Minimum Viable Developer Product: 5 Candidates Ranked
+# BRIDGE - Minimum Viable Developer Product: 5 Candidates Ranked
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -44,7 +44,7 @@
 
 ## CANDIDATE 3: Standing Records Viewer
 
-**What it is:** A CLI or web UI that shows the standing records for a project — what has been determined for which actions, with what authority, when, and why. `bridge records --project /path/to/repo` lists all standing determinations. `bridge records --action "format_user_name"` shows the specific standing for that action.
+**What it is:** A CLI or web UI that shows the standing records for a project - what has been determined for which actions, with what authority, when, and why. `bridge records --project /path/to/repo` lists all standing determinations. `bridge records --action "format_user_name"` shows the specific standing for that action.
 
 **Problem:** Developers don't know what the project has decided. Standing records provide institutional memory of what was determined and why.
 
@@ -56,7 +56,7 @@
 
 **Works locally:** Yes. Reads local standing records.
 
-**Verdict:** **MODERATE CANDIDATE.** Valuable as part of the platform (standing records are essential for audit, precedent, memory). But as a standalone product, it's a viewer of data that doesn't yet exist until the resolver has been used. It's a second-order product — valuable after the resolver has created records, not as an initial install.
+**Verdict:** **MODERATE CANDIDATE.** Valuable as part of the platform (standing records are essential for audit, precedent, memory). But as a standalone product, it's a viewer of data that doesn't yet exist until the resolver has been used. It's a second-order product - valuable after the resolver has created records, not as an initial install.
 
 ---
 
@@ -80,7 +80,7 @@
 
 ## CANDIDATE 5: Project Instruction Source Explorer
 
-**What it is:** A tool that indexes and visualizes all instruction sources in a project — what files, what prompts, what policies, what manifests — with their authority tiers, timestamps, and scopes. `bridge explore` shows the project's instruction landscape.
+**What it is:** A tool that indexes and visualizes all instruction sources in a project - what files, what prompts, what policies, what manifests - with their authority tiers, timestamps, and scopes. `bridge explore` shows the project's instruction landscape.
 
 **Problem:** Developers don't have a clear picture of what instruction sources exist in their project, where they are, what they say, and which ones are current.
 

@@ -1,14 +1,14 @@
-# BRIDGE — Long-Term Strategy
+# BRIDGE - Long-Term Strategy
 
 **Author:** Hermes Agent (Independent Deep Researcher)
 **Date:** 2026-08-27
-**Status:** Final research synthesis — not a product spec, not a pitch
+**Status:** Final research synthesis - not a product spec, not a pitch
 
 ---
 
 ## ONE SENTENCE
 
-If our research continues to hold, Bridge should become the **authority-resolution infrastructure layer for software projects and engineering organizations** — the system that encodes, computes, and serves the effective directive for any proposed action across any agent, human, or tool, with provenance and audit trail.
+If our research continues to hold, Bridge should become the **authority-resolution infrastructure layer for software projects and engineering organizations** - the system that encodes, computes, and serves the effective directive for any proposed action across any agent, human, or tool, with provenance and audit trail.
 
 This is NOT "developer tooling." This is NOT "agent coordination." This is a new category at the intersection of **project governance, agent authorization, and organizational decision infrastructure.**
 
@@ -22,7 +22,7 @@ A multi-agent workspace experiment. Can we get two coding agents to hand work to
 
 ### What We Discovered
 
-Work transfer is real but fragile (EXP-001, mixed results). Context transfer is lossy. The deeper problem is not moving context between agents — it is that **agents and humans operate on fragmented, conflicting, stale, and unprioritized instruction sources with no system to determine what actually governs.**
+Work transfer is real but fragile (EXP-001, mixed results). Context transfer is lossy. The deeper problem is not moving context between agents - it is that **agents and humans operate on fragmented, conflicting, stale, and unprioritized instruction sources with no system to determine what actually governs.**
 
 ### What We Built
 
@@ -37,7 +37,7 @@ A deterministic Effective Directive Resolver that:
 
 ### What We Are Testing Now
 
-Whether providing this resolved directive to a real coding agent (OpenCode + nemotron-3-super-120b-a12b) improves agent behavior — reduces instruction violations, increases correct actions, reduces false blocks.
+Whether providing this resolved directive to a real coding agent (OpenCode + nemotron-3-super-120b-a12b) improves agent behavior - reduces instruction violations, increases correct actions, reduces false blocks.
 
 ### What We Have Not Yet Proven
 
@@ -59,23 +59,23 @@ This is real. It is felt. It is solvable.
 
 ### What the Moat Is
 
-Once a project encodes its authority graph — which sources have standing, at what tiers, with what override rules, with what exception history — that graph becomes:
+Once a project encodes its authority graph - which sources have standing, at what tiers, with what override rules, with what exception history - that graph becomes:
 
-1. **Hard to replicate externally** — it encodes project-specific knowledge, conventions, and historical decisions
-2. **Increasingly accurate over time** — every resolved conflict, every accepted override, every recorded precedent makes the graph more precise for future actions
-3. **Embedded in workflow** — once agents and developers rely on the resolver for directive computation, removing it means returning to ad-hoc conflict resolution
+1. **Hard to replicate externally** - it encodes project-specific knowledge, conventions, and historical decisions
+2. **Increasingly accurate over time** - every resolved conflict, every accepted override, every recorded precedent makes the graph more precise for future actions
+3. **Embedded in workflow** - once agents and developers rely on the resolver for directive computation, removing it means returning to ad-hoc conflict resolution
 
 The moat is **project-specific authority graph + accumulated resolution history + workflow embedding.** This is a data + workflow moat, not an algorithm moat. The algorithm is deterministic and could be replicated. The graph and history are project-specific and cannot be without re-encoding.
 
 ### What the Expansion Is
 
-From single-project developer tool → cross-project authority federation → enterprise engineering governance → multi-agent authority arbitration.
+From single-project developer tool -> cross-project authority federation -> enterprise engineering governance -> multi-agent authority arbitration.
 
 The expansion path is:
-1. **Single project** — CLI tool reads project files, resolves directives locally
-2. **Multiple projects** — shared authority templates, cross-project precedent lookup
-3. **Engineering organization** — org-wide authority policies, team-specific overrides, audit trail for compliance
-4. **Multi-agent, multi-platform** — Bridge as the neutral authority layer between agents from different providers, each with their own instruction hierarchy
+1. **Single project** - CLI tool reads project files, resolves directives locally
+2. **Multiple projects** - shared authority templates, cross-project precedent lookup
+3. **Engineering organization** - org-wide authority policies, team-specific overrides, audit trail for compliance
+4. **Multi-agent, multi-platform** - Bridge as the neutral authority layer between agents from different providers, each with their own instruction hierarchy
 
 ### Why This Is Not Just "Another Developer Tool"
 
@@ -93,19 +93,19 @@ This is an **infrastructure problem**, not a productivity problem. Infrastructur
 
 ### Core Ownership
 
-1. **Authority graph encoding** — the project's standing-precedence hierarchy, source tiers, override rules, exception history
-2. **Directive resolution engine** — the deterministic computation that takes action + sources + graph → effective directive
-3. **Resolution history** — every resolved directive, with citations, timestamp, and outcome (did the agent follow it? did it work?)
-4. **Precedent database** — which resolutions were accepted, which were overridden, which patterns repeat across projects
-5. **Audit trail** — provenance chain from instruction source → authority evaluation → effective directive → agent action → outcome
+1. **Authority graph encoding** - the project's standing-precedence hierarchy, source tiers, override rules, exception history
+2. **Directive resolution engine** - the deterministic computation that takes action + sources + graph -> effective directive
+3. **Resolution history** - every resolved directive, with citations, timestamp, and outcome (did the agent follow it? did it work?)
+4. **Precedent database** - which resolutions were accepted, which were overridden, which patterns repeat across projects
+5. **Audit trail** - provenance chain from instruction source -> authority evaluation -> effective directive -> agent action -> outcome
 
 ### What Bridge Should Never Own
 
-1. **Agent runtimes** — Bridge does not run agents. It serves directives to agents.
-2. **Model training or selection** — Bridge is model-agnostic. The resolver is deterministic; the agent is a consumer of the directive.
-3. **Wire protocols** — Bridge adopts A2A, MCP, ACP, SPIFFE. It does not invent new ones. See Mission H: if protocols add authority, delegation, precedence, the resolver becomes a protocol consumer, not a protocol definer. Bridge's value is in the project-specific authority graph, not in defining how authority is transmitted.
-4. **IDE or editor integration as primary product** — IDE integration is distribution, not the product. The product is the authority graph + resolver + audit trail.
-5. **Cloud hosting as a moat** — the resolver is deterministic and can run locally. Cloud hosting is for collaboration, precedent sharing, and enterprise management — not for running the core computation.
+1. **Agent runtimes** - Bridge does not run agents. It serves directives to agents.
+2. **Model training or selection** - Bridge is model-agnostic. The resolver is deterministic; the agent is a consumer of the directive.
+3. **Wire protocols** - Bridge adopts A2A, MCP, ACP, SPIFFE. It does not invent new ones. See Mission H: if protocols add authority, delegation, precedence, the resolver becomes a protocol consumer, not a protocol definer. Bridge's value is in the project-specific authority graph, not in defining how authority is transmitted.
+4. **IDE or editor integration as primary product** - IDE integration is distribution, not the product. The product is the authority graph + resolver + audit trail.
+5. **Cloud hosting as a moat** - the resolver is deterministic and can run locally. Cloud hosting is for collaboration, precedent sharing, and enterprise management - not for running the core computation.
 
 ---
 
@@ -117,7 +117,7 @@ OpenAI published "Improving instruction hierarchy in frontier LLMs" (March 2026)
 
 Anthropic and Google are likely doing similar work.
 
-If model providers bake a strong, universal instruction hierarchy into their models, then **the model itself becomes the resolver** for many conflict cases. Bridge's value proposition — "we resolve conflicts that the model can't" — shrinks.
+If model providers bake a strong, universal instruction hierarchy into their models, then **the model itself becomes the resolver** for many conflict cases. Bridge's value proposition - "we resolve conflicts that the model can't" - shrinks.
 
 ### Why This Threat Is Real but Not Fatal
 
@@ -148,7 +148,7 @@ If model providers bake a strong, universal instruction hierarchy into their mod
 
 EXP-004 proves the resolver computes correct directives 76% of the time. EXP-005 is testing whether providing those directives to an agent improves the agent's behavior.
 
-**If the agent ignores the directive and does its own thing anyway**, then the entire Bridge value proposition collapses. The resolver would be a computationally elegant solution to a problem that agents don't actually have — because agents either (a) already resolve conflicts adequately on their own, or (b) don't pay attention to external directives.
+**If the agent ignores the directive and does its own thing anyway**, then the entire Bridge value proposition collapses. The resolver would be a computationally elegant solution to a problem that agents don't actually have - because agents either (a) already resolve conflicts adequately on their own, or (b) don't pay attention to external directives.
 
 ### Why This Is The Critical Unknown
 
@@ -162,7 +162,7 @@ EXP-004 proves the resolver computes correct directives 76% of the time. EXP-005
 
 EXP-005 results. If positive (BRIDGE > RAW by a meaningful margin, with the effect larger than plausible stochastic noise), the unknown is resolved in Bridge's favor. If negative or ambiguous, the entire project needs fundamental rethinking.
 
-**This is why EXP-005 is the gating experiment.** Everything else — the category, the moat, the strategy, the company — depends on whether the resolver actually changes agent behavior for the better.
+**This is why EXP-005 is the gating experiment.** Everything else - the category, the moat, the strategy, the company - depends on whether the resolver actually changes agent behavior for the better.
 
 ---
 
@@ -182,15 +182,15 @@ This is already running. It is the most important experiment in the entire Bridg
 
 ### What We Need From EXP-005
 
-1. **Statistical significance** — not just "BRIDGE did better than RAW" but "the difference is larger than plausible stochastic noise." With 60 trials and stochastic models, we need to be careful about over-interpreting noise.
+1. **Statistical significance** - not just "BRIDGE did better than RAW" but "the difference is larger than plausible stochastic noise." With 60 trials and stochastic models, we need to be careful about over-interpreting noise.
 
-2. **Effect size** — how big is the improvement? 1%? 5%? 20%? This determines whether the effect is commercially meaningful.
+2. **Effect size** - how big is the improvement? 1%? 5%? 20%? This determines whether the effect is commercially meaningful.
 
-3. **Consistency** — does BRIDGE outperform RAW across most scenarios, or only on a few? A few wins could be luck. Consistency across scenarios suggests a real effect.
+3. **Consistency** - does BRIDGE outperform RAW across most scenarios, or only on a few? A few wins could be luck. Consistency across scenarios suggests a real effect.
 
-4. **Failure analysis** — on trials where BRIDGE did worse than RAW, why? Did the resolver give a wrong directive? Did the agent ignore the directive? Did the directive create a new problem?
+4. **Failure analysis** - on trials where BRIDGE did worse than RAW, why? Did the resolver give a wrong directive? Did the agent ignore the directive? Did the directive create a new problem?
 
-5. **Human vs Bridge gap** — how close is BRIDGE to HUMAN? If BRIDGE is 90% as good as HUMAN, that is a strong result. If BRIDGE is 50% as good, the resolver needs improvement before it's useful.
+5. **Human vs Bridge gap** - how close is BRIDGE to HUMAN? If BRIDGE is 90% as good as HUMAN, that is a strong result. If BRIDGE is 50% as good, the resolver needs improvement before it's useful.
 
 ---
 
@@ -206,13 +206,13 @@ This is already running. It is the most important experiment in the entire Bridg
 
 2. **Model providers solve it generically.** OpenAI, Anthropic, or Google ship a model that reads CLAUDE.md, AGENTS.md, and project files and resolves conflicts internally with high accuracy. Bridge becomes unnecessary.
 
-3. **The problem is smaller than we think.** Most projects have few real conflicts. Most conflicts are resolved by "the newer source wins" or "the more specific source wins" — simple heuristics that agents already follow. Bridge over-engineers the solution.
+3. **The problem is smaller than we think.** Most projects have few real conflicts. Most conflicts are resolved by "the newer source wins" or "the more specific source wins" - simple heuristics that agents already follow. Bridge over-engineers the solution.
 
 4. **Developers don't want an authority layer.** They want their agent to just work. Adding an authority layer is a tax on their workflow, not a benefit. They would rather tune prompts than configure authority graphs.
 
 5. **The moat is thinner than we think.** The authority graph is project-specific, but it is also small and reproducible. A competitor could offer "import your project files and we build your authority graph" without needing Bridge's accumulated history. The history matters, but maybe not enough.
 
-6. **Protocol standardization subsumes Bridge.** If A2A 2.0 adds authority, delegation, precedence, and policy as first-class primitives, then the protocol becomes the authority layer and Bridge becomes a protocol implementation detail. Bridge's value shifts from "we solve authority" to "we provide project-specific authority graphs that feed into the protocol" — a smaller, less defensible position.
+6. **Protocol standardization subsumes Bridge.** If A2A 2.0 adds authority, delegation, precedence, and policy as first-class primitives, then the protocol becomes the authority layer and Bridge becomes a protocol implementation detail. Bridge's value shifts from "we solve authority" to "we provide project-specific authority graphs that feed into the protocol" - a smaller, less defensible position.
 
 ### Why I Am Not Hedging
 
@@ -275,7 +275,7 @@ These probabilities are low because the chain has many links, each with uncertai
 - The graph is the moat; sharing and precedent make the moat compound
 - Templates reduce the initial configuration burden for new projects
 - Accuracy metrics provide evidence for the value proposition
-- Precedent lookup turns the moat from "your graph" to "all graphs" — network effects begin
+- Precedent lookup turns the moat from "your graph" to "all graphs" - network effects begin
 
 ### Phase 3: Enterprise Governance (24-36 months)
 
@@ -312,44 +312,44 @@ These probabilities are low because the chain has many links, each with uncertai
 
 ### IF EXP-005 IS POSITIVE (Bridge improves agent behavior)
 
-→ Proceed with Phase 1 (developer wedge). The core thesis is validated at the behavioral level.
-→ Prioritize accuracy improvement (76% → 85%+). The behavioral effect may be limited by resolver accuracy.
-→ Design EXP-006 (cross-project portability) and EXP-007 (resolver accuracy at scale) in parallel.
-→ Begin category definition and market positioning work.
-→ Plan for Phase 2 (graph sharing + precedent) after Phase 1 shows developer engagement.
+-> Proceed with Phase 1 (developer wedge). The core thesis is validated at the behavioral level.
+-> Prioritize accuracy improvement (76% -> 85%+). The behavioral effect may be limited by resolver accuracy.
+-> Design EXP-006 (cross-project portability) and EXP-007 (resolver accuracy at scale) in parallel.
+-> Begin category definition and market positioning work.
+-> Plan for Phase 2 (graph sharing + precedent) after Phase 1 shows developer engagement.
 
 ### IF EXP-005 IS NEGATIVE (Bridge does not improve agent behavior, or effect is negligible)
 
-→ Pause all expansion plans.
-→ Diagnose the cause:
-  - Did the resolver give wrong directives? → Improve resolver accuracy.
-  - Did the agent ignore the directives? → Investigate agent integration, prompt injection, agent willingness to follow external directives.
-  - Did the RAW condition already resolve conflicts adequately? → The resolver may be solving a problem that doesn't exist at the agent level. Pivot to human-facing tool (show developers the conflicts and resolutions; let them decide).
-→ If the cause is unfixable, the Bridge thesis as currently conceived is falsified. Consider pivot to:
-  - **Authority visualization and conflict detection** (show developers what conflicts exist; let them resolve manually)
-  - **Compliance audit trail** (the value is not agent improvement but auditability; this is a narrower, enterprise-only play)
-  - **Protocol-level authority** (if the resolver doesn't help agents, maybe the value is at the protocol layer — but this is a much larger Pivot)
+-> Pause all expansion plans.
+-> Diagnose the cause:
+ - Did the resolver give wrong directives? -> Improve resolver accuracy.
+ - Did the agent ignore the directives? -> Investigate agent integration, prompt injection, agent willingness to follow external directives.
+ - Did the RAW condition already resolve conflicts adequately? -> The resolver may be solving a problem that doesn't exist at the agent level. Pivot to human-facing tool (show developers the conflicts and resolutions; let them decide).
+-> If the cause is unfixable, the Bridge thesis as currently conceived is falsified. Consider pivot to:
+ - **Authority visualization and conflict detection** (show developers what conflicts exist; let them resolve manually)
+ - **Compliance audit trail** (the value is not agent improvement but auditability; this is a narrower, enterprise-only play)
+ - **Protocol-level authority** (if the resolver doesn't help agents, maybe the value is at the protocol layer - but this is a much larger Pivot)
 
 ### IF EXP-004 ACCURACY CANNOT IMPROVE ABOVE 80%
 
-→ Accept 76-80% as the ceiling for the current approach.
-→ Determine whether 76-80% is good enough:
-  - If agents follow the directive and the directive is correct 76-80% of the time, the agent is helped 76-80% of the time and misled 20-24% of the time. Whether this is net positive depends on how often the agent would have gotten those 20-24% right on its own.
-  - If the net effect is positive but small, Bridge may be a marginal tool, not a platform.
-→ Consider hybrid approaches:
-  - Bridge resolves what it can; agent handles the rest
-  - Bridge flags high-confidence resolutions; low-confidence resolutions are flagged for human review
-  - Bridge + model collaboration (resolver produces candidate directives; model evaluates and selects)
+-> Accept 76-80% as the ceiling for the current approach.
+-> Determine whether 76-80% is good enough:
+ - If agents follow the directive and the directive is correct 76-80% of the time, the agent is helped 76-80% of the time and misled 20-24% of the time. Whether this is net positive depends on how often the agent would have gotten those 20-24% right on its own.
+ - If the net effect is positive but small, Bridge may be a marginal tool, not a platform.
+-> Consider hybrid approaches:
+ - Bridge resolves what it can; agent handles the rest
+ - Bridge flags high-confidence resolutions; low-confidence resolutions are flagged for human review
+ - Bridge + model collaboration (resolver produces candidate directives; model evaluates and selects)
 
 ### IF MODEL PROVIDERS BAKE IN PROJECT-SPECIFIC HIERARCHY
 
-→ This is the biggest threat. Monitor OpenAI, Anthropic, and Google closely.
-→ If a model provider ships a feature that reads project instruction files and resolves conflicts with high accuracy, Bridge's developer wedge is threatened.
-→ Bridge's defense: multi-platform neutrality, audit trail, precedent, enterprise governance. These are real but may not be enough if the model provider's feature is "good enough."
-→ If the threat materializes, Pivot toward:
-  - **Enterprise governance and compliance** (the value is not conflict resolution but auditable authority + cross-platform neutrality + precedent)
-  - **Protocol integration** (Bridge becomes the project authority graph provider for agent protocols; the protocol handles transmission; Bridge handles project-specific encoding)
-  - **Precedent and history** (model providers' hierarchies are static; Bridge's accumulate over time)
+-> This is the biggest threat. Monitor OpenAI, Anthropic, and Google closely.
+-> If a model provider ships a feature that reads project instruction files and resolves conflicts with high accuracy, Bridge's developer wedge is threatened.
+-> Bridge's defense: multi-platform neutrality, audit trail, precedent, enterprise governance. These are real but may not be enough if the model provider's feature is "good enough."
+-> If the threat materializes, Pivot toward:
+ - **Enterprise governance and compliance** (the value is not conflict resolution but auditable authority + cross-platform neutrality + precedent)
+ - **Protocol integration** (Bridge becomes the project authority graph provider for agent protocols; the protocol handles transmission; Bridge handles project-specific encoding)
+ - **Precedent and history** (model providers' hierarchies are static; Bridge's accumulate over time)
 
 ---
 
@@ -378,7 +378,7 @@ Do not define the category before the behavioral effect is proven.
 Do not invest in protocol integration before the resolver is accurate and trusted.
 Do not scale before the moat is demonstrated to compound.
 
-**The sequence is: behavioral proof → developer adoption → graph compounding → enterprise governance → multi-agent arbitration.**
+**The sequence is: behavioral proof -> developer adoption -> graph compounding -> enterprise governance -> multi-agent arbitration.**
 
 Any step out of order is a bet that the later steps matter before the earlier ones are proven. That is sometimes correct (visionary bets can create markets) but it is also how research programs waste years building things nobody uses.
 

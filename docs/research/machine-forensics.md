@@ -9,30 +9,30 @@
 
 ## 1. System Architecture
 
-| Component        | Detail                                 |
+| Component | Detail |
 | ---------------- | -------------------------------------- |
-| CPU              | AMD Ryzen 7 5800H (8C/16T @ 3.194 GHz) |
-| GPU (discrete)   | NVIDIA GeForce RTX 3050 Laptop         |
-| GPU (integrated) | AMD Radeon                             |
-| RAM              | 15.35 GiB total, ~85-90% used at idle  |
-| Disk             | 475 GiB total, **97% used** (critical) |
-| Shell            | PowerShell 7.6.5                       |
-| Kernel           | 10.0.26200.0                           |
+| CPU | AMD Ryzen 7 5800H (8C/16T @ 3.194 GHz) |
+| GPU (discrete) | NVIDIA GeForce RTX 3050 Laptop |
+| GPU (integrated) | AMD Radeon |
+| RAM | 15.35 GiB total, ~85-90% used at idle |
+| Disk | 475 GiB total, **97% used** (critical) |
+| Shell | PowerShell 7.6.5 |
+| Kernel | 10.0.26200.0 |
 
 ### Installed Runtimes
 
-| Runtime | Version            | Path                                                        |
+| Runtime | Version | Path |
 | ------- | ------------------ | ----------------------------------------------------------- |
-| Node.js | 25.2.1             | `scoop\apps\nodejs\current\`                                |
-| npm     | 11.10.0            | (bundled with Node.js)                                      |
-| pnpm    | 9.15.3             | `%APPDATA%\npm\`                                            |
-| Deno    | 2.8.2              | `scoop\apps\deno\`                                          |
-| Python  | 3.14               | `C:\Program Files\Python314\` (pip only, no `python` alias) |
-| Ruby    | 4.0.6              | `scoop\apps\ruby\`                                          |
-| Git     | (latest via scoop) | `C:\Program Files\Git\`                                     |
-| Rust    | ❌ Not installed   | scoop install failed                                        |
-| Go      | ❌ Not installed   | scoop install failed                                        |
-| .NET    | ❌ Not installed   | -                                                          |
+| Node.js | 25.2.1 | `scoop\apps\nodejs\current\` |
+| npm | 11.10.0 | (bundled with Node.js) |
+| pnpm | 9.15.3 | `%APPDATA%\npm\` |
+| Deno | 2.8.2 | `scoop\apps\deno\` |
+| Python | 3.14 | `C:\Program Files\Python314\` (pip only, no `python` alias) |
+| Ruby | 4.0.6 | `scoop\apps\ruby\` |
+| Git | (latest via scoop) | `C:\Program Files\Git\` |
+| Rust | Not installed | scoop install failed |
+| Go | Not installed | scoop install failed |
+| .NET | Not installed | - |
 
 ### Package Managers
 
@@ -43,14 +43,14 @@
 
 ### Developer Tools
 
-| Tool            | Available                                       |
+| Tool | Available |
 | --------------- | ----------------------------------------------- |
-| VS Code         | ✅ `%LOCALAPPDATA%\Programs\Microsoft VS Code\` |
-| Cursor          | ✅ `C:\Program Files\cursor\`                   |
-| Git             | ✅                                              |
-| GitHub CLI (gh) | ✅ v2.83.1, authenticated as `aryankori`        |
-| Docker          | ❌ Not installed                                |
-| WSL             | ✅ Available (via WindowsApps)                  |
+| VS Code | `%LOCALAPPDATA%\Programs\Microsoft VS Code\` |
+| Cursor | `C:\Program Files\cursor\` |
+| Git | |
+| GitHub CLI (gh) | v2.83.1, authenticated as `aryankori` |
+| Docker | Not installed |
+| WSL | Available (via WindowsApps) |
 
 ---
 
@@ -58,14 +58,14 @@
 
 ### 2.1 Claude Code
 
-| Attribute      | Value                               | Evidence                         |
+| Attribute | Value | Evidence |
 | -------------- | ----------------------------------- | -------------------------------- |
-| **Version**    | 2.1.233                             | [DOCUMENTED] `claude --version`  |
-| **Executable** | `~\.local\bin\claude.exe`           | [OBSERVED]                       |
-| **Data Dir**   | `~\.claude\`                        | [OBSERVED] filesystem inspection |
-| **App Data**   | `%APPDATA%\Claude\`                 | [OBSERVED] Electron app data     |
-| **Daemon**     | Supervisor process with named pipes | [OBSERVED] daemon.log            |
-| **Named Pipe** | `\\.\pipe\cc-daemon-*-control`      | [OBSERVED] daemon.log            |
+| **Version** | 2.1.233 | [DOCUMENTED] `claude --version` |
+| **Executable** | `~\.local\bin\claude.exe` | [OBSERVED] |
+| **Data Dir** | `~\.claude\` | [OBSERVED] filesystem inspection |
+| **App Data** | `%APPDATA%\Claude\` | [OBSERVED] Electron app data |
+| **Daemon** | Supervisor process with named pipes | [OBSERVED] daemon.log |
+| **Named Pipe** | `\\.\pipe\cc-daemon-*-control` | [OBSERVED] daemon.log |
 
 **Process Architecture:**
 
@@ -100,24 +100,24 @@
 
 **Key Capabilities:**
 
-- ✅ Launch, stop, resume
-- ✅ Send input (stdin or stream-json)
-- ✅ Receive streaming output
-- ✅ Session management
-- ✅ MCP server/client
-- ✅ Background agents
-- ✅ Import context from other agents
+- Launch, stop, resume
+- Send input (stdin or stream-json)
+- Receive streaming output
+- Session management
+- MCP server/client
+- Background agents
+- Import context from other agents
 
 ---
 
 ### 2.2 OpenCode
 
-| Attribute      | Value                                                      | Evidence                          |
+| Attribute | Value | Evidence |
 | -------------- | ---------------------------------------------------------- | --------------------------------- |
-| **Version**    | 1.18.23                                                    | [DOCUMENTED] `opencode --version` |
-| **Executable** | `scoop\apps\opencode\current\opencode.exe`                 | [OBSERVED]                        |
-| **Desktop**    | `%LOCALAPPDATA%\Programs\@opencode-aidesktop\OpenCode.exe` | [OBSERVED] running process        |
-| **Data Dir**   | `~\.config\opencode\` + `~\.codex\`                        | [OBSERVED]                        |
+| **Version** | 1.18.23 | [DOCUMENTED] `opencode --version` |
+| **Executable** | `scoop\apps\opencode\current\opencode.exe` | [OBSERVED] |
+| **Desktop** | `%LOCALAPPDATA%\Programs\@opencode-aidesktop\OpenCode.exe` | [OBSERVED] running process |
+| **Data Dir** | `~\.config\opencode\` + `~\.codex\` | [OBSERVED] |
 
 **Process Architecture:**
 
@@ -155,24 +155,24 @@
 
 **Key Capabilities:**
 
-- ✅ Launch, stop, resume
-- ✅ Send messages
-- ✅ Headless server mode
-- ✅ ACP standard protocol
-- ✅ Session export/import
-- ✅ MCP client
-- ✅ mDNS discovery
+- Launch, stop, resume
+- Send messages
+- Headless server mode
+- ACP standard protocol
+- Session export/import
+- MCP client
+- mDNS discovery
 
 ---
 
 ### 2.3 Hermes Agent
 
-| Attribute      | Value                                                                             | Evidence                        |
+| Attribute | Value | Evidence |
 | -------------- | --------------------------------------------------------------------------------- | ------------------------------- |
-| **Version**    | 0.20.2                                                                            | [DOCUMENTED] `hermes --version` |
-| **Executable** | `%LOCALAPPDATA%\hermes\hermes-agent\venv\Scripts\hermes.exe`                      | [OBSERVED]                      |
-| **Desktop**    | `%LOCALAPPDATA%\hermes\hermes-agent\apps\desktop\release\win-unpacked\Hermes.exe` | [OBSERVED]                      |
-| **Data Dir**   | `%LOCALAPPDATA%\hermes\`                                                          | [OBSERVED]                      |
+| **Version** | 0.20.2 | [DOCUMENTED] `hermes --version` |
+| **Executable** | `%LOCALAPPDATA%\hermes\hermes-agent\venv\Scripts\hermes.exe` | [OBSERVED] |
+| **Desktop** | `%LOCALAPPDATA%\hermes\hermes-agent\apps\desktop\release\win-unpacked\Hermes.exe` | [OBSERVED] |
+| **Data Dir** | `%LOCALAPPDATA%\hermes\` | [OBSERVED] |
 
 **Process Architecture:**
 
@@ -210,24 +210,24 @@
 
 **Key Capabilities:**
 
-- ✅ Launch, stop, resume
-- ✅ Send messages
-- ✅ WebSocket server
-- ✅ ACP mode
-- ✅ MCP client/server
-- ✅ Task management (kanban)
-- ✅ Scheduled operations (cron)
-- ✅ Multi-platform messaging (WhatsApp, Slack)
+- Launch, stop, resume
+- Send messages
+- WebSocket server
+- ACP mode
+- MCP client/server
+- Task management (kanban)
+- Scheduled operations (cron)
+- Multi-platform messaging (WhatsApp, Slack)
 
 ---
 
 ### 2.4 Gemini CLI
 
-| Attribute      | Value                                      | Evidence                        |
+| Attribute | Value | Evidence |
 | -------------- | ------------------------------------------ | ------------------------------- |
-| **Version**    | 0.42.0                                     | [DOCUMENTED] `gemini --version` |
-| **Executable** | `scoop\apps\nodejs\current\bin\gemini.ps1` | [OBSERVED]                      |
-| **Data Dir**   | `~\.gemini\`                               | [OBSERVED]                      |
+| **Version** | 0.42.0 | [DOCUMENTED] `gemini --version` |
+| **Executable** | `scoop\apps\nodejs\current\bin\gemini.ps1` | [OBSERVED] |
+| **Data Dir** | `~\.gemini\` | [OBSERVED] |
 
 **Transport:**
 
@@ -243,21 +243,21 @@
 
 **Key Capabilities:**
 
-- ✅ Launch, resume
-- ✅ ACP mode
-- ✅ Structured output (stream-json)
-- ✅ MCP client [DOCUMENTED]
-- ✅ Extension system [DOCUMENTED]
-- ✅ Skills system [DOCUMENTED]
+- Launch, resume
+- ACP mode
+- Structured output (stream-json)
+- MCP client [DOCUMENTED]
+- Extension system [DOCUMENTED]
+- Skills system [DOCUMENTED]
 
 ---
 
 ### 2.5 Antigravity CLI (agy)
 
-| Attribute      | Value                                 | Evidence   |
+| Attribute | Value | Evidence |
 | -------------- | ------------------------------------- | ---------- |
-| **Executable** | `%LOCALAPPDATA%\agy\bin\agy.exe`      | [OBSERVED] |
-| **Data Dir**   | `~\.gemini\` (shared with Gemini CLI) | [OBSERVED] |
+| **Executable** | `%LOCALAPPDATA%\agy\bin\agy.exe` | [OBSERVED] |
+| **Data Dir** | `~\.gemini\` (shared with Gemini CLI) | [OBSERVED] |
 
 **Transport:**
 
@@ -271,20 +271,20 @@
 
 **Key Capabilities:**
 
-- ✅ Launch, resume
-- ✅ Structured output
-- ✅ Agent selection [DOCUMENTED]
-- ✅ Project management [DOCUMENTED]
+- Launch, resume
+- Structured output
+- Agent selection [DOCUMENTED]
+- Project management [DOCUMENTED]
 
 ---
 
 ### 2.6 Antigravity IDE
 
-| Attribute      | Value                                                         | Evidence   |
+| Attribute | Value | Evidence |
 | -------------- | ------------------------------------------------------------- | ---------- |
 | **Executable** | `%LOCALAPPDATA%\Programs\Antigravity IDE\Antigravity IDE.exe` | [OBSERVED] |
-| **Data Dir**   | `~\.gemini\antigravity-ide\`                                  | [OBSERVED] |
-| **Running**    | ✅ 13 processes                                               | [OBSERVED] |
+| **Data Dir** | `~\.gemini\antigravity-ide\` | [OBSERVED] |
+| **Running** | 13 processes | [OBSERVED] |
 
 **Note:** Antigravity IDE is the current execution context. It's an Electron-based IDE with integrated AI agent capabilities. Its internal protocol is proprietary but it shares the `~\.gemini\` data directory with Gemini CLI and agy.
 
@@ -292,11 +292,11 @@
 
 ### 2.7 Other Discovered Software
 
-| Software       | Status                    | Notes                                            |
+| Software | Status | Notes |
 | -------------- | ------------------------- | ------------------------------------------------ |
-| **Cursor**     | Installed but not running | Electron-based IDE at `C:\Program Files\cursor\` |
-| **Ollama**     | Installed but not running | Local LLM server (v0.32.15)                      |
-| **ChatBox AI** | Install failed            | scoop install error                              |
+| **Cursor** | Installed but not running | Electron-based IDE at `C:\Program Files\cursor\` |
+| **Ollama** | Installed but not running | Local LLM server (v0.32.15) |
+| **ChatBox AI** | Install failed | scoop install error |
 
 ---
 
@@ -304,13 +304,13 @@
 
 The most critical finding: **every major AI coding agent on this machine supports or is converging toward ACP (Agent Client Protocol).**
 
-| Agent       | ACP | Stream-JSON | HTTP Server | WebSocket | Named Pipes | MCP |
+| Agent | ACP | Stream-JSON | HTTP Server | WebSocket | Named Pipes | MCP |
 | ----------- | --- | ----------- | ----------- | --------- | ----------- | --- |
-| Claude Code | ✅  | ✅          | ❌          | ❌        | ✅          | ✅  |
-| OpenCode    | ✅  | ❌          | ✅          | ❌        | ❌          | ✅  |
-| Hermes      | ✅  | ❌          | ✅          | ✅        | ❌          | ✅  |
-| Gemini CLI  | ✅  | ✅          | ❌          | ❌        | ❌          | ✅  |
-| agy         | ❌  | ✅          | ❌          | ❌        | ❌          | ❌  |
+| Claude Code | | | | | | |
+| OpenCode | | | | | | |
+| Hermes | | | | | | |
+| Gemini CLI | | | | | | |
+| agy | | | | | | |
 
 **ACP** is the minimum common denominator. Bridge should build on ACP as its primary integration protocol.
 
@@ -318,12 +318,12 @@ The most critical finding: **every major AI coding agent on this machine support
 
 ## 4. Session Architecture Comparison
 
-| Agent       | Primary Storage       | Format        | Resumable | Exportable             |
+| Agent | Primary Storage | Format | Resumable | Exportable |
 | ----------- | --------------------- | ------------- | --------- | ---------------------- |
-| Claude Code | `~\.claude\sessions\` | JSONL         | ✅        | ❌ (no export cmd)     |
-| OpenCode    | `~\.codex\*.sqlite`   | SQLite        | ✅        | ✅ (`export`/`import`) |
-| Hermes      | `state.db`            | SQLite (28MB) | ✅        | ❌                     |
-| Gemini CLI  | `~\.gemini\history\`  | Unknown       | ✅        | ❌                     |
+| Claude Code | `~\.claude\sessions\` | JSONL | | (no export cmd) |
+| OpenCode | `~\.codex\*.sqlite` | SQLite | | (`export`/`import`) |
+| Hermes | `state.db` | SQLite (28MB) | | |
+| Gemini CLI | `~\.gemini\history\` | Unknown | | |
 
 **Observation:** Session formats are fundamentally different. A Bridge Session abstraction must normalize over JSONL, SQLite, and potentially YAML without losing fidelity.
 
@@ -331,13 +331,13 @@ The most critical finding: **every major AI coding agent on this machine support
 
 ## 5. Running Process Summary (at time of inspection)
 
-| Process            | Count | Parent                       |
+| Process | Count | Parent |
 | ------------------ | ----- | ---------------------------- |
-| Antigravity IDE    | 13    | Electron multi-process       |
-| Hermes (desktop)   | 5     | Electron multi-process       |
-| OpenCode (desktop) | 6     | Electron multi-process       |
-| OpenCode (CLI)     | 2     | Terminal                     |
-| Node.js            | 12    | Various (MCP servers, tools) |
+| Antigravity IDE | 13 | Electron multi-process |
+| Hermes (desktop) | 5 | Electron multi-process |
+| OpenCode (desktop) | 6 | Electron multi-process |
+| OpenCode (CLI) | 2 | Terminal |
+| Node.js | 12 | Various (MCP servers, tools) |
 
 **Total AI-related processes:** ~38
 

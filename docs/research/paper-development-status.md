@@ -1,9 +1,9 @@
 # Bridge: Research Paper & Empirical Program Status
 
-**Document ID:** `PAPER-STATUS-20260827`  
-**Date:** 2026-08-27  
-**Status:** BLOCKED (Pending External Quota)  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Document ID:** `PAPER-STATUS-20260827` 
+**Date:** 2026-08-27 
+**Status:** BLOCKED (Pending External Quota) 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 

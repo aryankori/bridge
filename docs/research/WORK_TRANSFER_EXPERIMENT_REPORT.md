@@ -1,11 +1,11 @@
 # BRIDGE - WORK TRANSFER EXPERIMENT REPORT
 
-**Document Version:** 1.0.0  
-**Date:** 2026-08-25  
-**Auditor / Engineer:** Experimental Systems Engineer (Antigravity)  
-**Experiment ID:** `EXP-001-WORK-TRANSFER`  
-**Status:** Completed & Empirically Verified  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Document Version:** 1.0.0 
+**Date:** 2026-08-25 
+**Auditor / Engineer:** Experimental Systems Engineer (Antigravity) 
+**Experiment ID:** `EXP-001-WORK-TRANSFER` 
+**Status:** Completed & Empirically Verified 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 
@@ -24,11 +24,11 @@ We compared three experimental conditions on an identical, isolated codebase con
 
 ```text
 ┌─────────────┬──────────────────────────────┬──────────────┬──────────────┬─────────┐
-│ Condition   │ Work-Transfer Strategy       │ Tests Passed │ Duration (s) │ Success │
+│ Condition │ Work-Transfer Strategy │ Tests Passed │ Duration (s) │ Success │
 ├─────────────┼──────────────────────────────┼──────────────┼──────────────┼─────────┤
-│ Condition A │ Native Baseline              │ 9 / 10       │ 4.2 s        │ NO      │
-│ Condition B │ Unstructured Transcript      │ 10 / 10      │ 7.8 s        │ YES     │
-│ Condition C │ Structured Work-Transfer     │ 10 / 10      │ 2.1 s        │ YES     │
+│ Condition A │ Native Baseline │ 9 / 10 │ 4.2 s │ NO │
+│ Condition B │ Unstructured Transcript │ 10 / 10 │ 7.8 s │ YES │
+│ Condition C │ Structured Work-Transfer │ 10 / 10 │ 2.1 s │ YES │
 └─────────────┴──────────────────────────────┴──────────────┴──────────────┴─────────┘
 ```
 

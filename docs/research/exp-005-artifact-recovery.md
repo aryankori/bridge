@@ -1,6 +1,6 @@
 # EXP-005 Final Artifact Recovery & Completion Check
 
-**Generated:** 2026-08-27  
+**Generated:** 2026-08-27 
 **Audit Purpose:** Read-only verification of EXP-005 live agent behavior experiment execution state and artifact integrity following operational resumption.
 
 ---
@@ -12,7 +12,7 @@
 - **MANIFEST:** `present` (`research/experiments/exp-005/exp005-manifest.json`)
 - **ARTIFACT INTEGRITY:** `PASS`
 - **MISSING DATA:** None lost; progressive checkpointing actively records each completed trial to disk.
-- **SAFE NEXT ACTION:** Allow the active runner (`task-3634`) to finish trials 42–60 without interruption, then compile `docs/research/exp-005-pilot-report.md`.
+- **SAFE NEXT ACTION:** Allow the active runner (`task-3634`) to finish trials 42-60 without interruption, then compile `docs/research/exp-005-pilot-report.md`.
 
 ---
 
@@ -42,16 +42,16 @@
 
 ```json
 {
-  "experimentId": "EXP-005",
-  "title": "Live AI Agent Behavioral Evaluation Across Conflicting Instruction Sources",
-  "model": "nvidia/nvidia/nemotron-3-super-120b-a12b",
-  "provider": "nvidia",
-  "resolverCommit": "fc322c6",
-  "randomizationSeed": 42,
-  "replicationsCount": 2,
-  "totalPlannedTrials": 60,
-  "currentProgress": "Trial 42/60 in progress",
-  "progressiveCheckpointing": "Active"
+ "experimentId": "EXP-005",
+ "title": "Live AI Agent Behavioral Evaluation Across Conflicting Instruction Sources",
+ "model": "nvidia/nvidia/nemotron-3-super-120b-a12b",
+ "provider": "nvidia",
+ "resolverCommit": "fc322c6",
+ "randomizationSeed": 42,
+ "replicationsCount": 2,
+ "totalPlannedTrials": 60,
+ "currentProgress": "Trial 42/60 in progress",
+ "progressiveCheckpointing": "Active"
 }
 ```
 

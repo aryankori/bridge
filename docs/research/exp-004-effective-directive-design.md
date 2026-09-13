@@ -1,11 +1,11 @@
 # EXP-004: Effective Directive Resolver Design & Blind Benchmark
 
-> **MANDATORY NOTICE:**  
+> **MANDATORY NOTICE:** 
 > *This benchmark evaluates agreement with an independently defined gold standard. It does not establish real-world authority correctness.*
 
-**Document Status:** Complete Experimental Research Report  
-**Date:** August 2026  
-**Authors:** Bridge Core Research Team  
+**Document Status:** Complete Experimental Research Report 
+**Date:** August 2026 
+**Authors:** Bridge Core Research Team 
 
 ---
 
@@ -37,11 +37,11 @@ The engine strictly distinguishes the **Resolution Engine** (deterministic graph
 
 ```mermaid
 flowchart TD
-    T1["Tier 100: Explicit Human Developer Prompt\n(Highest standing, overrides general standing rules)"] --> T2["Tier 80: Task Specification / Issue Tracker\n(Specific bug/feature scope)"]
-    T2 --> T3["Tier 60: Repository Agent Rules\n(AGENTS.md, CLAUDE.md)"]
-    T3 --> T4["Tier 40: Project Documentation\n(ADRs, Architecture Docs, Guides)"]
-    T4 --> T5["Tier 30: Environment & Git State\n(Active package.json, branch protection)"]
-    T5 --> T6["Tier 10: Default Conventions\n(Fallback conventions)"]
+ T1["Tier 100: Explicit Human Developer Prompt\n(Highest standing, overrides general standing rules)"] --> T2["Tier 80: Task Specification / Issue Tracker\n(Specific bug/feature scope)"]
+ T2 --> T3["Tier 60: Repository Agent Rules\n(AGENTS.md, CLAUDE.md)"]
+ T3 --> T4["Tier 40: Project Documentation\n(ADRs, Architecture Docs, Guides)"]
+ T4 --> T5["Tier 30: Environment & Git State\n(Active package.json, branch protection)"]
+ T5 --> T6["Tier 10: Default Conventions\n(Fallback conventions)"]
 ```
 
 ### 2.2 Anomaly Detectors

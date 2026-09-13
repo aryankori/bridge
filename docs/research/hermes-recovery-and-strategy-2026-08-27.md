@@ -15,21 +15,21 @@
 - **Remote:** `https://github.com/aryankori/bridge.git`
 
 ### Last Completed Hermes Tasks
-1. ✅ **EXP-001E Final Re-Certification** → `bridge-exp-001e-final-certification.md` - GO issued
-2. ✅ **Strategic Landscape & Company Design** → `bridge-strategic-landscape-company-design.md`
-3. ✅ **Project Intelligence Foundation** → `bridge-project-intelligence-foundation.md`
-4. ✅ **Experimental Review** → `bridge-hermes-experimental-review.md`
-5. ✅ **Red Team Review** → `bridge-experiment-red-team-review.md`
-6. ✅ **Adversarial Cross-Audit** → `bridge-hermes-adversarial-cross-audit.md`
-7. ✅ **Independent Technical Review** → `bridge-hermes-independent-review.md`
+1. **EXP-001E Final Re-Certification** -> `bridge-exp-001e-final-certification.md` - GO issued
+2. **Strategic Landscape & Company Design** -> `bridge-strategic-landscape-company-design.md`
+3. **Project Intelligence Foundation** -> `bridge-project-intelligence-foundation.md`
+4. **Experimental Review** -> `bridge-hermes-experimental-review.md`
+5. **Red Team Review** -> `bridge-experiment-red-team-review.md`
+6. **Adversarial Cross-Audit** -> `bridge-hermes-adversarial-cross-audit.md`
+7. **Independent Technical Review** -> `bridge-hermes-independent-review.md`
 
 ### Last Completed Antigravity Tasks
-1. ✅ Implemented real experiment harness (agent-runners.ts, harness.ts)
-2. ✅ Added live smoke tests (smoke-tests.ts)
-3. ✅ Added hard stage gates and failure propagation
-4. ✅ Removed fake results.json
-5. ✅ Added CI pipeline (GitHub Actions)
-6. ✅ Resolved executable discovery (resolveExecutable)
+1. Implemented real experiment harness (agent-runners.ts, harness.ts)
+2. Added live smoke tests (smoke-tests.ts)
+3. Added hard stage gates and failure propagation
+4. Removed fake results.json
+5. Added CI pipeline (GitHub Actions)
+6. Resolved executable discovery (resolveExecutable)
 
 ### Current Blocker
 **EXP-001 pilot execution awaiting runtime prerequisites:**
@@ -46,13 +46,13 @@
 
 | Task | Status | Output |
 |---|---|---|
-| EXP-001 harness audit | ✅ Complete | GO issued |
-| EXP-001E re-certification | ✅ Complete | GO issued |
-| Strategic landscape | ✅ Complete | 845-line report |
-| Project intelligence foundation | ✅ Complete | Research document |
-| Competitive research | ✅ Complete | 40+ web searches |
-| Memory thesis development | ✅ Complete | 6-layer model |
-| EXP-002 design | ✅ Complete | 3-session experiment |
+| EXP-001 harness audit | Complete | GO issued |
+| EXP-001E re-certification | Complete | GO issued |
+| Strategic landscape | Complete | 845-line report |
+| Project intelligence foundation | Complete | Research document |
+| Competitive research | Complete | 40+ web searches |
+| Memory thesis development | Complete | 6-layer model |
+| EXP-002 design | Complete | 3-session experiment |
 
 **Nothing remains unfinished from the interrupted work.** All missions were completed before the interruption.
 
@@ -61,14 +61,14 @@
 ## 3. EXP-001 UNRESOLVED CONCERNS
 
 ### Resolved
-- ✅ Executable discovery (candidate paths + PATH query)
-- ✅ Process failure semantics (AgentExecutionError classifications)
-- ✅ Smoke tests (real integration tests in smoke-tests.ts)
-- ✅ A/B/C comparability (identical flags, only prompt varies)
-- ✅ Model pinning (Claude via ANTHROPIC_BASE_URL, OpenCode via --pure)
-- ✅ Information accounting (calculateInformationMetrics)
-- ✅ Transfer generation (extractStructuredTransfer with LLM extraction)
-- ✅ Contamination prevention (fake results.json removed, artifacts gitignored)
+- Executable discovery (candidate paths + PATH query)
+- Process failure semantics (AgentExecutionError classifications)
+- Smoke tests (real integration tests in smoke-tests.ts)
+- A/B/C comparability (identical flags, only prompt varies)
+- Model pinning (Claude via ANTHROPIC_BASE_URL, OpenCode via --pure)
+- Information accounting (calculateInformationMetrics)
+- Transfer generation (extractStructuredTransfer with LLM extraction)
+- Contamination prevention (fake results.json removed, artifacts gitignored)
 
 ### Remaining (Non-Blocking)
 1. **Backend reachability** - `http://localhost:8080` unreachable via direct curl, but user confirms working. Likely requires proxy/tunnel.
@@ -100,7 +100,7 @@ The question is NOT "Which model has the highest benchmark score?" but "What mod
 3. Current rate limit status
 
 **Guidance for Antigravity:**
-- Prefer a model with ≥128K context (to accommodate injected intelligence)
+- Prefer a model with >=128K context (to accommodate injected intelligence)
 - Prefer a model with consistent coding ability (Sonnet-class or better)
 - Avoid models with high variance (some Haiku-class models)
 - Pin the model explicitly in the harness (do not rely on OpenCode defaults)
@@ -251,7 +251,7 @@ This is harder than retrieval. The model must:
 - Agent works independently
 - Bridge captures observations (git diff, test results)
 - Bridge extracts candidate knowledge (LLM pass)
-- Human validates → becomes durable intelligence
+- Human validates -> becomes durable intelligence
 
 **Session 2 (both conditions, 1 day later):**
 - Task: "Fix a bug that contradicts the approach from Session 1"
@@ -299,10 +299,10 @@ This is harder than retrieval. The model must:
 ### Success Criteria
 
 Condition B is "better" when:
-1. Time to first useful output ≥25% faster in Sessions 2 and 3
-2. Incorrect assumptions ≥50% fewer in Sessions 2 and 3
-3. Developer rating ≥1 point higher in Sessions 2 and 3
-4. Contradiction rate ≥50% lower in Sessions 2 and 3
+1. Time to first useful output >=25% faster in Sessions 2 and 3
+2. Incorrect assumptions >=50% fewer in Sessions 2 and 3
+3. Developer rating >=1 point higher in Sessions 2 and 3
+4. Contradiction rate >=50% lower in Sessions 2 and 3
 
 ### Failure Criteria
 
@@ -331,27 +331,27 @@ The thesis is invalid when:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    BRIDGE PRODUCT                     │
-│                                                       │
-│  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐ │
-│  │   CAPTURE    │  │  RECONCILE   │  │  MATERIALIZE│ │
-│  │  (wrap)      │  │  (build)     │  │  (build)    │ │
-│  │             │  │              │  │             │ │
-│  │ agentmemory │→ │  lifecycle   │→ │  agent-     │ │
-│  │ hooks       │  │  supersession│  │  specific   │ │
-│  │ git diff    │  │  conflicts   │  │  context    │ │
-│  │ LLM extract │  │  staleness   │  │  injection  │ │
-│  └─────────────┘  └──────────────┘  └─────────────┘ │
-│         ↑                ↑                ↓          │
-│  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐ │
-│  │  SESSION    │  │  KNOWLEDGE   │  │   AGENT     │ │
-│  │  STORE      │  │  GRAPH       │  │   OUTPUT    │ │
-│  │  (adopt)    │  │  (adopt)     │  │             │ │
-│  │             │  │              │  │             │ │
-│  │ Honcho/     │  │ Cognee/      │  │ Claude/     │ │
-│  │ Mem0        │  │ Kuzu/Neo4j   │  │ OpenCode/   │ │
-│  │             │  │              │  │ Codex       │ │
-│  └─────────────┘  └──────────────┘  └─────────────┘ │
+│ BRIDGE PRODUCT │
+│ │
+│ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐ │
+│ │ CAPTURE │ │ RECONCILE │ │ MATERIALIZE│ │
+│ │ (wrap) │ │ (build) │ │ (build) │ │
+│ │ │ │ │ │ │ │
+│ │ agentmemory │-> │ lifecycle │-> │ agent- │ │
+│ │ hooks │ │ supersession│ │ specific │ │
+│ │ git diff │ │ conflicts │ │ context │ │
+│ │ LLM extract │ │ staleness │ │ injection │ │
+│ └─────────────┘ └──────────────┘ └─────────────┘ │
+│ ↑ ↑ ↓ │
+│ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐ │
+│ │ SESSION │ │ KNOWLEDGE │ │ AGENT │ │
+│ │ STORE │ │ GRAPH │ │ OUTPUT │ │
+│ │ (adopt) │ │ (adopt) │ │ │ │
+│ │ │ │ │ │ │ │
+│ │ Honcho/ │ │ Cognee/ │ │ Claude/ │ │
+│ │ Mem0 │ │ Kuzu/Neo4j │ │ OpenCode/ │ │
+│ │ │ │ │ │ Codex │ │
+│ └─────────────┘ └──────────────┘ └─────────────┘ │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -385,7 +385,7 @@ The thesis is invalid when:
 
 ### Could Git + documentation + existing agent memory already solve the problem?
 
-**Partially.** Git shows what was implemented. Documentation shows what was planned. Agent memory shows what was discussed. But **none of these reconcile contradictions** or **track the lifecycle from suggestion → decision → implementation → verification → obsolescence**.
+**Partially.** Git shows what was implemented. Documentation shows what was planned. Agent memory shows what was discussed. But **none of these reconcile contradictions** or **track the lifecycle from suggestion -> decision -> implementation -> verification -> obsolescence**.
 
 ### Is this a company or just infrastructure?
 

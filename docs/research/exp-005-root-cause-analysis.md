@@ -1,7 +1,7 @@
 # EXP-005 Root Cause Analysis
 
-**Status:** Forensic reconstruction complete  
-**Generated:** Phase 2 — EXP-005 root cause + repair  
+**Status:** Forensic reconstruction complete 
+**Generated:** Phase 2 - EXP-005 root cause + repair 
 **Related documents:** `docs/research/exp-005-forensic-truth.md`
 
 ---
@@ -13,7 +13,7 @@ Why did the EXP-005 pilot fail to persist trial data?
 Specifically:
 - Why is `exp005-manifest.json` missing?
 - Why do only 1 empty worktree directory survive?
-- Why do conflicting reports exist (25 manifest entries, 24 worktrees, 44–45/60 completed)?
+- Why do conflicting reports exist (25 manifest entries, 24 worktrees, 44-45/60 completed)?
 
 ---
 
@@ -31,7 +31,7 @@ The runner is designed to:
 The write path:
 
 ```
-Trial execution → worktree created → trial results → manifest JSON updated → manifest file persisted to disk
+Trial execution -> worktree created -> trial results -> manifest JSON updated -> manifest file persisted to disk
 ```
 
 The source code implements this write path. There is no obvious code bug that would silently drop manifest entries.
@@ -40,7 +40,7 @@ The source code implements this write path. There is no obvious code bug that wo
 
 Worktrees are created via `git worktree add`. They persist on disk until explicitly removed via `git worktree remove` or `git worktree prune`, or until the underlying directory is deleted.
 
-The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exists but is empty — the `.git` file or directory that `git worktree add` creates is absent. This means either:
+The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exists but is empty - the `.git` file or directory that `git worktree add` creates is absent. This means either:
 - The worktree was never fully created (process failed mid-creation)
 - The worktree was created and later removed (git worktree remove, or directory deletion)
 - The worktree creation directory was created but the git worktree add itself failed or was never completed
@@ -58,7 +58,7 @@ The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exi
 | Runner stdout/stderr | NOT AVAILABLE | No execution log to inspect |
 | Task logs with trial granularity | NOT AVAILABLE | No per-trial execution record |
 
-**Key point:** The absence of the manifest is the central failure. Without the manifest, there is no authoritative record of what ran, what completed, what timed out, what failed. The worktree directories are secondary — they are created by the same process that writes the manifest, so if the manifest write failed, the worktree creation may also have been interrupted.
+**Key point:** The absence of the manifest is the central failure. Without the manifest, there is no authoritative record of what ran, what completed, what timed out, what failed. The worktree directories are secondary - they are created by the same process that writes the manifest, so if the manifest write failed, the worktree creation may also have been interrupted.
 
 ---
 
@@ -83,7 +83,7 @@ The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exi
 - If the process crashed (OOM, manual kill, system sleep, network disconnect), in-flight writes would be lost
 - An interrupted `git worktree add` could leave a directory but no `.git` pointer
 
-**Plausibility:** HIGH. A crash during trial 1–59 would explain why 59 worktrees are absent and the manifest is missing. The one surviving empty directory could be a worktree creation that started but didn't complete before the crash.
+**Plausibility:** HIGH. A crash during trial 1-59 would explain why 59 worktrees are absent and the manifest is missing. The one surviving empty directory could be a worktree creation that started but didn't complete before the crash.
 
 **Testable:** Check system event logs for process crashes, OOM events, unexpected reboots. Check git reflog for worktree add/remove events around the execution window.
 
@@ -91,12 +91,12 @@ The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exi
 
 **Evidence:**
 - The code looks correct in source, but runtime conditions could break it
-- If `node_modules` was absent (as reported in prior sessions), the TypeScript runner may not have been able to execute at all — but if it didn't execute, no worktrees would be created, which contradicts the one surviving directory
+- If `node_modules` was absent (as reported in prior sessions), the TypeScript runner may not have been able to execute at all - but if it didn't execute, no worktrees would be created, which contradicts the one surviving directory
 - If the runner executed but the manifest write path threw an unhandled exception, subsequent writes would stop
 
 **Plausibility:** MEDIUM. If the manifest write threw an exception early (e.g., on trial 1), the runner may have continued creating worktrees without persisting the manifest. But this would leave 59 worktrees on disk, which we don't see. So either the exception stopped worktree creation too, or the worktrees were later cleaned up.
 
-**Testable:** Read the runner's error handling logic in `harness.ts` — does a manifest write failure stop the loop or continue? Check if worktree creation and manifest writing are in the same try/catch or separate ones.
+**Testable:** Read the runner's error handling logic in `harness.ts` - does a manifest write failure stop the loop or continue? Check if worktree creation and manifest writing are in the same try/catch or separate ones.
 
 ### 4.4 Worktree cleanup / pruning
 
@@ -105,7 +105,7 @@ The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exi
 - Manual cleanup could have removed worktree directories
 - If the runner's working directory was cleaned up (temp cleanup, disk cleanup tools, C: drive cleanup), worktree directories could be deleted
 
-**Plausibility:** MEDIUM-HIGH. If worktrees were created but later pruned or deleted, the manifest might also have been deleted if it was stored inside a worktree or in a directory that was cleaned. But the manifest is at `research/experiments/exp-005/exp005-manifest.json` — inside the main repo, not in a worktree. So if only worktrees were cleaned, the manifest should survive. The fact that BOTH are missing suggests a broader cleanup or the manifest was never written.
+**Plausibility:** MEDIUM-HIGH. If worktrees were created but later pruned or deleted, the manifest might also have been deleted if it was stored inside a worktree or in a directory that was cleaned. But the manifest is at `research/experiments/exp-005/exp005-manifest.json` - inside the main repo, not in a worktree. So if only worktrees were cleaned, the manifest should survive. The fact that BOTH are missing suggests a broader cleanup or the manifest was never written.
 
 ### 4.5 Shell / environment mismatch (Windows PowerShell vs Git Bash)
 
@@ -141,7 +141,7 @@ The surviving worktree directory `trial-exp005-scn-006-B-rep2-1787827019225` exi
 
 | Report | Claim | Why it can't be verified |
 |---|---|---|
-| Antigravity: ~44–45/60 completed | 44–45 trials finished | No manifest, no worktrees, no artifacts. May have been a progress message, not a completion count. Progress messages are not completion records. |
+| Antigravity: ~44-45/60 completed | 44-45 trials finished | No manifest, no worktrees, no artifacts. May have been a progress message, not a completion count. Progress messages are not completion records. |
 | Forensic inspection: 25 manifest entries | Manifest had 25 entries | Manifest file does not exist on disk. The report may have been written from memory, from a transient read, or from a manifest that was later deleted. |
 | 24 surviving worktrees | 24 worktree directories existed | Only 1 empty directory exists. The other 23 may have been cleaned up, pruned, or never created. |
 | Infrastructure-compromised | Infrastructure was broken | Consistent with current state, but doesn't tell us exactly what broke or when. |
@@ -166,13 +166,13 @@ The following are NOT determinable from on-disk artifacts:
 
 ## 7. What Would Be Needed to Fully Diagnose
 
-1. **Runner stdout/stderr logs** — would show where the process failed
-2. **System event logs** — would show crashes, OOM, disk full events
-3. **Filesystem timestamps** on the surviving worktree directory — would show when it was created/last modified
-4. **Git reflog with worktree events** — would show worktree add/remove operations
-5. **Windows event logs** — would show process starts/stops, errors
-6. **Any backup or shadow copy** of `exp005-manifest.json` — would reveal what was written
-7. **Antigravity's execution logs** — would show what the runner actually did
+1. **Runner stdout/stderr logs** - would show where the process failed
+2. **System event logs** - would show crashes, OOM, disk full events
+3. **Filesystem timestamps** on the surviving worktree directory - would show when it was created/last modified
+4. **Git reflog with worktree events** - would show worktree add/remove operations
+5. **Windows event logs** - would show process starts/stops, errors
+6. **Any backup or shadow copy** of `exp005-manifest.json` - would reveal what was written
+7. **Antigravity's execution logs** - would show what the runner actually did
 
 Without these, the root cause is inferred from the pattern of absence, not observed directly.
 
@@ -197,24 +197,24 @@ The evidence pattern is consistent with one of:
 
 ### 9.1 Immediate: Recreate the execution environment
 
-1. **Free disk space** — C: drive at 97% is a hard blocker; need margin
-2. **Install dependencies** — ensure `node_modules` present, TypeScript compilable, all CLI tools available
-3. **Fix shell consistency** — ensure runner uses a single, consistent shell (Git Bash recommended for git worktree operations on Windows)
-4. **Verify git worktree capability** — test `git worktree add` / `git worktree remove` in the target directory
+1. **Free disk space** - C: drive at 97% is a hard blocker; need margin
+2. **Install dependencies** - ensure `node_modules` present, TypeScript compilable, all CLI tools available
+3. **Fix shell consistency** - ensure runner uses a single, consistent shell (Git Bash recommended for git worktree operations on Windows)
+4. **Verify git worktree capability** - test `git worktree add` / `git worktree remove` in the target directory
 
 ### 9.2 Medium-term: Strengthen checkpointing
 
-1. **Write manifest more frequently** — after every trial, not just at the end
-2. **Write to multiple locations** — local file + a backup location
-3. **Log stdout/stderr to files** — capture runner output per trial
-4. **Record filesystem timestamps** — track when each worktree is created and populated
-5. **Add a manifest integrity check** — verify the manifest is valid JSON after each write
-6. **Add a heartbeat** — record that the runner is alive at intervals, so a crash can be localized
+1. **Write manifest more frequently** - after every trial, not just at the end
+2. **Write to multiple locations** - local file + a backup location
+3. **Log stdout/stderr to files** - capture runner output per trial
+4. **Record filesystem timestamps** - track when each worktree is created and populated
+5. **Add a manifest integrity check** - verify the manifest is valid JSON after each write
+6. **Add a heartbeat** - record that the runner is alive at intervals, so a crash can be localized
 
 ### 9.3 Long-term: Separate execution from persistence
 
-1. **Worktree creation and manifest writing should be independent operations** — if one fails, the other should still persist what it can
-2. **Each trial should produce a self-contained result artifact** — not depend on a central manifest for persistence
+1. **Worktree creation and manifest writing should be independent operations** - if one fails, the other should still persist what it can
+2. **Each trial should produce a self-contained result artifact** - not depend on a central manifest for persistence
 3. **Consider a database or append-only log** instead of a JSON file that can be corrupted or deleted
 
 ---

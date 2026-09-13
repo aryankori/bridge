@@ -1,4 +1,4 @@
-# BRIDGE — Experiment Roadmap: EXP-006, EXP-007, EXP-008
+# BRIDGE - Experiment Roadmap: EXP-006, EXP-007, EXP-008
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -12,7 +12,7 @@
 |---|---|---|---|
 | **EXP-001** | Completed | Does structured work transfer improve cross-agent productivity? | Work transfer has value (if positive) |
 | **EXP-004** | Completed | Can a deterministic resolver correctly identify effective directives? | Resolver works at the computation level (76% accuracy, 0% false allow) |
-| **EXP-005** | Running | Does effective directive resolution improve live agent behavior vs. raw instructions? | Resolver improves agent outcomes (if positive) — this is the critical test |
+| **EXP-005** | Running | Does effective directive resolution improve live agent behavior vs. raw instructions? | Resolver improves agent outcomes (if positive) - this is the critical test |
 
 **The critical path:** EXP-005 results determine everything. If positive, the resolver is proven to improve agent behavior. If negative, the resolver may be a solution to a problem that doesn't matter (agents either don't need resolution, or resolution doesn't change behavior).
 
@@ -24,20 +24,20 @@
 
 **Question:** Does the resolver's improvement come from the directive content or from the presence of any structured guidance?
 
-**Control:** Condition A (RAW) — no directive
-**Treatment 1:** Condition C (BRIDGE) — resolver directive with citations
-**Treatment 2:** Condition D (PLACEBO) — generic structured directive without resolution ("Follow the most recent instruction source for this task. Check timestamps.")
-**Treatment 3:** Condition E (HUMAN-STRUCTURED) — human-written directive in the same format as Bridge, but without resolver involvement
+**Control:** Condition A (RAW) - no directive
+**Treatment 1:** Condition C (BRIDGE) - resolver directive with citations
+**Treatment 2:** Condition D (PLACEBO) - generic structured directive without resolution ("Follow the most recent instruction source for this task. Check timestamps.")
+**Treatment 3:** Condition E (HUMAN-STRUCTURED) - human-written directive in the same format as Bridge, but without resolver involvement
 
-**Primary metric:** Correct action rate, instruction violation rate, false allow rate — same as EXP-005
+**Primary metric:** Correct action rate, instruction violation rate, false allow rate - same as EXP-005
 
 **Falsification criteria:**
-- If Treatment 2 (PLACEBO) performs as well as Treatment 1 (BRIDGE), the resolver's specific resolution is not the source of improvement — any structured guidance works. This weakens the resolver's differentiation.
-- If Treatment 3 (HUMAN-STRUCTURED) performs as well as Treatment 1 (BRIDGE), the resolver matches human-structured guidance but doesn't exceed it. This is acceptable — it means the resolver is as good as a human at structuring guidance.
+- If Treatment 2 (PLACEBO) performs as well as Treatment 1 (BRIDGE), the resolver's specific resolution is not the source of improvement - any structured guidance works. This weakens the resolver's differentiation.
+- If Treatment 3 (HUMAN-STRUCTURED) performs as well as Treatment 1 (BRIDGE), the resolver matches human-structured guidance but doesn't exceed it. This is acceptable - it means the resolver is as good as a human at structuring guidance.
 
 **Why it matters:** EXP-005 shows that Bridge > RAW. But it doesn't isolate WHY. Is it the resolution (the specific directive)? Is it the format (structured, citation-backed)? Is it the presence of ANY guidance? This experiment isolates the mechanism. If the mechanism is "any structure helps," the resolver's specific resolution logic is less valuable than its format.
 
-**Design constraint:** Use the same 10 EXP-005 scenarios. Same model. Same randomization. Same replication. Add 2 new conditions → 10 × 5 × 2 = 100 trials. Feasible.
+**Design constraint:** Use the same 10 EXP-005 scenarios. Same model. Same randomization. Same replication. Add 2 new conditions -> 10 × 5 × 2 = 100 trials. Feasible.
 
 **When to run:** After EXP-005 completes and shows positive result. Before scaling to more scenarios or publishing.
 
@@ -48,13 +48,13 @@
 **Question:** Does standing computation generalize across more scenarios, more conflict types, and more instruction source categories?
 
 **Control:** EXP-004 benchmark (40 scenarios, 76% accuracy, 0% false allow)
-**Treatment:** Expanded benchmark — add scenarios that test:
+**Treatment:** Expanded benchmark - add scenarios that test:
 - More instruction source types (IDE settings, Copilot instructions, CI configuration files, branch protection rules, PR descriptions, CODEOWNERS, CONTRIBUTING.md, STYLE.md)
 - More conflict types (temporal conflicts where both sources are current but disagree, scope conflicts where sources apply to different parts of the action, multi-hop conflicts where A overrides B and B overrides C)
-- More action types (not just code changes — configuration changes, documentation changes, dependency updates, refactoring, test writing, CI configuration)
-- Real repositories (not synthetic fixtures — use actual open-source repos with real instruction conflicts)
+- More action types (not just code changes - configuration changes, documentation changes, dependency updates, refactoring, test writing, CI configuration)
+- Real repositories (not synthetic fixtures - use actual open-source repos with real instruction conflicts)
 
-**Primary metric:** Exact resolution accuracy, conflict detection F1, false allow rate, false block rate, citation recall — same as EXP-004
+**Primary metric:** Exact resolution accuracy, conflict detection F1, false allow rate, false block rate, citation recall - same as EXP-004
 
 **Falsification criteria:**
 - If accuracy drops below 65% on the expanded set, the resolver's current authority framework doesn't generalize. The tier structure needs expansion.
@@ -99,48 +99,48 @@
 
 ```
 IF EXP-005 POSITIVE (Bridge improves agent behavior):
-  │
-  ├─ Run EXP-006 (mechanism isolation)
-  │   │
-  │   ├─ IF PLACEBO ≈ BRIDGE: Mechanism is "structure helps," not "resolution helps"
-  │   │   └─ Pivot: Invest in format and structure, not resolution logic
-  │   │
-  │   └─ IF BRIDGE > PLACEBO: Mechanism is resolution-specific
-  │       └─ Continue to EXP-007
-  │
-  ├─ Run EXP-007 (generalization)
-  │   │
-  │   ├─ IF accuracy drops < 65%: Authority framework needs expansion
-  │   │   └─ Invest in expanding tiers, detectors, source types
-  │   │
-  │   └─ IF accuracy holds ≥ 70%: Resolver generalizes
-  │       └─ Continue to EXP-008
-  │
-  └─ Run EXP-008 (real-world field study)
-      │
-      ├─ IF no behavioral difference: Bridge doesn't fit real workflows
-      │   └─ Investigate adoption barriers, workflow integration
-      │
-      └─ IF positive: Bridge is ready for production use
-          └─ Proceed to productization and publication
+ │
+ ├─ Run EXP-006 (mechanism isolation)
+ │ │
+ │ ├─ IF PLACEBO ≈ BRIDGE: Mechanism is "structure helps," not "resolution helps"
+ │ │ └─ Pivot: Invest in format and structure, not resolution logic
+ │ │
+ │ └─ IF BRIDGE > PLACEBO: Mechanism is resolution-specific
+ │ └─ Continue to EXP-007
+ │
+ ├─ Run EXP-007 (generalization)
+ │ │
+ │ ├─ IF accuracy drops < 65%: Authority framework needs expansion
+ │ │ └─ Invest in expanding tiers, detectors, source types
+ │ │
+ │ └─ IF accuracy holds >= 70%: Resolver generalizes
+ │ └─ Continue to EXP-008
+ │
+ └─ Run EXP-008 (real-world field study)
+ │
+ ├─ IF no behavioral difference: Bridge doesn't fit real workflows
+ │ └─ Investigate adoption barriers, workflow integration
+ │
+ └─ IF positive: Bridge is ready for production use
+ └─ Proceed to productization and publication
 
 IF EXP-005 NEGATIVE (Bridge does not improve agent behavior):
-  │
-  ├─ Investigate why:
-  │   ├─ Did agents ignore the directive? → Agent behavior problem
-  │   ├─ Was the directive wrong? → Resolver accuracy problem
-  │   ├─ Was the directive right but agent followed it and still failed? → Directive insufficient problem
-  │   └─ Was the RAW baseline already good? → Resolution not needed problem
-  │
-  ├─ IF agents ignored directive: Stop. Bridge's core thesis (agents benefit from resolution) is falsified.
-  │
-  ├─ IF directive was wrong: Improve resolver. Re-run EXP-005 with improved resolver.
-  │
-  ├─ IF directive right but agent still failed: Resolution helps but is insufficient.
-  │   └─ Bridge needs additional interventions (not just directives)
-  │
-  └─ IF RAW baseline already good: Agents don't need resolution for these scenarios.
-      └─ Bridge's developer wedge is not compelling. Pivot to enterprise/compliance niche.
+ │
+ ├─ Investigate why:
+ │ ├─ Did agents ignore the directive? -> Agent behavior problem
+ │ ├─ Was the directive wrong? -> Resolver accuracy problem
+ │ ├─ Was the directive right but agent followed it and still failed? -> Directive insufficient problem
+ │ └─ Was the RAW baseline already good? -> Resolution not needed problem
+ │
+ ├─ IF agents ignored directive: Stop. Bridge's core thesis (agents benefit from resolution) is falsified.
+ │
+ ├─ IF directive was wrong: Improve resolver. Re-run EXP-005 with improved resolver.
+ │
+ ├─ IF directive right but agent still failed: Resolution helps but is insufficient.
+ │ └─ Bridge needs additional interventions (not just directives)
+ │
+ └─ IF RAW baseline already good: Agents don't need resolution for these scenarios.
+ └─ Bridge's developer wedge is not compelling. Pivot to enterprise/compliance niche.
 ```
 
 ---

@@ -1,9 +1,9 @@
 # BRIDGE FOUNDATION SPECIFICATION
 
-**Document Version:** 1.0.0  
-**Date:** 2026-08-25  
-**Author:** Founding Principal Engineer  
-**Status:** Approved Foundation  
+**Document Version:** 1.0.0 
+**Date:** 2026-08-25 
+**Author:** Founding Principal Engineer 
+**Status:** Approved Foundation 
 
 ---
 
@@ -41,22 +41,22 @@ Package Managers: Scoop (36 packages), Chocolatey (19 packages), pnpm (v9.15.3)
 
 ```text
 [BRIDGE PROCESS ENGINE]
-       │
-       ├── (1) Subprocess Spawn (stdio pipes)
-       │         ├── Claude Code CLI (`claude -p --output-format stream-json`)
-       │         ├── Gemini CLI (`gemini -p --output-format stream-json`)
-       │         └── agy (`agy -p --output-format stream-json`)
-       │
-       ├── (2) JSON-RPC 2.0 ACP Server / Client
-       │         ├── OpenCode ACP (`opencode acp`)
-       │         └── Hermes ACP (`hermes acp`)
-       │
-       ├── (3) Local Loopback HTTP / WebSocket Gateway
-       │         ├── OpenCode HTTP Server (`opencode serve --port 0`)
-       │         └── Hermes WebSocket Server (`hermes serve --port 9119`)
-       │
-       └── (4) Windows Named Pipes (IPC)
-                 └── Claude Supervisor (`\\.\pipe\cc-daemon-*-control`)
+ │
+ ├── (1) Subprocess Spawn (stdio pipes)
+ │ ├── Claude Code CLI (`claude -p --output-format stream-json`)
+ │ ├── Gemini CLI (`gemini -p --output-format stream-json`)
+ │ └── agy (`agy -p --output-format stream-json`)
+ │
+ ├── (2) JSON-RPC 2.0 ACP Server / Client
+ │ ├── OpenCode ACP (`opencode acp`)
+ │ └── Hermes ACP (`hermes acp`)
+ │
+ ├── (3) Local Loopback HTTP / WebSocket Gateway
+ │ ├── OpenCode HTTP Server (`opencode serve --port 0`)
+ │ └── Hermes WebSocket Server (`hermes serve --port 9119`)
+ │
+ └── (4) Windows Named Pipes (IPC)
+ └── Claude Supervisor (`\\.\pipe\cc-daemon-*-control`)
 ```
 
 ---
@@ -66,18 +66,18 @@ Package Managers: Scoop (36 packages), Chocolatey (19 packages), pnpm (v9.15.3)
 Sessions operate across three distinct storage patterns:
 
 1. **Structured Append Log (JSONL):**
-  - *Agents:* Claude Code (`~\.claude\history.jsonl`, `~\.claude\sessions\*.jsonl`), agy.
-  - *Format:* Line-delimited JSON events with explicit turn counters, tokens, and ISO timestamps.
-  - *Lifecycle:* Append-only per turn; resumed via `--resume <id>` or `--continue`.
+ - *Agents:* Claude Code (`~\.claude\history.jsonl`, `~\.claude\sessions\*.jsonl`), agy.
+ - *Format:* Line-delimited JSON events with explicit turn counters, tokens, and ISO timestamps.
+ - *Lifecycle:* Append-only per turn; resumed via `--resume <id>` or `--continue`.
 
 2. **Relational Transactional Engine (SQLite with WAL):**
-  - *Agents:* OpenCode (`~\.codex\state_5.sqlite`, `logs_2.sqlite`), Hermes (`~\AppData\Local\hermes\state.db`, `kanban.db`).
-  - *Format:* ACID relational schema with separate tables for sessions, messages, tool executions, and embeddings.
-  - *Lifecycle:* Multi-session state preservation with transactional rollbacks and export/import commands.
+ - *Agents:* OpenCode (`~\.codex\state_5.sqlite`, `logs_2.sqlite`), Hermes (`~\AppData\Local\hermes\state.db`, `kanban.db`).
+ - *Format:* ACID relational schema with separate tables for sessions, messages, tool executions, and embeddings.
+ - *Lifecycle:* Multi-session state preservation with transactional rollbacks and export/import commands.
 
 3. **Hybrid File System Hierarchies (JSON / YAML / Markdown):**
-  - *Agents:* Gemini CLI (`~\.gemini\history\`), Hermes (`~\AppData\Local\hermes\memories\`).
-  - *Format:* Directory tree containing discrete conversation state files.
+ - *Agents:* Gemini CLI (`~\.gemini\history\`), Hermes (`~\AppData\Local\hermes\memories\`).
+ - *Format:* Directory tree containing discrete conversation state files.
 
 ---
 
@@ -111,13 +111,13 @@ Sessions operate across three distinct storage patterns:
 
 ```text
 ┌─────────────────┬──────────────────────┬────────────────────────┬─────────────────────────────┐
-│ Project         │ Architecture         │ Transport Substrate    │ Core Limitation             │
+│ Project │ Architecture │ Transport Substrate │ Core Limitation │
 ├─────────────────┼──────────────────────┼────────────────────────┼─────────────────────────────┤
-│ Lori / Capella  │ Cloud Agent Relay    │ Remote WebSockets      │ Requires Cloud; No Local IPC│
-│ cdesktop        │ Virtual Display / OS │ Screen Framebuffer / VNC│ High Latency; Fragile Vision│
-│ Astrail         │ Multi-CLI Wrapper    │ Unstructured Stdio     │ Regex Parsing; No Protocols │
-│ GT Office       │ Desktop Multi-Window │ Electron Webview Tabs  │ Pure UI Shell; No Shared Bus│
-│ BRIDGE (Target) │ Native System Layer  │ ACP + Stdio-JSON + IPC │ Local-first; Zero-cloud IPC │
+│ Lori / Capella │ Cloud Agent Relay │ Remote WebSockets │ Requires Cloud; No Local IPC│
+│ cdesktop │ Virtual Display / OS │ Screen Framebuffer / VNC│ High Latency; Fragile Vision│
+│ Astrail │ Multi-CLI Wrapper │ Unstructured Stdio │ Regex Parsing; No Protocols │
+│ GT Office │ Desktop Multi-Window │ Electron Webview Tabs │ Pure UI Shell; No Shared Bus│
+│ BRIDGE (Target) │ Native System Layer │ ACP + Stdio-JSON + IPC │ Local-first; Zero-cloud IPC │
 └─────────────────┴──────────────────────┴────────────────────────┴─────────────────────────────┘
 ```
 
@@ -127,22 +127,22 @@ Sessions operate across three distinct storage patterns:
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                         BRIDGE CORE                         │
+│ BRIDGE CORE │
 ├─────────────────────────────────────────────────────────────┤
-│  1. AgentDescriptor  ── Static identity, path, capabilities  │
-│  2. AgentRegistry    ── Lifecycle, discovery, instance map   │
-│  3. EventBus         ── Typed synchronous & async event bus │
-│  4. SessionManager   ── Unified session state machine        │
-│  5. ContextCarrier   ── Portable snapshot of code & memory   │
-│  6. SecurityPolicy   ── Path & command permission sandbox   │
+│ 1. AgentDescriptor ── Static identity, path, capabilities │
+│ 2. AgentRegistry ── Lifecycle, discovery, instance map │
+│ 3. EventBus ── Typed synchronous & async event bus │
+│ 4. SessionManager ── Unified session state machine │
+│ 5. ContextCarrier ── Portable snapshot of code & memory │
+│ 6. SecurityPolicy ── Path & command permission sandbox │
 └─────────────────────────────────────────────────────────────┘
-                               │
-                ┌──────────────┴──────────────┐
-                ▼                             ▼
-   ┌───────────────────────────┐ ┌───────────────────────────┐
-   │    AcpTransportAdapter    │ │   StdioJsonStreamAdapter  │
-   │  (OpenCode / Hermes / IDE)│ │   (Claude Code / Gemini)  │
-   └───────────────────────────┘ └───────────────────────────┘
+ │
+ ┌──────────────┴──────────────┐
+ ▼ ▼
+ ┌───────────────────────────┐ ┌───────────────────────────┐
+ │ AcpTransportAdapter │ │ StdioJsonStreamAdapter │
+ │ (OpenCode / Hermes / IDE)│ │ (Claude Code / Gemini) │
+ └───────────────────────────┘ └───────────────────────────┘
 ```
 
 ---
@@ -153,15 +153,15 @@ Every agent integration implements the following contract in TypeScript:
 
 ```typescript
 export interface AgentAdapter {
-  readonly descriptor: AgentDescriptor;
-  discover(): Promise<AgentDescriptor | null>;
-  createSession(options?: Record<string, unknown>): Promise<Session>;
-  attachSession(sessionId: SessionId): Promise<Session>;
-  listSessions(): Promise<Session[]>;
-  sendMessage(sessionId: SessionId, content: string): Promise<void>;
-  streamOutput(sessionId: SessionId): AsyncIterable<Message>;
-  closeSession(sessionId: SessionId): Promise<void>;
-  dispose(): Promise<void>;
+ readonly descriptor: AgentDescriptor;
+ discover(): Promise<AgentDescriptor | null>;
+ createSession(options?: Record<string, unknown>): Promise<Session>;
+ attachSession(sessionId: SessionId): Promise<Session>;
+ listSessions(): Promise<Session[]>;
+ sendMessage(sessionId: SessionId, content: string): Promise<void>;
+ streamOutput(sessionId: SessionId): AsyncIterable<Message>;
+ closeSession(sessionId: SessionId): Promise<void>;
+ dispose(): Promise<void>;
 }
 ```
 
@@ -192,28 +192,28 @@ Bridge defines a structured `ContextCarrier` format for moving state between het
 
 ```typescript
 export interface ContextCarrier {
-  version: '1.0';
-  sourceAgentId: AgentId;
-  targetAgentId?: AgentId;
-  createdAt: Date;
-  summary: string;
-  files: Array<{
-    path: string;
-    content: string;
-    language: string;
-    cursorPosition?: { line: number; column: number };
-  }>;
-  decisions: Array<{
-    topic: string;
-    outcome: string;
-    rationale: string;
-  }>;
-  conversationSummary: string;
-  activeTask?: {
-    goal: string;
-    completedSteps: string[];
-    nextSteps: string[];
-  };
+ version: '1.0';
+ sourceAgentId: AgentId;
+ targetAgentId?: AgentId;
+ createdAt: Date;
+ summary: string;
+ files: Array<{
+ path: string;
+ content: string;
+ language: string;
+ cursorPosition?: { line: number; column: number };
+ }>;
+ decisions: Array<{
+ topic: string;
+ outcome: string;
+ rationale: string;
+ }>;
+ conversationSummary: string;
+ activeTask?: {
+ goal: string;
+ completedSteps: string[];
+ nextSteps: string[];
+ };
 }
 ```
 
@@ -262,41 +262,41 @@ bridge/
 ├── tsup.config.ts
 ├── vitest.config.ts
 ├── docs/
-│   ├── BRIDGE_FOUNDATION_SPECIFICATION.md
-│   ├── adapters/
-│   ├── architecture/
-│   │   └── 001-initial-stack.md
-│   ├── decisions/
-│   ├── development/
-│   ├── research/
-│   │   └── machine-forensics.md
-│   └── security/
+│ ├── BRIDGE_FOUNDATION_SPECIFICATION.md
+│ ├── adapters/
+│ ├── architecture/
+│ │ └── 001-initial-stack.md
+│ ├── decisions/
+│ ├── development/
+│ ├── research/
+│ │ └── machine-forensics.md
+│ └── security/
 ├── src/
-│   ├── index.ts
-│   ├── adapters/
-│   │   └── index.ts
-│   ├── core/
-│   │   ├── events.ts
-│   │   ├── index.ts
-│   │   ├── registry.ts
-│   │   └── types.ts
-│   └── transport/
-│       └── index.ts
+│ ├── index.ts
+│ ├── adapters/
+│ │ └── index.ts
+│ ├── core/
+│ │ ├── events.ts
+│ │ ├── index.ts
+│ │ ├── registry.ts
+│ │ └── types.ts
+│ └── transport/
+│ └── index.ts
 └── tests/
-    └── core/
-        └── core.test.ts
+ └── core/
+ └── core.test.ts
 ```
 
 ---
 
 ## 16. Major Risks & Mitigations
 
-1. **Risk:** Machine disk capacity saturation (97% full).  
-   *Mitigation:* Use `pnpm` hardlinks, reject heavy browser binaries, clean `dist/` on build.
-2. **Risk:** Upstream CLI parameter breaking changes.  
-   *Mitigation:* Prefer standard ACP (Agent Client Protocol) over raw CLI flag scraping.
-3. **Risk:** Agent deadlocks during bidirectional stdio piping.  
-   *Mitigation:* Non-blocking asynchronous streams with timeout alarms and process watchdogs.
+1. **Risk:** Machine disk capacity saturation (97% full). 
+ *Mitigation:* Use `pnpm` hardlinks, reject heavy browser binaries, clean `dist/` on build.
+2. **Risk:** Upstream CLI parameter breaking changes. 
+ *Mitigation:* Prefer standard ACP (Agent Client Protocol) over raw CLI flag scraping.
+3. **Risk:** Agent deadlocks during bidirectional stdio piping. 
+ *Mitigation:* Non-blocking asynchronous streams with timeout alarms and process watchdogs.
 
 ---
 
@@ -320,12 +320,12 @@ bridge/
 
 ```text
 [BRIDGE ORCHESTRATOR]
-        │
-        ├── 1. Discovers Claude Code & OpenCode via PATH
-        ├── 2. Spawns Claude Code with `--output-format stream-json`
-        ├── 3. Collects structured task analysis
-        ├── 4. Normalizes output into `ContextCarrier`
-        └── 5. Dispatches `ContextCarrier` payload into OpenCode ACP Server
+ │
+ ├── 1. Discovers Claude Code & OpenCode via PATH
+ ├── 2. Spawns Claude Code with `--output-format stream-json`
+ ├── 3. Collects structured task analysis
+ ├── 4. Normalizes output into `ContextCarrier`
+ └── 5. Dispatches `ContextCarrier` payload into OpenCode ACP Server
 ```
 
 ---

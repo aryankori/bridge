@@ -1,4 +1,4 @@
-# BRIDGE — Control Plane Attack: Could OPA/Cedar/Gateways Replace Bridge?
+# BRIDGE - Control Plane Attack: Could OPA/Cedar/Gateways Replace Bridge?
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -12,9 +12,9 @@
 
 **Architecture:**
 ```
-Agent → Bridge Policy Engine → Tool/API
-              ↓
-         Allow / Deny / Modify / Escalate
+Agent -> Bridge Policy Engine -> Tool/API
+ ↓
+ Allow / Deny / Modify / Escalate
 ```
 
 **Competitive landscape (through August 2026):**
@@ -23,7 +23,7 @@ Agent → Bridge Policy Engine → Tool/API
 |---|---|---|---|---|
 | **OPA (Open Policy Agent)** | General policy engine | Rego (declarative) | No (infrastructure-focused) | Unified policy across microservices, K8s, CI/CD |
 | **AWS Cedar** | Authorization language | Cedar (constrained grammar) | Partial (AgentCore integration) | Application-level authorization, human-readable |
-| **AWS AgentCore Policy** | Agent gateway | Cedar + NL → Cedar | Yes | Intercepts every agent tool call, deterministic enforcement |
+| **AWS AgentCore Policy** | Agent gateway | Cedar + NL -> Cedar | Yes | Intercepts every agent tool call, deterministic enforcement |
 | **Databricks Unity AI Gateway** | Agent gateway | Service policies | Yes | LLM access control, MCP governance, cost controls |
 | **NeuralTrust TrustGate** | AI gateway | Custom | Yes | Tool invocation interception, risk scoring, policy enforcement |
 | **ElixirData Context OS** | Governed agent runtime | Policy Gates | Yes | Policy Gates (Allow/Modify/Escalate/Block), RBAC, Decision Traces |
@@ -51,7 +51,7 @@ Agent → Bridge Policy Engine → Tool/API
 - Rego is a difficult language (closer to Datalog than YAML); policy authoring is a barrier
 - OPA is infrastructure-focused (service-to-service, K8s admission), not agent-instruction-focused
 - OPA evaluates policy against a request; it does not evaluate competing claims about what the request SHOULD be
-- OPA has no concept of "instruction source authority" — it evaluates rules, not instruction hierarchy
+- OPA has no concept of "instruction source authority" - it evaluates rules, not instruction hierarchy
 - OPA does not produce citation-backed rationale; it produces allow/deny
 
 ### AWS Cedar
@@ -62,11 +62,11 @@ Agent → Bridge Policy Engine → Tool/API
 - Human-readable policies (permit/when/unless structure)
 - Default-deny, forbid-wins-over-permit, order-independent evaluation
 - AWS-backed; shipped in Amazon Bedrock AgentCore Policy (March 2026)
-- NL → Cedar formalization (natural-language policy authoring)
+- NL -> Cedar formalization (natural-language policy authoring)
 
 **Limitations for Bridge:**
 - Cedar is an authorization language, not a claim-resolution engine
-- Cedar evaluates "does principal X have permission for action Y on resource Z?" — not "which instruction source governs this action?"
+- Cedar evaluates "does principal X have permission for action Y on resource Z?" - not "which instruction source governs this action?"
 - Cedar policies are static (configured by administrator); they don't evaluate per-action standing from multiple sources
 - Cedar doesn't model instruction sources as claims with tiers, staleness, scope, and evidence
 
@@ -82,7 +82,7 @@ Agent → Bridge Policy Engine → Tool/API
 
 **Limitations for Bridge:**
 - AgentCore Policy governs TOOL ACCESS (what the agent can do), not INSTRUCTION RESOLUTION (what the agent should do)
-- AgentCore answers "can this agent call this tool with these arguments?" — not "given conflicting instructions about this task, what should the agent do?"
+- AgentCore answers "can this agent call this tool with these arguments?" - not "given conflicting instructions about this task, what should the agent do?"
 - AgentCore is AWS-centric; Bridge aims to be agent- and platform-agnostic
 - AgentCore enforces policy; it does not author policy from project instruction sources
 
@@ -157,15 +157,15 @@ Bridge should NOT be a control plane (gateway, enforcement layer). The control p
 **Bridge's correct position:**
 
 ```
-Agent → [reads] → Bridge Effective Directive ← [computed from] ← Project Instruction Sources
-                                    ↓
-                          Standing Records (audit, precedent, memory)
+Agent -> [reads] -> Bridge Effective Directive <- [computed from] <- Project Instruction Sources
+ ↓
+ Standing Records (audit, precedent, memory)
 ```
 
 Bridge sits ABOVE the control plane (if one exists):
 - The control plane enforces what the agent can do (tool access, security boundaries)
 - Bridge tells the agent what it should do (effective directive from project's own instructions)
-- The agent may act on Bridge's directive, or ignore it — Bridge doesn't enforce, it recommends with authority
+- The agent may act on Bridge's directive, or ignore it - Bridge doesn't enforce, it recommends with authority
 
 **If a control plane exists (AgentCore, Unity Gateway, etc.), Bridge feeds it:**
 - Bridge resolves the effective directive from project instructions
@@ -180,7 +180,7 @@ Bridge sits ABOVE the control plane (if one exists):
 
 ---
 
-## 6. THE BRIDGE DIFFERENTIATION — SUMMARY
+## 6. THE BRIDGE DIFFERENTIATION - SUMMARY
 
 | Dimension | Control Plane (OPA/Cedar/Gateway) | Bridge |
 |---|---|---|
@@ -193,7 +193,7 @@ Bridge sits ABOVE the control plane (if one exists):
 | **Memory value** | None (ephemeral decisions) | Standing records are precedent for future actions |
 | **Project specificity** | Generic (same policy for all projects) | Project-specific (computed from project's own sources) |
 
-**The moat:** Bridge's value is NOT in enforcing boundaries — that's the control plane's job. Bridge's value is in computing effective standing from project-specific instruction sources, with citation-backed rationale and durable standing records. This is a different category from access control.
+**The moat:** Bridge's value is NOT in enforcing boundaries - that's the control plane's job. Bridge's value is in computing effective standing from project-specific instruction sources, with citation-backed rationale and durable standing records. This is a different category from access control.
 
 ---
 

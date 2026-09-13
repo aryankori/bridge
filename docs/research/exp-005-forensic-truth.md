@@ -1,7 +1,7 @@
 # EXP-005 Forensic Truth
 
-**Status:** Forensic reconstruction complete  
-**Generated:** Phase 1 — EXP-005 forensic reconciliation  
+**Status:** Forensic reconstruction complete 
+**Generated:** Phase 1 - EXP-005 forensic reconciliation 
 **Classification framework:** VALID_COMPLETION / VALID_TIMEOUT / VALID_FAILURE / INFRASTRUCTURE_FAILURE / PARTIAL / UNKNOWN / MISSING
 
 ---
@@ -19,7 +19,7 @@
 
 **Randomization:** Seed 42, Mulberry32 PRNG + Fisher-Yates shuffle (per `run-pilot.ts` and `harness.ts`).
 
-**Planned trial identifiers:** `trial-exp005-scn-{NN}-{COND}-{rep}{N}-{SEED}` where NN = 01–10, COND ∈ {A, B, C}, rep ∈ {1, 2}.
+**Planned trial identifiers:** `trial-exp005-scn-{NN}-{COND}-{rep}{N}-{SEED}` where NN = 01-10, COND ∈ {A, B, C}, rep ∈ {1, 2}.
 
 ---
 
@@ -31,7 +31,7 @@
 |---|---|
 | `research/experiments/exp-005/exp005-manifest.json` exists | **NO** |
 | Any `.json` file in `research/experiments/exp-005/` | **NO** (verified by `find` + `ls`) |
-| Manifest referenced in source code | YES — `harness.ts` writes to it, `run-pilot.ts` reads from it |
+| Manifest referenced in source code | YES - `harness.ts` writes to it, `run-pilot.ts` reads from it |
 
 **Finding:** The manifest file does not exist on disk. Any report citing manifest entries (e.g., "25 manifest entries") cannot be verified from on-disk artifacts.
 
@@ -42,7 +42,7 @@
 | `research/experiments/exp-005/worktrees/` directory exists | YES |
 | Surviving worktree directories | **1** (verified by `find` + `ls -la`) |
 | Worktree name | `trial-exp005-scn-006-B-rep2-1787827019225` |
-| Worktree contents | **EMPTY** — directory exists but contains no files (verified by `ls -la`) |
+| Worktree contents | **EMPTY** - directory exists but contains no files (verified by `ls -la`) |
 
 **Finding:** Only 1 worktree directory survives, and it is empty. Any report citing "24 surviving worktrees" cannot be verified from on-disk artifacts.
 
@@ -54,24 +54,24 @@ All harness source files are present and read:
 |---|---|---|---|
 | `run-pilot.ts` | 6,561 chars | Read | Implements pilot execution loop, worktree creation, manifest checkpointing |
 | `harness.ts` | 7,363 chars | Read | Implements checkpointing logic, trial record structure, write path to manifest JSON |
-| `agent-runners.ts` | — | Source present | Agent runner implementations |
-| `evaluator.ts` | — | Source present | Evaluation logic |
-| `validate.ts` | — | Source present | Validation logic |
-| `methodology.md` | — | Source present | Experimental methodology |
-| `schema.ts` | — | Source present | Data schemas |
-| `payload-builder.ts` | — | Source present | Prompt payload construction |
-| `scenarios.ts` | — | Source present | 10 scenario definitions |
-| `security.ts` | — | Source present | Security constraints |
-| `smoke-tests.ts` | — | Source present | Smoke test suite |
+| `agent-runners.ts` | - | Source present | Agent runner implementations |
+| `evaluator.ts` | - | Source present | Evaluation logic |
+| `validate.ts` | - | Source present | Validation logic |
+| `methodology.md` | - | Source present | Experimental methodology |
+| `schema.ts` | - | Source present | Data schemas |
+| `payload-builder.ts` | - | Source present | Prompt payload construction |
+| `scenarios.ts` | - | Source present | 10 scenario definitions |
+| `security.ts` | - | Source present | Security constraints |
+| `smoke-tests.ts` | - | Source present | Smoke test suite |
 
-**Finding:** The harness source code is intact and internally consistent. The checkpointing logic in `harness.ts` and `run-pilot.ts` implements a write path to `exp005-manifest.json`. The code does not appear to have a bug that would explain the missing manifest — the failure was at the execution/infrastructure level, not the code level.
+**Finding:** The harness source code is intact and internally consistent. The checkpointing logic in `harness.ts` and `run-pilot.ts` implements a write path to `exp005-manifest.json`. The code does not appear to have a bug that would explain the missing manifest - the failure was at the execution/infrastructure level, not the code level.
 
 ### 2.4 Git Artifacts
 
 | Check | Result |
 |---|---|
 | Git reflog shows worktree creation events | To be verified (see below) |
-| Git history shows experiment-related commits | Yes — experiment harness committed at 5f53d12 |
+| Git history shows experiment-related commits | Yes - experiment harness committed at 5f53d12 |
 | Any hidden branches or stashes | None found |
 | Any tags related to EXP-005 | None found |
 
@@ -194,8 +194,8 @@ Given that:
 | UNKNOWN | 0 | 0% |
 | **MISSING** | **59** | **98.3%** |
 
-**Total classified:** 60 trials  
-**Trials with any on-disk evidence:** 1 (trial 06-B-2, empty directory only)  
+**Total classified:** 60 trials 
+**Trials with any on-disk evidence:** 1 (trial 06-B-2, empty directory only) 
 **Trials with valid results:** 0
 
 ---
@@ -204,7 +204,7 @@ Given that:
 
 | Report | Claim | Reconciled status |
 |---|---|---|
-| Antigravity progress (~44–45/60) | 44–45 trials completed | **Cannot verify.** No manifest, no worktrees, no artifacts. May have been a progress estimate, not a completion count. If trials did execute, their artifacts are now gone. |
+| Antigravity progress (~44-45/60) | 44-45 trials completed | **Cannot verify.** No manifest, no worktrees, no artifacts. May have been a progress estimate, not a completion count. If trials did execute, their artifacts are now gone. |
 | Forensic inspection (25 manifest entries) | 25 trials in manifest | **Cannot verify.** Manifest file does not exist on disk. If a manifest existed at some point, it has been deleted or lost. |
 | 24 surviving worktrees | 24 worktree directories | **Cannot verify.** Only 1 empty worktree directory exists on disk. If 24 worktrees existed, 23 have been cleaned up or lost. |
 | Infrastructure-compromised | Execution infrastructure broken | **CONSISTENT with disk state.** Manifest missing, worktrees largely absent, disk near capacity, environment mismatches present. |
@@ -240,7 +240,7 @@ Given that:
 
 **EXP-005 trial data is not recoverable from on-disk artifacts.**
 
-The experiment planned 60 trials. The runner executed (per source code design and prior session reports). The checkpointing layer failed to persist results. The surviving on-disk evidence is insufficient to classify any trial as VALID_COMPLETION, VALID_TIMEOUT, or VALID_FAILURE. One trial (06-B-2) has an empty worktree directory — classified as PARTIAL with no usable results.
+The experiment planned 60 trials. The runner executed (per source code design and prior session reports). The checkpointing layer failed to persist results. The surviving on-disk evidence is insufficient to classify any trial as VALID_COMPLETION, VALID_TIMEOUT, or VALID_FAILURE. One trial (06-B-2) has an empty worktree directory - classified as PARTIAL with no usable results.
 
 **This is an infrastructure failure, not a methodology failure.** The methodology (design, randomization, scenarios, conditions, replications, evaluator logic) is intact in source code and passed correction gates in prior sessions. The binding constraint is that no trial data survives.
 

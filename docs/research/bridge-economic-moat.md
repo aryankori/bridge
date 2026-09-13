@@ -1,4 +1,4 @@
-# BRIDGE — Economic Moat Analysis
+# BRIDGE - Economic Moat Analysis
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -85,7 +85,7 @@ For each candidate thesis, assess:
 
 **Defensible:** Moderate. Transfer requires adapter-specific extraction and normalization. Each agent has a different interface. A competitor would need to build adapters for the same agents. But adapters are replicable (the cross-audit documented the interfaces).
 
-**Ownable:** Moderate. "Work transfer" is not an established category. Bridge could define it. But the category is narrower than standing — it's about handoff between agents, not about what is effective.
+**Ownable:** Moderate. "Work transfer" is not an established category. Bridge could define it. But the category is narrower than standing - it's about handoff between agents, not about what is effective.
 
 **Monetizable:** Uncertain. Developer tools for multi-agent workflows are early. The market may not be willing to pay yet.
 
@@ -131,7 +131,7 @@ For each candidate thesis, assess:
 
 ---
 
-## 3. THE SIX MOAT SOURCES — BRIDGE-SPECIFIC ANALYSIS
+## 3. THE SIX MOAT SOURCES - BRIDGE-SPECIFIC ANALYSIS
 
 ### Graph Data (Standing Graph, Authority Graph)
 
@@ -192,7 +192,7 @@ For each candidate thesis, assess:
 
 ---
 
-## 4. MOAT SYNTHESIS — HONEST ASSESSMENT
+## 4. MOAT SYNTHESIS - HONEST ASSESSMENT
 
 **Bridge's moat is not in the algorithm.** The resolver is deterministic graph traversal. It can be replicated.
 

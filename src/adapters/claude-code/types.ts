@@ -3,7 +3,7 @@
  *
  * Type definitions for Claude Code's stream-json output format.
  * Reverse-engineered from live CLI output with:
- *   claude -p --output-format stream-json --verbose
+ * claude -p --output-format stream-json --verbose
  *
  * Evidence: Each line is a complete JSON object with a `type` field.
  * Observed event types from actual CLI output:
@@ -22,30 +22,30 @@
 // ---------------------------------------------------------------------------
 
 export interface ClaudeSystemInit {
-  type: 'system';
-  subtype: 'init';
-  session_id: string;
-  uuid: string;
-  [key: string]: unknown;
+ type: 'system';
+ subtype: 'init';
+ session_id: string;
+ uuid: string;
+ [key: string]: unknown;
 }
 
 export interface ClaudeSystemApiRetry {
-  type: 'system';
-  subtype: 'api_retry';
-  attempt: number;
-  max_retries: number;
-  retry_delay_ms: number;
-  error_status: number | null;
-  error: string;
-  session_id: string;
-  uuid: string;
+ type: 'system';
+ subtype: 'api_retry';
+ attempt: number;
+ max_retries: number;
+ retry_delay_ms: number;
+ error_status: number | null;
+ error: string;
+ session_id: string;
+ uuid: string;
 }
 
 export interface ClaudeSystemOther {
-  type: 'system';
-  subtype: string;
-  session_id?: string;
-  [key: string]: unknown;
+ type: 'system';
+ subtype: string;
+ session_id?: string;
+ [key: string]: unknown;
 }
 
 export type ClaudeSystemEvent = ClaudeSystemInit | ClaudeSystemApiRetry | ClaudeSystemOther;
@@ -55,30 +55,30 @@ export type ClaudeSystemEvent = ClaudeSystemInit | ClaudeSystemApiRetry | Claude
 // ---------------------------------------------------------------------------
 
 export interface ClaudeContentBlockStart {
-  type: 'content_block_start';
-  index: number;
-  content_block: {
-    type: 'text' | 'tool_use';
-    text?: string;
-    id?: string;
-    name?: string;
-    input?: unknown;
-  };
+ type: 'content_block_start';
+ index: number;
+ content_block: {
+ type: 'text' | 'tool_use';
+ text?: string;
+ id?: string;
+ name?: string;
+ input?: unknown;
+ };
 }
 
 export interface ClaudeContentBlockDelta {
-  type: 'content_block_delta';
-  index: number;
-  delta: {
-    type: 'text_delta' | 'input_json_delta';
-    text?: string;
-    partial_json?: string;
-  };
+ type: 'content_block_delta';
+ index: number;
+ delta: {
+ type: 'text_delta' | 'input_json_delta';
+ text?: string;
+ partial_json?: string;
+ };
 }
 
 export interface ClaudeContentBlockStop {
-  type: 'content_block_stop';
-  index: number;
+ type: 'content_block_stop';
+ index: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -86,26 +86,26 @@ export interface ClaudeContentBlockStop {
 // ---------------------------------------------------------------------------
 
 export interface ClaudeAssistantMessage {
-  type: 'assistant';
-  message: {
-    id: string;
-    type: 'message';
-    role: 'assistant';
-    content: Array<{
-      type: 'text' | 'tool_use';
-      text?: string;
-      id?: string;
-      name?: string;
-      input?: unknown;
-    }>;
-    model: string;
-    stop_reason: string | null;
-    usage?: {
-      input_tokens: number;
-      output_tokens: number;
-    };
-  };
-  session_id: string;
+ type: 'assistant';
+ message: {
+ id: string;
+ type: 'message';
+ role: 'assistant';
+ content: Array<{
+ type: 'text' | 'tool_use';
+ text?: string;
+ id?: string;
+ name?: string;
+ input?: unknown;
+ }>;
+ model: string;
+ stop_reason: string | null;
+ usage?: {
+ input_tokens: number;
+ output_tokens: number;
+ };
+ };
+ session_id: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -113,16 +113,16 @@ export interface ClaudeAssistantMessage {
 // ---------------------------------------------------------------------------
 
 export interface ClaudeResultEvent {
-  type: 'result';
-  result: string;
-  session_id: string;
-  subtype: string;
-  cost_usd?: number;
-  duration_ms?: number;
-  duration_api_ms?: number;
-  is_error: boolean;
-  num_turns: number;
-  [key: string]: unknown;
+ type: 'result';
+ result: string;
+ session_id: string;
+ subtype: string;
+ cost_usd?: number;
+ duration_ms?: number;
+ duration_api_ms?: number;
+ is_error: boolean;
+ num_turns: number;
+ [key: string]: unknown;
 }
 
 // ---------------------------------------------------------------------------
@@ -130,34 +130,34 @@ export interface ClaudeResultEvent {
 // ---------------------------------------------------------------------------
 
 export type ClaudeStreamEvent =
-  | ClaudeSystemEvent
-  | ClaudeContentBlockStart
-  | ClaudeContentBlockDelta
-  | ClaudeContentBlockStop
-  | ClaudeAssistantMessage
-  | ClaudeResultEvent
-  | { type: string; [key: string]: unknown }; // Catch-all for unknown event types
+ | ClaudeSystemEvent
+ | ClaudeContentBlockStart
+ | ClaudeContentBlockDelta
+ | ClaudeContentBlockStop
+ | ClaudeAssistantMessage
+ | ClaudeResultEvent
+ | { type: string; [key: string]: unknown }; // Catch-all for unknown event types
 
 // ---------------------------------------------------------------------------
 // Type Guards
 // ---------------------------------------------------------------------------
 
 export function isClaudeSystemEvent(event: ClaudeStreamEvent): event is ClaudeSystemEvent {
-  return event.type === 'system';
+ return event.type === 'system';
 }
 
 export function isClaudeContentDelta(
-  event: ClaudeStreamEvent,
+ event: ClaudeStreamEvent,
 ): event is ClaudeContentBlockDelta {
-  return event.type === 'content_block_delta';
+ return event.type === 'content_block_delta';
 }
 
 export function isClaudeResult(event: ClaudeStreamEvent): event is ClaudeResultEvent {
-  return event.type === 'result';
+ return event.type === 'result';
 }
 
 export function isClaudeAssistantMessage(
-  event: ClaudeStreamEvent,
+ event: ClaudeStreamEvent,
 ): event is ClaudeAssistantMessage {
-  return event.type === 'assistant';
+ return event.type === 'assistant';
 }

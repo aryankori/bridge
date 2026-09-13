@@ -1,4 +1,4 @@
-# BRIDGE — Startup Attack: Kill the Company
+# BRIDGE - Startup Attack: Kill the Company
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -20,7 +20,7 @@
 
 **How likely:** Moderate to high. OpenAI is investing in instruction hierarchy (March 2026 blog). Anthropic is building agent memory and governance (Claude Managed Agents, April 2026). Both have the model capability, the platform access, and the incentive to make agents more reliable.
 
-**Bridge's defense:** Bridge's resolution is deterministic (same input → same output), citation-backed, and auditorily separate from the model. Platform vendors' built-in resolution is probabilistic (model-based) and opaque. For compliance, audit, and high-stakes decisions, deterministic resolution may be preferred. But this is a niche defense.
+**Bridge's defense:** Bridge's resolution is deterministic (same input -> same output), citation-backed, and auditorily separate from the model. Platform vendors' built-in resolution is probabilistic (model-based) and opaque. For compliance, audit, and high-stakes decisions, deterministic resolution may be preferred. But this is a niche defense.
 
 ### Open-Source Project Ships a General Resolver
 
@@ -74,7 +74,7 @@
 
 ### Enterprise Governance for AI Agents
 
-**Structure:** Enterprises deploying multiple agents need governance — what agents can do, what they should do, who decided, with what authority, with what record. They need standing computation as part of their governance infrastructure.
+**Structure:** Enterprises deploying multiple agents need governance - what agents can do, what they should do, who decided, with what authority, with what record. They need standing computation as part of their governance infrastructure.
 
 **Why Bridge is necessary:** Existing governance platforms (AWS AgentCore, Databricks Unity Gateway, NeuralTrust, ElixirData) focus on access control and enforcement. They don't compute project-specific standing from instruction sources. Bridge fills this gap.
 
@@ -191,7 +191,7 @@ Bridge becomes a useful developer tool (resolver + standing records) with a nich
 
 **The best-case outcome:**
 
-Multi-agent, multi-platform development becomes standard. Platform vendors' built-in resolvers handle generic cases but not project-specific standing. Regulators demand deterministic, auditable standing records. Bridge becomes the neutral institutional state layer that all agents, all platforms, and all compliance frameworks read and write. Bridge is infrastructure — like Git, like OPA, like a protocol — not a feature.
+Multi-agent, multi-platform development becomes standard. Platform vendors' built-in resolvers handle generic cases but not project-specific standing. Regulators demand deterministic, auditable standing records. Bridge becomes the neutral institutional state layer that all agents, all platforms, and all compliance frameworks read and write. Bridge is infrastructure - like Git, like OPA, like a protocol - not a feature.
 
 **The worst-case outcome:**
 

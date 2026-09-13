@@ -1,4 +1,4 @@
-# BRIDGE — Decision Tree: IF/THEN Strategy
+# BRIDGE - Decision Tree: IF/THEN Strategy
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -14,7 +14,7 @@
 |---|---|
 | **Next Research** | Analyze transfer quality: what transfers well, what transfers poorly, what limits transfer value. Publish transfer taxonomy. |
 | **Next Product** | Add transfer as a Bridge feature (not the main product). Transfer-cli: extract context from agent A, format for agent B, inject. |
-| **Next Paper** | Component paper: "Structured Work Transfer for Multi-Agent Development" — empirical results from EXP-001. |
+| **Next Paper** | Component paper: "Structured Work Transfer for Multi-Agent Development" - empirical results from EXP-001. |
 | **Next Business Action** | Validate transfer as a feature, not the wedge. The wedge remains standing computation. Transfer is a complement. |
 
 ### IF EXP-001 NEGATIVE (work transfer does not improve outcomes)
@@ -28,7 +28,7 @@
 
 ---
 
-## 2. EXP-004 OUTCOME (KNOWN — COMPLETED)
+## 2. EXP-004 OUTCOME (KNOWN - COMPLETED)
 
 **Results:** 76% exact resolution accuracy, 76.9% conflict detection F1, 0% false allow, 8% false block, 88% citation recall on 25 held-out scenarios.
 
@@ -39,7 +39,7 @@
 | Dimension | Action |
 |---|---|
 | **Next Research** | Characterize the 24% of failures: what types of conflicts does the resolver miss? Are they addressable with better anomaly detectors, more tiers, or different authority rules? |
-| **Next Product** | Ship the resolver at 75% accuracy with honesty about limitations. "75% accurate, 0% false allow, 25% of conflicts need human review." This is a feature, not a bug — honest accuracy builds trust. |
+| **Next Product** | Ship the resolver at 75% accuracy with honesty about limitations. "75% accurate, 0% false allow, 25% of conflicts need human review." This is a feature, not a bug - honest accuracy builds trust. |
 | **Next Paper** | Paper 1 (Effective Directives) reports 75% accuracy honestly. The paper's contribution is the framework + safety guarantee + explainability, not superhuman accuracy. |
 | **Next Business Action** | Position as "resolver with safety guarantee." 75% accuracy with 0% false allow is valuable for compliance and cautious agent deployment. Don't overclaim. |
 
@@ -64,14 +64,14 @@
 |---|---|
 | **Next Research** | EXP-006: mechanism isolation (is it the resolution or the format?). EXP-007: generalization to more scenarios. |
 | **Next Product** | Ship Bridge resolver as a developer tool (CLI + agent injection). The wedge is proven. Invest in the product. |
-| **Next Paper** | Paper 1: "Effective Directives for AI Coding Agents" — framework + benchmark + live agent validation. This is the flagship paper. |
+| **Next Paper** | Paper 1: "Effective Directives for AI Coding Agents" - framework + benchmark + live agent validation. This is the flagship paper. |
 | **Next Business Action** | Raise stakes. The thesis is validated at the behavioral level. Pursue developer adoption, open-source distribution, and enterprise compliance angle. The company is viable if the market materializes. |
 
 **Sub-condition B: BRIDGE > RAW by a small margin (5-15% improvement)**
 
 | Dimension | Action |
 |---|---|
-| **Next Research** | EXP-006: is the small margin real or noise? Mechanism isolation. EXP-008: real-world use — does the small margin translate to real value? |
+| **Next Research** | EXP-006: is the small margin real or noise? Mechanism isolation. EXP-008: real-world use - does the small margin translate to real value? |
 | **Next Product** | Ship Bridge resolver with honest characterization: "improves agent behavior modestly; most valuable for high-stakes or high-conflict actions." |
 | **Next Paper** | Paper 1 reports small but significant improvement. The paper's contribution is the framework and the proof of concept, not a dramatic behavioral improvement. |
 | **Next Business Action** | Bridge is a useful tool, not a transformative product. The company is viable only if the compliance/enterprise angle provides enough revenue. Developer wedge alone is not enough for a company. |
@@ -82,7 +82,7 @@
 |---|---|
 | **Next Research** | Why no difference? Did agents ignore the directive? Was the RAW baseline already good? Was the directive format unhelpful? Deep investigation before concluding. |
 | **Next Product** | Defer resolver as a product. The behavioral value is not demonstrated. The resolver may still be useful for audit/compliance (standing records), but the developer wedge is not compelling. |
-| **Next Paper** | Paper 1 reports negative behavioral result honestly. "Resolver computes correct standing, but agent behavior does not improve." This is an important negative result — it tells the field that resolution alone is insufficient. |
+| **Next Paper** | Paper 1 reports negative behavioral result honestly. "Resolver computes correct standing, but agent behavior does not improve." This is an important negative result - it tells the field that resolution alone is insufficient. |
 | **Next Business Action** | Pivot. If the agent doesn't benefit from the directive, Bridge's developer wedge is dead. Pivot to: (a) standing records for compliance/audit only, or (b) a different intervention that actually changes agent behavior. |
 
 ### IF EXP-005 NEGATIVE (BRIDGE does not improve agent behavior vs RAW)
@@ -133,14 +133,14 @@
 |---|---|
 | **Next Research** | The format and structure are the value, not the resolution logic. Investigate what structural elements help: citations? status labels? section headers? |
 | **Next Product** | The product is "structured directive format," not "resolver." Invest in the format, not the resolution logic. The resolver becomes a format generator, not a computation engine. |
-| **Next Paper** | Paper 2 (if any) is about directive format, not standing. The standing concept is weakened — if any structure helps, standing is not the differentiator. |
+| **Next Paper** | Paper 2 (if any) is about directive format, not standing. The standing concept is weakened - if any structure helps, standing is not the differentiator. |
 | **Next Business Action** | The resolver's resolution logic is less valuable than expected. The moat shifts to format and structure, which is weaker. Pivot to compliance/audit (where the computation matters more than the format). |
 
 ---
 
 ## 5. EXP-007 OUTCOME (GENERALIZATION)
 
-### IF RESOLVER GENERALIZES (accuracy holds ≥ 70% on expanded set)
+### IF RESOLVER GENERALIZES (accuracy holds >= 70% on expanded set)
 
 | Dimension | Action |
 |---|---|
@@ -217,7 +217,7 @@
 |---|---|
 | **Next Research** | Define the category standard. What are the interfaces, formats, and protocols? How do systems interoperate? |
 | **Next Product** | Platform Bridge: the standard institutional state layer. All agents, all platforms, all compliance frameworks read and write. |
-| **Next Paper** | Paper 3 (Institutional State) — the definitive category paper. |
+| **Next Paper** | Paper 3 (Institutional State) - the definitive category paper. |
 | **Next Business Action** | Platform company. Infrastructure-like moat. Network effects. Category ownership. |
 
 ### IF CATEGORY DOES NOT MATERIALIZE (no one recognizes institutional state as a category)
@@ -234,42 +234,42 @@
 ## 8. THE MASTER DECISION TREE (CONDENSED)
 
 ```
-                               ┌─────────────────────────────┐
-                               │        EXP-005 RESULT       │
-                               └─────────────┬───────────────┘
-                                             │
-                    ┌────────────────────────┼────────────────────────┐
-                    │                        │                        │
-              POSITIVE (large)        POSITIVE (small)         NEGATIVE
-                    │                        │                        │
-                    ▼                        ▼                        ▼
-            Ship + paper           Ship + paper           Investigate why:
-            Big bet                Smaller bet            ├─ Ignored? → fix integration
-                    │                        │                    ├─ RAW good? → niche only
-                    ▼                        ▼                    └─ Wrong? → fix resolver
-            EXP-006/007             EXP-006/007
-                    │                        │
-                    ▼                        ▼
-            Generalize?           Generalize?                 ┌─────────────────────────┐
-                    │                        │                   │   REPITCH BY BRANCH:    │
-              ┌─────┴─────┐           ┌─────┴─────┐           │                         │
-              │           │           │           │           │ • Enterprise/compliance  │
-          YES          NO          YES          NO          │ • Standing records only │
-              │           │           │           │           │ • Agent integration fix │
-              ▼           ▼           ▼           ▼           │ • Pivot or shut down    │
-        EXP-008      Invest        EXP-008      Defer         └─────────────────────────┘
-            │               │           │               │
-            ▼               ▼           ▼               ▼
-        Real-world     Real-world    Real-world     Real-world
-         help?          help?        help?          help?
-            │               │           │               │
-          ┌─┴─┐           ┌─┴─┐       ┌─┴─┐           ┌─┴─┐
-          │   │           │   │       │   │           │   │
-          YES NO         YES NO      YES NO         YES NO
-          │   │           │   │       │   │           │   │
-          ▼   ▼           ▼   ▼       ▼   ▼           ▼   ▼
-      Ship   Pivot    Ship   Pivot  Ship   Pivot    Ship   Pivot
-      scale  down     scale  down   scale  down     scale  down
+ ┌─────────────────────────────┐
+ │ EXP-005 RESULT │
+ └─────────────┬───────────────┘
+ │
+ ┌────────────────────────┼────────────────────────┐
+ │ │ │
+ POSITIVE (large) POSITIVE (small) NEGATIVE
+ │ │ │
+ ▼ ▼ ▼
+ Ship + paper Ship + paper Investigate why:
+ Big bet Smaller bet ├─ Ignored? -> fix integration
+ │ │ ├─ RAW good? -> niche only
+ ▼ ▼ └─ Wrong? -> fix resolver
+ EXP-006/007 EXP-006/007
+ │ │
+ ▼ ▼
+ Generalize? Generalize? ┌─────────────────────────┐
+ │ │ │ REPITCH BY BRANCH: │
+ ┌─────┴─────┐ ┌─────┴─────┐ │ │
+ │ │ │ │ │ | Enterprise/compliance │
+ YES NO YES NO │ | Standing records only │
+ │ │ │ │ │ | Agent integration fix │
+ ▼ ▼ ▼ ▼ │ | Pivot or shut down │
+ EXP-008 Invest EXP-008 Defer └─────────────────────────┘
+ │ │ │ │
+ ▼ ▼ ▼ ▼
+ Real-world Real-world Real-world Real-world
+ help? help? help? help?
+ │ │ │ │
+ ┌─┴─┐ ┌─┴─┐ ┌─┴─┐ ┌─┴─┐
+ │ │ │ │ │ │ │ │
+ YES NO YES NO YES NO YES NO
+ │ │ │ │ │ │ │ │
+ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼
+ Ship Pivot Ship Pivot Ship Pivot Ship Pivot
+ scale down scale down scale down scale down
 ```
 
 ---

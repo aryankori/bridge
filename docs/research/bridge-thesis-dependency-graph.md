@@ -1,4 +1,4 @@
-# BRIDGE — Thesis Dependency Graph & Transition Rationale
+# BRIDGE - Thesis Dependency Graph & Transition Rationale
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -10,21 +10,21 @@
 
 ```
 interoperability
-  → transfer
-    → memory
-      → intelligence
-        → reconciliation
-          → commitment
-            → authority
-              → effective directive
-                → effective standing
+ -> transfer
+ -> memory
+ -> intelligence
+ -> reconciliation
+ -> commitment
+ -> authority
+ -> effective directive
+ -> effective standing
 ```
 
 Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT ASSUMPTION WAS REJECTED?
 
 ---
 
-## 1. INTEROPERABILITY → TRANSFER
+## 1. INTEROPERABILITY -> TRANSFER
 
 **Why the move:** You cannot transfer work across agents that cannot see each other.
 
@@ -32,9 +32,9 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 - Hermes cross-audit (2026-08-25) verified 6+ distinct agent runtimes on the machine: Claude Code, OpenCode, Hermes, Gemini CLI, Antigravity, Cursor
 - Cross-audit proved each agent spawns as isolated subprocess with no shared state
 - A2A specification (Linux Foundation/Google) emerging as inter-agent standard; ACP as editor-to-agent standard; MCP as tool-to-agent standard
-- No existing system transfers structured context between agents — only lossy conversation summaries
+- No existing system transfers structured context between agents - only lossy conversation summaries
 
-**Assumption rejected:** "Agents that use the same model can share context." FALSE — model similarity does not create state sharing.
+**Assumption rejected:** "Agents that use the same model can share context." FALSE - model similarity does not create state sharing.
 
 **What remains unproven:**
 - Whether developers actually want cross-agent transfer, or whether they prefer each agent to operate independently
@@ -42,17 +42,17 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## 2. TRANSFER → MEMORY
+## 2. TRANSFER -> MEMORY
 
 **Why the move:** Transfer without persistence creates a one-time handoff. The receiving agent has context for one session, then loses it.
 
 **Evidence:**
-- Cross-audit Context Transfer Audit: Conversation turn history classified as `[LOSSY TRANSFER]` — LLM summaries degrade across hops
+- Cross-audit Context Transfer Audit: Conversation turn history classified as `[LOSSY TRANSFER]` - LLM summaries degrade across hops
 - Model hidden reasoning / scratchpads classified as `[IMPOSSIBLE TRANSFER]`
 - Developer-wedge-validation research: "approximately 15 to 25 percent of interaction time with the agent is spent re-establishing context" (GitHub issue cited in research corpus)
 - Anthropic's Code with Claude 2026 event shipped Claude Managed Agents with built-in memory (April 2026), acknowledging the amnesia problem is real and urgent
 
-**Assumption rejected:** "Transfer is sufficient; the receiving agent will remember what it learned." FALSE — agents lose all context when sessions end.
+**Assumption rejected:** "Transfer is sufficient; the receiving agent will remember what it learned." FALSE - agents lose all context when sessions end.
 
 **What remains unproven:**
 - Whether the value is in remembering what the agent did, or in remembering what the project decided
@@ -60,13 +60,13 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## 3. MEMORY → INTELLIGENCE
+## 3. MEMORY -> INTELLIGENCE
 
 **Why the move:** Storing memory is not enough. Memory must be retrievable, structured, and actionable. The question shifts from "can agents remember?" to "can agents use what they remember to make better decisions?"
 
 **Evidence:**
-- PROJECTMEM paper (arXiv 2606.12329, 2026): "A Local-First, Event-Sourced Memory and Judgment Layer for AI Coding Agents" — argues memory should be immutable, human-legible, offline, and tool-agnostic
-- agentmemory project (rohitg00/agentmemory, ~311 GitHub PRs as of Aug 2026): persistent memory for Claude Code, Codex, Copilot, Gemini, OpenCode — MCP-based, "real-world benchmarks"
+- PROJECTMEM paper (arXiv 2606.12329, 2026): "A Local-First, Event-Sourced Memory and Judgment Layer for AI Coding Agents" - argues memory should be immutable, human-legible, offline, and tool-agnostic
+- agentmemory project (rohitg00/agentmemory, ~311 GitHub PRs as of Aug 2026): persistent memory for Claude Code, Codex, Copilot, Gemini, OpenCode - MCP-based, "real-world benchmarks"
 - Anthropic's "Effective context engineering for AI agents" (Sep 2025): context retrieval, compaction, note-taking strategies
 - Mem0 (arXiv April 2025): 91% reduction in response time vs full-context, LOCOMO benchmark
 - Galileo AI blog (2025): "Without a tamper-evident audit trail, incidents quickly devolve into blame games"
@@ -79,16 +79,16 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## 4. INTELLIGENCE → RECONCILIATION
+## 4. INTELLIGENCE -> RECONCILIATION
 
 **Why the move:** Memory can store conflicting information. When multiple agents with different memories, or multiple document sources, disagree, you need a reconciliation mechanism.
 
 **Evidence:**
 - EXP-004 design doc: "conflicting instructions arise (outdated README mandating npm while active configuration mandates pnpm, or prompt requesting hotfix that contradicts lint rule)"
 - 40 scenarios across 8 categories: package managers, branch protection, style, runtime versions, security vetoes, adversarial injections, task exceptions, unresolvable ambiguities
-- The reconciliation problem is not hypothetical — it is the daily experience of developers working with multiple instruction sources
+- The reconciliation problem is not hypothetical - it is the daily experience of developers working with multiple instruction sources
 
-**Assumption rejected:** "The latest instruction wins." FALSE — stales docs, stale ADRs, and stale READMEs are common. Recency is not authority.
+**Assumption rejected:** "The latest instruction wins." FALSE - stales docs, stale ADRs, and stale READMEs are common. Recency is not authority.
 
 **What remains unproven:**
 - Whether reconciliation should be automated (resolver) or human-mediated
@@ -96,17 +96,17 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## 5. RECONCILIATION → COMMITMENT
+## 5. RECONCILIATION -> COMMITMENT
 
 **Why the move:** Reconciliation produces a decision, but decisions that aren't recorded as commitments are not durable. The project needs to know what was decided and why.
 
 **Evidence:**
-- Hermes recovery & strategy doc (2026-08-27): commits to canonical commit graph; commits as anchor for memory, reconciliation, authority — "all other Bridge concepts are projections of the commit graph"
+- Hermes recovery & strategy doc (2026-08-27): commits to canonical commit graph; commits as anchor for memory, reconciliation, authority - "all other Bridge concepts are projections of the commit graph"
 - Standing falsification research: "Bridge Core begins by committing a record of what decision was made and why, before reasoning about whether the decision was correct"
 - EU AI Act August 2026 deadline: Article 12 requires tamper-evident logs; audit trail tools like MakerChecker (AGPL-3.0, 2026) hash-chain every action
-- "Decision Provenance: Harnessing Data Flow for Accountable Systems" (IEEE Access 2019) — lineage exposes inputs, decisions, downstream effects
+- "Decision Provenance: Harnessing Data Flow for Accountable Systems" (IEEE Access 2019) - lineage exposes inputs, decisions, downstream effects
 
-**Assumption rejected:** "Decisions are implicit in the code." FALSE — code is the output of decisions, not the decision record. The decision *why* is lost without explicit commitment.
+**Assumption rejected:** "Decisions are implicit in the code." FALSE - code is the output of decisions, not the decision record. The decision *why* is lost without explicit commitment.
 
 **What remains unproven:**
 - Whether developers will adopt explicit decision commitment, or whether informal practices (chat logs, PR descriptions) suffice
@@ -114,17 +114,17 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## 6. COMMITMENT → AUTHORITY
+## 6. COMMITMENT -> AUTHORITY
 
 **Why the move:** Once you record commitments, you face the question: whose commitment governs? When two agents or two humans make conflicting commitments, which one is authoritative?
 
 **Evidence:**
-- Standing breakthrough research: "authority graph — node for every instruction source, edge for precedence"
-- Standing falsification: tiers — Explicit Human Developer Prompt (100) > Task Specification/Issue (80) > Repository Agent Rules (60) > Project Documentation (40) > Environment/Git State (30) > Default Conventions (10)
+- Standing breakthrough research: "authority graph - node for every instruction source, edge for precedence"
+- Standing falsification: tiers - Explicit Human Developer Prompt (100) > Task Specification/Issue (80) > Repository Agent Rules (60) > Project Documentation (40) > Environment/Git State (30) > Default Conventions (10)
 - "Many-Tier Instruction Hierarchy in LLM Agents" (arXiv 2604.09443, 2026): OpenAI's Model Spec hardcodes 5 authority levels; academic work shows models are "brittle at fine-grained instruction conflict resolution"
 - OpenAI instruction hierarchy blog (March 2026): "When these instructions conflict, the model has to decide which ones to prioritize"
 
-**Assumption rejected:** "All instruction sources are equal." FALSE — a human developer prompt should override a stale README. But the hierarchy is not obvious to the model.
+**Assumption rejected:** "All instruction sources are equal." FALSE - a human developer prompt should override a stale README. But the hierarchy is not obvious to the model.
 
 **What remains unproven:**
 - Whether a universal authority hierarchy exists, or whether it is organization/team/project specific
@@ -132,7 +132,7 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## 7. AUTHORITY → EFFECTIVE DIRECTIVE
+## 7. AUTHORITY -> EFFECTIVE DIRECTIVE
 
 **Why the move:** Authority is abstract. The agent needs a concrete answer: "what should I do right now, given all the conflicting authorities?" The effective directive is the resolution of authority into a single actionable output.
 
@@ -146,20 +146,20 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 **What remains unproven (EXP-005 is testing this):**
 - Whether effective directive resolution actually improves agent behavior in live execution
-- Whether the 76% resolver accuracy is good enough — does the agent act on the directive or ignore it?
+- Whether the 76% resolver accuracy is good enough - does the agent act on the directive or ignore it?
 - Whether the gap between resolver accuracy and agent outcome is bridgeable
 
 ---
 
-## 8. EFFECTIVE DIRECTIVE → EFFECTIVE STANDING
+## 8. EFFECTIVE DIRECTIVE -> EFFECTIVE STANDING
 
 **Why the move:** A single directive is a point solution. Real projects have many actions, many agents, many authorities. The concept expands from "what directive governs this one action?" to "what is the effective standing of each authority across all actions, and how does standing change over time?"
 
 **Evidence:**
-- Standing falsification research: "effective standing — for a given action, under current project conditions, what authority governs and why?" — extends beyond single directives to standing across project state
+- Standing falsification research: "effective standing - for a given action, under current project conditions, what authority governs and why?" - extends beyond single directives to standing across project state
 - Standing breakthrough: "The fundamental primitive is not 'who wins' but 'who stands effective for this action at this time under these conditions'"
-- Effective standing product falsification: enterprise hypothesis — "compute effective standing / authority across fragmented systems when multiple legitimate authorities can influence the same action"
-- Commitment control: standing is not static — it changes with project evolution, policy updates, explicit overrides, and temporal conditions
+- Effective standing product falsification: enterprise hypothesis - "compute effective standing / authority across fragmented systems when multiple legitimate authorities can influence the same action"
+- Commitment control: standing is not static - it changes with project evolution, policy updates, explicit overrides, and temporal conditions
 
 **Assumption rejected:** "Standing is a property of the authority." The breakthrough insight: standing is a property of the *action-authority-state* triple. It is situational and temporal.
 
@@ -170,18 +170,18 @@ Each arrow answers: WHY DID WE MOVE HERE? WHAT EVIDENCE CAUSED THE MOVE? WHAT AS
 
 ---
 
-## THE THESIS CHAIN — SUMMARY
+## THE THESIS CHAIN - SUMMARY
 
 | Transition | Move Driven By | Key Evidence | Rejecting Assumption | Unproven |
 |---|---|---|---|---|
-| Interop → Transfer | Agents can't see each other | 6+ runtimes verified; no cross-agent context sharing | "Same model = shared context" | Do developers want transfer? |
-| Transfer → Memory | One-time handoff isn't enough | Anthropic shipped memory; agentmemory project; PROJECTMEM paper | "Transfer is sufficient" | Agent memory vs project memory? |
-| Memory → Intelligence | Storing isn't using | Context engineering literature; Mem0 benchmark | "Memory is a context problem" | Does structured memory improve outcomes? |
-| Intelligence → Reconciliation | Conflicting memory/sources | EXP-004: 40 scenarios, 8 conflict categories | "Latest instruction wins" | Automated vs human reconciliation? |
-| Reconciliation → Commitment | Decisions must be recorded | EU AI Act Article 12; commit graph as anchor | "Decisions are in the code" | Will developers adopt explicit commitment? |
-| Commitment → Authority | Whose commitment governs? | Standing tiers; Many-Tier Instruction Hierarchy paper | "All sources are equal" | Universal vs team-specific hierarchy? |
-| Authority → Effective Directive | Authority is abstract; agent needs concrete answer | EXP-004: 76% accuracy, 0% false allow; EXP-005 live test | "Model can resolve conflicts alone" | Does directive improve agent behavior? |
-| Effective Directive → Effective Standing | Point solution → system | Standing as action-authority-state triple; temporal | "Standing is a property of authority" | Enterprise generalization? Deterministic at scale? |
+| Interop -> Transfer | Agents can't see each other | 6+ runtimes verified; no cross-agent context sharing | "Same model = shared context" | Do developers want transfer? |
+| Transfer -> Memory | One-time handoff isn't enough | Anthropic shipped memory; agentmemory project; PROJECTMEM paper | "Transfer is sufficient" | Agent memory vs project memory? |
+| Memory -> Intelligence | Storing isn't using | Context engineering literature; Mem0 benchmark | "Memory is a context problem" | Does structured memory improve outcomes? |
+| Intelligence -> Reconciliation | Conflicting memory/sources | EXP-004: 40 scenarios, 8 conflict categories | "Latest instruction wins" | Automated vs human reconciliation? |
+| Reconciliation -> Commitment | Decisions must be recorded | EU AI Act Article 12; commit graph as anchor | "Decisions are in the code" | Will developers adopt explicit commitment? |
+| Commitment -> Authority | Whose commitment governs? | Standing tiers; Many-Tier Instruction Hierarchy paper | "All sources are equal" | Universal vs team-specific hierarchy? |
+| Authority -> Effective Directive | Authority is abstract; agent needs concrete answer | EXP-004: 76% accuracy, 0% false allow; EXP-005 live test | "Model can resolve conflicts alone" | Does directive improve agent behavior? |
+| Effective Directive -> Effective Standing | Point solution -> system | Standing as action-authority-state triple; temporal | "Standing is a property of authority" | Enterprise generalization? Deterministic at scale? |
 
 ---
 

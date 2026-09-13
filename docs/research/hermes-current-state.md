@@ -1,7 +1,7 @@
-# Bridge — Hermes Current State
+# Bridge - Hermes Current State
 
-**Generated:** Phase 0 reconstruction  
-**Author:** Hermes Agent (Research Lead / Evaluation Lead)  
+**Generated:** Phase 0 reconstruction 
+**Author:** Hermes Agent (Research Lead / Evaluation Lead) 
 **Categories:** REPOSITORY FACT · EXPERIMENTAL EVIDENCE · AGENT REPORT · MEMORY · INFERENCE · HYPOTHESIS
 
 ---
@@ -32,7 +32,7 @@
 
 ---
 
-## 2. EXPERIMENTAL EVIDENCE — EXP-005 FORENSIC STATE
+## 2. EXPERIMENTAL EVIDENCE - EXP-005 FORENSIC STATE
 
 ### What exists on disk (verified this session)
 
@@ -41,8 +41,8 @@
 | `research/experiments/exp-005/exp005-manifest.json` | **NO** | File does not exist on disk; no `.json` files in `exp-005/` directory |
 | `research/experiments/exp-005/worktrees/` | **YES** | Directory exists, contains exactly **one** surviving worktree |
 | Surviving worktree | `trial-exp005-scn-006-B-rep2-1787827019225` | Condition B (HUMAN), scenario 6, replication 2, seed `1787827019225` |
-| `run-pilot.ts` | YES | Pilot runner source — read |
-| `harness.ts` | YES | Harness source — read (7,363 chars) |
+| `run-pilot.ts` | YES | Pilot runner source - read |
+| `harness.ts` | YES | Harness source - read (7,363 chars) |
 | `agent-runners.ts` | YES | Agent runner implementations |
 | `evaluator.ts` | YES | Evaluation logic |
 | `validate.ts` | YES | Validation logic |
@@ -71,10 +71,10 @@ The runner (`run-pilot.ts` + `harness.ts`) produced worktrees on disk but the ma
 
 | Report | Claim | Status |
 |---|---|---|
-| Antigravity progress report (~44–45/60) | 44–45 trials completed | **Cannot verify from disk artifacts** — no manifest, only 1 worktree |
-| Later forensic inspection (25 manifest entries) | 25 trials in manifest | **Cannot verify** — manifest file does not exist on disk |
-| 24 surviving worktrees | 24 worktree directories | **Cannot verify** — only 1 worktree exists on disk |
-| Infrastructure-compromised report | Execution infrastructure broken | **CONSISTENT with disk state** — manifest missing, worktrees largely absent, C: drive at 97% capacity |
+| Antigravity progress report (~44-45/60) | 44-45 trials completed | **Cannot verify from disk artifacts** - no manifest, only 1 worktree |
+| Later forensic inspection (25 manifest entries) | 25 trials in manifest | **Cannot verify** - manifest file does not exist on disk |
+| 24 surviving worktrees | 24 worktree directories | **Cannot verify** - only 1 worktree exists on disk |
+| Infrastructure-compromised report | Execution infrastructure broken | **CONSISTENT with disk state** - manifest missing, worktrees largely absent, C: drive at 97% capacity |
 
 **The reports are mutually inconsistent AND inconsistent with disk state.** The only defensible conclusion is that the on-disk evidence is insufficient to reconstruct the full trial-by-trial provenance. The 60-trial plan existed. The runner ran. The persistence layer failed.
 
@@ -85,7 +85,7 @@ The runner (`run-pilot.ts` + `harness.ts`) produced worktrees on disk but the ma
 3. The runner source code (`run-pilot.ts`, `harness.ts`) implements checkpointing logic that writes to `exp005-manifest.json`
 4. The manifest file does not exist on disk
 5. Only 1 worktree survives on disk (scenario 6, condition B, replication 2)
-6. C: drive was at 97% capacity (464/475 GiB) at time of investigation — a plausible contributing factor to write failures or cleanup
+6. C: drive was at 97% capacity (464/475 GiB) at time of investigation - a plausible contributing factor to write failures or cleanup
 7. The surviving worktree is internally consistent (contains its own git state, test artifacts, and outputs for that single trial)
 
 ### What CANNOT be said definitively
@@ -107,9 +107,9 @@ The following items come from Antigravity execution reports and kanban workspace
 
 | Document | Size | Nature |
 |---|---|---|
-| `EXP-005-Analysis-Report.md` | 20,218 chars | Analysis of 25 checkpointed trials — but the manifest it analyzed does not exist on disk |
+| `EXP-005-Analysis-Report.md` | 20,218 chars | Analysis of 25 checkpointed trials - but the manifest it analyzed does not exist on disk |
 | `EXP-005-Revision-Plan-Part-1.md` | 11,089 chars | 7 revision directions ordered by priority |
-| `EXP-005-Revision-Plan.md` | — | Revision plan |
+| `EXP-005-Revision-Plan.md` | - | Revision plan |
 
 ### Prior session verdicts (agent reports)
 
@@ -120,7 +120,7 @@ The following items come from Antigravity execution reports and kanban workspace
 | NO-GO (infrastructure-broken caveat) | Post-pilot review; manifest missing | Agent report; consistent with disk state |
 | "EXP-005 is approved for live pilot execution" | Most recent gate posture | Agent report; contradicts NO-GO |
 
-**The YES-GO and NO-GO verdicts are both present in the agent record.** The GO verdicts concern the methodology and correction set. The NO-GO verdict concerns the actual executed data. These are not necessarily contradictory — a correct methodology can still produce no reliable data if the infrastructure fails.
+**The YES-GO and NO-GO verdicts are both present in the agent record.** The GO verdicts concern the methodology and correction set. The NO-GO verdict concerns the actual executed data. These are not necessarily contradictory - a correct methodology can still produce no reliable data if the infrastructure fails.
 
 ---
 
@@ -130,10 +130,10 @@ From `MEMORY.md` (persistent across sessions):
 
 - **EXP-004:** Resolver validated at 76% accuracy, 0% false-allow. Resolver frozen at commit `fc322c6`. Pre-validated on 10/10 scenarios (100% exact match) in corrected code.
 - **EXP-005:** Infrastructure-broken. Checkpointing stopped at 25/49 (per memory). No `node_modules`. Windows/PowerShell/batch mismatch identified as a contributing factor.
-- **Kanban board:** `bridge` board at `C:\Users\aryan\AppData\Local\hermes\kanban\boards\bridge\kanban.db`. 15 tasks. Dependency chain: EXP-005 → EXP-006 → EXP-007 → Enterprise governance. Parallel track: CLI resolver → Auth graph → Precedent → Multi-agent.
+- **Kanban board:** `bridge` board at `C:\Users\aryan\AppData\Local\hermes\kanban\boards\bridge\kanban.db`. 15 tasks. Dependency chain: EXP-005 -> EXP-006 -> EXP-007 -> Enterprise governance. Parallel track: CLI resolver -> Auth graph -> Precedent -> Multi-agent.
 - **Tavily:** Preferred research tool for Bridge project. MCP server enabled at `https://mcp.tavily.com/mcp/` but unauthenticated.
 - **Consensus thesis:** Authority-resolution infrastructure, not agent orchestration platform. Must justify against original work-transfer pain. Biggest threat = model providers baking in instruction hierarchy.
-- **C: drive:** 97% full (464/475 GiB) — potential factor in artifact loss.
+- **C: drive:** 97% full (464/475 GiB) - potential factor in artifact loss.
 - **Surviving worktree:** `trial-exp005-scn-006-B-rep2-1787827019225` (condition B, scenario 6, rep 2, seed 1787827019225).
 
 ---
@@ -162,7 +162,7 @@ The methodology can be GO while the data is NO-GO. The correct next step is not 
 
 ### Inference 5: The research direction (authority-resolution infrastructure) is consistent with the original product
 
-The original Bridge product is "ONE PLACE → MULTIPLE AI AGENTS → SHARED PROJECT → AUTOMATIC WORK TRANSFER." The authority-resolution concepts (Effective Directive, resolver, consensus-vs-authority) are potential subsystems that serve the original product, not a replacement for it. The research should not silently redefine Bridge as a governance product.
+The original Bridge product is "ONE PLACE -> MULTIPLE AI AGENTS -> SHARED PROJECT -> AUTOMATIC WORK TRANSFER." The authority-resolution concepts (Effective Directive, resolver, consensus-vs-authority) are potential subsystems that serve the original product, not a replacement for it. The research should not silently redefine Bridge as a governance product.
 
 ---
 
@@ -194,7 +194,7 @@ The original Bridge product is "ONE PLACE → MULTIPLE AI AGENTS → SHARED PROJ
 
 ### H5: The original Bridge product does not yet have a minimal viable work-transfer pipeline
 
-**Hypothesis:** Despite the research corpus (25 documents), the codebase does not yet contain a production-ready "Agent A → Bridge → WorkTransfer → Agent B" pipeline. The research is ahead of the implementation.
+**Hypothesis:** Despite the research corpus (25 documents), the codebase does not yet contain a production-ready "Agent A -> Bridge -> WorkTransfer -> Agent B" pipeline. The research is ahead of the implementation.
 
 **Status:** Untested. Requires codebase inspection of `src/` and `src/effective-directive/`.
 

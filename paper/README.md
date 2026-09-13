@@ -7,7 +7,7 @@ This directory contains the LaTeX source and supporting documentation for the Br
 - `main.tex`: The primary LaTeX document.
 - `references.bib`: The BibTeX bibliography.
 - `sections/`: Contains the individual `.tex` files for each section of the paper.
-  - *Note: Sections 06, 07, 11, and 12 are explicitly blocked with placeholders pending the successful execution of EXP-001.*
+ - *Note: Sections 06, 07, 11, and 12 are explicitly blocked with placeholders pending the successful execution of EXP-001.*
 - `figures/`: Will contain empirical graphs (PDF/PNG) and architectural TikZ diagrams.
 - `tables/`: Will contain `.tex` fragments for data tables.
 - `data/`: Will house the raw NDJSON/CSV telemetry from the experimental harness.

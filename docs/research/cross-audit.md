@@ -1,10 +1,10 @@
 # BRIDGE - ANTIGRAVITY CROSS-AUDIT
 
-**Document Version:** 1.0.0  
-**Date:** 2026-08-25  
-**Auditor:** Principal Systems Engineer (Antigravity)  
-**Subject:** Cross-Audit of Hermes Independent Technical & Market Review against Local Forensics & Codebase  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Document Version:** 1.0.0 
+**Date:** 2026-08-25 
+**Auditor:** Principal Systems Engineer (Antigravity) 
+**Subject:** Cross-Audit of Hermes Independent Technical & Market Review against Local Forensics & Codebase 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 
@@ -95,14 +95,14 @@ Hermes proposed this contract:
 
 ```typescript
 interface Adapter {
-  discover(): Agent[];
-  connect(config: unknown): Session;
-  disconnect(sessionId: string): void;
-  send(sessionId: string, message: Message): void;
-  stream(sessionId: string): EventEmitter<Message>;
-  interrupt(sessionId: string): void;
-  getCapabilities(agentId: string): Capability[];
-  getHealth(agentId: string): HealthStatus;
+ discover(): Agent[];
+ connect(config: unknown): Session;
+ disconnect(sessionId: string): void;
+ send(sessionId: string, message: Message): void;
+ stream(sessionId: string): EventEmitter<Message>;
+ interrupt(sessionId: string): void;
+ getCapabilities(agentId: string): Capability[];
+ getHealth(agentId: string): HealthStatus;
 }
 ```
 
@@ -116,15 +116,15 @@ interface Adapter {
 
 ```typescript
 export interface AgentAdapter {
-  readonly descriptor: AgentDescriptor;
-  discover(): Promise<AgentDescriptor | null>;
-  createSession(options?: SessionOptions): Promise<Session>;
-  attachSession(sessionId: SessionId): Promise<Session>;
-  listSessions(): Promise<Session[]>;
-  sendMessage(sessionId: SessionId, content: string): Promise<void>;
-  streamOutput(sessionId: SessionId): AsyncIterable<Message>;
-  closeSession(sessionId: SessionId): Promise<void>;
-  dispose(): Promise<void>;
+ readonly descriptor: AgentDescriptor;
+ discover(): Promise<AgentDescriptor | null>;
+ createSession(options?: SessionOptions): Promise<Session>;
+ attachSession(sessionId: SessionId): Promise<Session>;
+ listSessions(): Promise<Session[]>;
+ sendMessage(sessionId: SessionId, content: string): Promise<void>;
+ streamOutput(sessionId: SessionId): AsyncIterable<Message>;
+ closeSession(sessionId: SessionId): Promise<void>;
+ dispose(): Promise<void>;
 }
 ```
 
@@ -137,10 +137,10 @@ export interface AgentAdapter {
 - **Hermes Position:** Bridge Core should run an internal TCP server, and all adapters should communicate over TCP.
 - **Antigravity Finding:** `[CONTRADICTED]`.
 - **Reasoning:**
-  1. Opening a local TCP port requires network binding, triggers Windows Defender / Firewall prompts, and introduces port collision risks on developer machines.
-  2. For in-process coordination (Bridge Core + Adapters in Node.js), a typed in-memory `EventBus` provides zero-latency, synchronous guarantees, and direct object passing without JSON serialization overhead.
-  3. Stdio streams (`child_process.spawn`) are the only universal transport supported by all CLI agents.
-  4. TCP / WebSocket is appropriate only when an agent exposes an external service (`opencode serve`, `hermes serve --port 9119`).
+ 1. Opening a local TCP port requires network binding, triggers Windows Defender / Firewall prompts, and introduces port collision risks on developer machines.
+ 2. For in-process coordination (Bridge Core + Adapters in Node.js), a typed in-memory `EventBus` provides zero-latency, synchronous guarantees, and direct object passing without JSON serialization overhead.
+ 3. Stdio streams (`child_process.spawn`) are the only universal transport supported by all CLI agents.
+ 4. TCP / WebSocket is appropriate only when an agent exposes an external service (`opencode serve`, `hermes serve --port 9119`).
 
 ### 5.2 Transport Matrix for First Vertical Slice
 
@@ -172,18 +172,18 @@ export interface AgentAdapter {
 
 ```text
 [Source Agent A (e.g. Claude Code)]
-         │
-         ▼  (Raw JSON-lines stream / session DB)
+ │
+ ▼ (Raw JSON-lines stream / session DB)
 [Bridge Context Extractor]
-         │
-         ├── 1. Extract file changes & git diffs (Exact)
-         ├── 2. Extract active task status & decisions (Exact)
-         └── 3. Summarize conversation turns into decision ledger (Lossy)
-         │
-         ▼
+ │
+ ├── 1. Extract file changes & git diffs (Exact)
+ ├── 2. Extract active task status & decisions (Exact)
+ └── 3. Summarize conversation turns into decision ledger (Lossy)
+ │
+ ▼
 [Bridge Canonical ContextCarrier]
-         │
-         ▼  (Injected as task preamble or project file)
+ │
+ ▼ (Injected as task preamble or project file)
 [Target Agent B (e.g. OpenCode)]
 ```
 
@@ -248,11 +248,11 @@ The smallest real implementation that proves Bridge:
 
 ```text
 [Bridge Core Engine]
-        │
-        ├── (1) StdioJsonTransport  ── Spawns Claude Code (`--output-format stream-json`)
-        ├── (2) ContextExtractor    ── Captures files, git diff, and task outcome
-        ├── (3) ContextCarrier      ── Normalizes into structured handover payload
-        └── (4) AcpTransport        ── Dispatches handover payload into OpenCode ACP server
+ │
+ ├── (1) StdioJsonTransport ── Spawns Claude Code (`--output-format stream-json`)
+ ├── (2) ContextExtractor ── Captures files, git diff, and task outcome
+ ├── (3) ContextCarrier ── Normalizes into structured handover payload
+ └── (4) AcpTransport ── Dispatches handover payload into OpenCode ACP server
 ```
 
 ### 10.2 Exact Verification Test for First Slice

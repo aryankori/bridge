@@ -1,5 +1,5 @@
 /**
- * BRIDGE — EXP-004: Benchmark Runner CLI & Report Generator
+ * BRIDGE - EXP-004: Benchmark Runner CLI & Report Generator
  *
  * Runs the blind benchmark across 40 scenarios (15 DEV + 25 HELD-OUT)
  * and generates a comprehensive Markdown report.
@@ -13,13 +13,13 @@ import { DEFAULT_AUTHORITY_POLICY } from './policy.js';
 import type { BenchmarkReport } from './schema.js';
 
 export function generateMarkdownReport(report: BenchmarkReport): string {
-  return `# BRIDGE — EXP-004 BLIND BENCHMARK REPORT
+ return `# BRIDGE - EXP-004 BLIND BENCHMARK REPORT
 
-> **MANDATORY NOTICE:**  
+> **MANDATORY NOTICE:** 
 > *${report.disclaimer}*
 
-**Generated At:** ${report.generatedAt}  
-**Evaluated Policy:** ${report.policyName}  
+**Generated At:** ${report.generatedAt} 
+**Evaluated Policy:** ${report.policyName} 
 **Dataset Split:** ${report.summary.totalScenarios} Total (${report.summary.devCount} DEV / ${report.summary.heldOutCount} HELD-OUT)
 
 ---
@@ -55,11 +55,11 @@ export function generateMarkdownReport(report: BenchmarkReport): string {
 | Scenario ID | Set | Domain | Actual Status | Gold Status | Match? | Conflict Match? | Latency |
 |---|---|---|---|---|---|---|---|
 ${report.detailedBreakdown
-  .map(
-    (s) =>
-      `| \`${s.scenarioId}\` | ${s.set} | ${s.domain} | \`${s.actualStatus}\` | \`${s.goldStatus}\` | ${s.resolutionMatch ? '✅' : '❌'} | ${s.conflictDetectionMatch ? '✅' : '❌'} | ${s.latencyMs.toFixed(2)} ms |`
-  )
-  .join('\n')}
+ .map(
+ (s) =>
+ `| \`${s.scenarioId}\` | ${s.set} | ${s.domain} | \`${s.actualStatus}\` | \`${s.goldStatus}\` | ${s.resolutionMatch ? '' : ''} | ${s.conflictDetectionMatch ? '' : ''} | ${s.latencyMs.toFixed(2)} ms |`
+ )
+ .join('\n')}
 
 ---
 
@@ -72,19 +72,19 @@ ${report.detailedBreakdown
 }
 
 export function runMain(): BenchmarkReport {
-  const allScenarios = [...DEV_SCENARIOS, ...HELD_OUT_SCENARIOS];
-  const report = executeBenchmark(allScenarios, GOLD_STANDARDS, DEFAULT_AUTHORITY_POLICY);
-  const markdown = generateMarkdownReport(report);
-  return report;
+ const allScenarios = [...DEV_SCENARIOS, ...HELD_OUT_SCENARIOS];
+ const report = executeBenchmark(allScenarios, GOLD_STANDARDS, DEFAULT_AUTHORITY_POLICY);
+ const markdown = generateMarkdownReport(report);
+ return report;
 }
 
 // If invoked via CLI directly
 const proc = (globalThis as unknown as { process?: { argv?: string[] } }).process;
 if (
-  proc?.argv?.[1]?.endsWith('run-benchmark.ts') ||
-  proc?.argv?.[1]?.endsWith('run-benchmark.js')
+ proc?.argv?.[1]?.endsWith('run-benchmark.ts') ||
+ proc?.argv?.[1]?.endsWith('run-benchmark.js')
 ) {
-  const allScenarios = [...DEV_SCENARIOS, ...HELD_OUT_SCENARIOS];
-  const report = executeBenchmark(allScenarios, GOLD_STANDARDS, DEFAULT_AUTHORITY_POLICY);
-  console.log(generateMarkdownReport(report));
+ const allScenarios = [...DEV_SCENARIOS, ...HELD_OUT_SCENARIOS];
+ const report = executeBenchmark(allScenarios, GOLD_STANDARDS, DEFAULT_AUTHORITY_POLICY);
+ console.log(generateMarkdownReport(report));
 }

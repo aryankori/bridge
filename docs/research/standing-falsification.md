@@ -1,4 +1,4 @@
-# BRIDGE — STANDING FALSIFICATION REPORT
+# BRIDGE - STANDING FALSIFICATION REPORT
 
 **Author:** Hermes Agent (Independent Falsification Reviewer)
 **Date:** 2026-08-27
@@ -6,16 +6,16 @@
 
 ---
 
-## 1. DEFINITIONS — FORMAL COMPARISON
+## 1. DEFINITIONS - FORMAL COMPARISON
 
 | Term | Formal Definition | Anti-Definition | Example |
 |---|---|---|---|
-| **Identity** | Who/what this actor is | — | "agent-alpha", "aryan@example.com" |
-| **Authentication** | Proof that this actor IS who it claims | — | OAuth token, SPIFFE SVID |
+| **Identity** | Who/what this actor is | - | "agent-alpha", "aryan@example.com" |
+| **Authentication** | Proof that this actor IS who it claims | - | OAuth token, SPIFFE SVID |
 | **Authorization** | Binary answer: **CAN** actor X perform action Y? | Gatekeeping, not arbitration | IAM says "yes" or "no" |
-| **Permission** | Granted capability to perform action | — | `merge:pull-requests` |
-| **Role** | Named grouping of permissions | — | "Maintainers" role |
-| **Delegation** | Transfer of authority from delegator to delegatee | — | Authored by human, executed by agent |
+| **Permission** | Granted capability to perform action | - | `merge:pull-requests` |
+| **Role** | Named grouping of permissions | - | "Maintainers" role |
+| **Delegation** | Transfer of authority from delegator to delegatee | - | Authored by human, executed by agent |
 | **Policy** | Rule set: IF conditions THEN allow/deny/redirect | Static, not adaptive | Security policy "no prod access after hours" |
 | **Precedence** | Ordering among potentially conflicting authorities | Implicit in most systems | Security > Product in org chart |
 | **Decision Right** | Specific grant to make a decision of type T | Decentralized authority | "Board approves M&A" |
@@ -25,7 +25,7 @@
 
 ---
 
-## 2. THE 100-AGENT TEST — CONFLICT CASES
+## 2. THE 100-AGENT TEST - CONFLICT CASES
 
 ### Case 1: Security vs Product
 | Actor | Statement | Verification Status |
@@ -78,14 +78,14 @@
 | **What it solves** | Who can perform which actions | 
 | **What it does NOT solve** | What happens when two roles both have authority and conflict |
 | **Overlap with standing** | Roles carry inherent precedence in org chart (e.g., VP > IC), but RBAC itself is purely additive (union of permissions), not comparative |
-| **Remaining gap** | RBAC cannot express "VP's approval defeats IC's proposal" — it can only say both have the permission |
+| **Remaining gap** | RBAC cannot express "VP's approval defeats IC's proposal" - it can only say both have the permission |
 
 ### ABAC (Attribute-Based Access Control)
 | | Value |
 |---|---|
 | **What it solves** | Conditional access based on user/resource/environment attributes |
 | **What it does NOT solve** | Does not model authority conflicts between two *authorized* actors |
-| **Overlap** | Can encode "security-role AND after-hours → deny" but not "security-decision > product-decision" |
+| **Overlap** | Can encode "security-role AND after-hours -> deny" but not "security-decision > product-decision" |
 | **Remaining gap** | ABAC is a gate, not an arbiter. It denies access; it cannot rank two valid authorities |
 
 ### IAM / OIDC / OAuth
@@ -93,13 +93,13 @@
 |---|---|
 | **What it solves** | Identity and token issuance |
 | **What it does NOT solve** | Authority precedence |
-| **Overlap** | None — IAM answers "who are you?" not "whose decision wins?" |
+| **Overlap** | None - IAM answers "who are you?" not "whose decision wins?" |
 
 ### OPA / Rego (Policy Engine)
 | | Value |
 |---|---|
-| **What it solves** | Policy evaluation — IF conditions THEN decision |
-| **What it does NOT solve** | The policy rules themselves — OPA evaluates what you give it |
+| **What it solves** | Policy evaluation - IF conditions THEN decision |
+| **What it does NOT solve** | The policy rules themselves - OPA evaluates what you give it |
 | **Overlap** | A sufficiently expressive policy *could* encode standing: `allow if precedence(security, product) > threshold`. But OPA does not *discover* or *maintain* that precedence. |
 | **Remaining gap** | OPA is an engine. Standing is the *source data* it needs. OPA makes standing *executable*, not standing itself. |
 
@@ -108,7 +108,7 @@
 |---|---|
 | **What it solves** | Cryptographic proof that authority was delegated from human to agent |
 | **What it does NOT solve** | What happens when two delegates conflict |
-| **Overlap** | HDP captures *provenance of delegation* — "human X delegated to agent Y." Does not capture *precedence* between two delegations. |
+| **Overlap** | HDP captures *provenance of delegation* - "human X delegated to agent Y." Does not capture *precedence* between two delegations. |
 | **Remaining gap** | Provenance answers "who delegated to whom." Standing answers "whose delegation prevails when both execute." |
 
 ### Workflow / Approval Systems (Jira, Approvals)
@@ -124,27 +124,27 @@
 |---|---|
 | **What it solves** | Who can approve what up to what limit |
 | **What it does NOT solve** | Digital, machine-readable, runtime enforcement against autonomous agents |
-| **Overlap** | DOA matrices *are* standing documents — they record "VP can approve up to $100K, CFO up to $1M." This IS a standing representation. |
+| **Overlap** | DOA matrices *are* standing documents - they record "VP can approve up to $100K, CFO up to $1M." This IS a standing representation. |
 | **Remaining gap** | DOA matrices are *documents*, not *machine-usable authority predicates*. They exist as spreadsheets or PDFs, not as runtime-assertable primitives. |
 
 ### Multi-Agent Systems Literature
 | | Value |
 |---|---|
 | **What it solves** | Conflict resolution via negotiation, voting, or meta-governance |
-| **What it does NOT solve** | Legitimate authority (not majority vote, not negotiation outcome) — which authority *deserves* to win |
+| **What it does NOT solve** | Legitimate authority (not majority vote, not negotiation outcome) - which authority *deserves* to win |
 | **Overlap** | Multi-agent conflict resolution treats authority as negotiated/consensus. Standing treats authority as *institutional* (ratified, not negotiated). |
 | **Remaining gap** | Consensus ≠ legitimacy. Standing is about *who has the right*, not *what the group agrees on*. |
 
 ---
 
-## 4. STANDING VS AUTHORIZATION — ARE THEY DISTINCT?
+## 4. STANDING VS AUTHORIZATION - ARE THEY DISTINCT?
 
 ### The Two Questions
 
 ```
-AUTHORIZATION:  "Can actor A perform action X?"
-STANDING:       "Actor A and Actor B both have authority over X. 
-                 Which authority prevails, and why?"
+AUTHORIZATION: "Can actor A perform action X?"
+STANDING: "Actor A and Actor B both have authority over X. 
+ Which authority prevails, and why?"
 ```
 
 ### Example Where This Matters
@@ -152,28 +152,28 @@ STANDING:       "Actor A and Actor B both have authority over X.
 | Situation | Authorization Answer | Standing Answer |
 |---|---|---|
 | Engineer may merge PR | **YES** | (no conflict) |
-| Engineer and Security both may block merge; Security's concern is raised | **YES** (both can act) | **SECURITY WINS** — security veto is higher precedence for deployment decisions |
-| Two managers both approve different code changes for same file | **YES** (both can approve) | **UNRESOLVED** — needs standing: which manager has higher precedence for *this file type*? |
+| Engineer and Security both may block merge; Security's concern is raised | **YES** (both can act) | **SECURITY WINS** - security veto is higher precedence for deployment decisions |
+| Two managers both approve different code changes for same file | **YES** (both can approve) | **UNRESOLVED** - needs standing: which manager has higher precedence for *this file type*? |
 
 ### Formal Distinction
 
 ```
-AUTHORIZATION:  predicate(A, X) → {true, false}
-STANDING:       arbitration(A, B, X) → {A_wins, B_wins, unresolved}
-                       where predicate(A, X) = true AND predicate(B, X) = true
+AUTHORIZATION: predicate(A, X) -> {true, false}
+STANDING: arbitration(A, B, X) -> {A_wins, B_wins, unresolved}
+ where predicate(A, X) = true AND predicate(B, X) = true
 ```
 
 **If this distinction is meaningful, STANDING is a real computational primitive.** Authorization is the *gate*. Standing is the *arbiter*.
 
 ### Edge Case: When Standing Reduces to Authorization
 
-If every action can only be performed by ONE authorized actor (exclusive authority), standing *reduces* to authorization — there is no conflict to resolve.
+If every action can only be performed by ONE authorized actor (exclusive authority), standing *reduces* to authorization - there is no conflict to resolve.
 
 **Standing matters only when multiple actors can be authorized to act on the same subject.**
 
 ---
 
-## 5. STANDING VS POLICY — CAN A POLICY ENGINE REPRESENT IT?
+## 5. STANDING VS POLICY - CAN A POLICY ENGINE REPRESENT IT?
 
 ### Could a Sufficiently Expressive Policy Encode Standing?
 
@@ -181,18 +181,18 @@ A policy like this could represent standing:
 
 ```
 policy "deployment-decision" {
-  subject: "feature deployment"
-  authorities: [
-    { role: "security-reviewer", precedence: 90 },
-    { role: "product-manager", precedence: 70 },
-    { role: "engineering-lead", precedence: 80 }
-  ]
-  rule "when conflicting" {
-    winner = max_by(precedence)
-    if winner.role != proposed_by {
-      require_human_review
-    }
-  }
+ subject: "feature deployment"
+ authorities: [
+ { role: "security-reviewer", precedence: 90 },
+ { role: "product-manager", precedence: 70 },
+ { role: "engineering-lead", precedence: 80 }
+ ]
+ rule "when conflicting" {
+ winner = max_by(precedence)
+ if winner.role != proposed_by {
+ require_human_review
+ }
+ }
 }
 ```
 
@@ -221,11 +221,11 @@ Policy engines *evaluate* standing. They don't *discover*, *maintain*, or *propa
 
 ---
 
-## 6. STANDING VS COMMITMENT — COMPARISON
+## 6. STANDING VS COMMITMENT - COMPARISON
 
 ### Standing as a Property of Commitment
 
-**Argument for:** Every commitment has an authority behind it. "We use PostgreSQL" — who decided? DBA lead? If standing is just "commitment.decided_by + commitment.precedence," then standing is metadata, not a separate object.
+**Argument for:** Every commitment has an authority behind it. "We use PostgreSQL" - who decided? DBA lead? If standing is just "commitment.decided_by + commitment.precedence," then standing is metadata, not a separate object.
 
 **Counter-argument:** Two commitments can conflict. "We use PostgreSQL" (DBA lead) vs "We use MongoDB" (CTO). Both are commitments. Standing answers *which commitment wins*, not just who made it.
 
@@ -237,15 +237,15 @@ Policy engines *evaluate* standing. They don't *discover*, *maintain*, or *propa
 
 ### Standing as a Separate Object
 
-**Argument for:** Standing has its own lifecycle: granted → contested → ratified → expired. It has its own properties: precedence, overrides, domain scope, delegation chains. It's not just metadata on a commitment — it's a distinct graph.
+**Argument for:** Standing has its own lifecycle: granted -> contested -> ratified -> expired. It has its own properties: precedence, overrides, domain scope, delegation chains. It's not just metadata on a commitment - it's a distinct graph.
 
-**Counter-argument:** Standing without commitment is a tree without leaves — it describes who *would* win if there were a conflict, but without commitments, there are no conflicts.
+**Counter-argument:** Standing without commitment is a tree without leaves - it describes who *would* win if there were a conflict, but without commitments, there are no conflicts.
 
 ### Standing as Authorization Metadata
 
 **Argument for:** Authorization systems already track who has what rights. Standing is just "authorization with precedence attached."
 
-**Counter-argument:** Authorization is binary (can/cannot). Standing is comparative (which-wins-when-both-can). Binary ≠ comparative. **Precedence is not a permission — it's a ranking.**
+**Counter-argument:** Authorization is binary (can/cannot). Standing is comparative (which-wins-when-both-can). Binary ≠ comparative. **Precedence is not a permission - it's a ranking.**
 
 ### Verdict
 
@@ -253,7 +253,7 @@ Policy engines *evaluate* standing. They don't *discover*, *maintain*, or *propa
 
 ---
 
-## 7. SYSTEMS OF RECORD — CAN STANDING LIVE ELSEWHERE?
+## 7. SYSTEMS OF RECORD - CAN STANDING LIVE ELSEWHERE?
 
 ### Could Standing Live in Existing Systems?
 
@@ -269,7 +269,7 @@ Policy engines *evaluate* standing. They don't *discover*, *maintain*, or *propa
 
 ### Could Bridge Instead Compute a Federated "Effective Standing" View?
 
-**Yes — this is a stronger formulation than owning a separate ledger.**
+**Yes - this is a stronger formulation than owning a separate ledger.**
 
 Bridge could *aggregate* standing fragments from:
 - IAM (role permissions)
@@ -280,27 +280,27 @@ Bridge could *aggregate* standing fragments from:
 - Contracts/sign-offs (external authority grants)
 - HDP/UCAN tokens (delegation provenance)
 
-**The value is not owning a new ledger — it's computing a unified, current, machine-readable standing view from existing fragments.**
+**The value is not owning a new ledger - it's computing a unified, current, machine-readable standing view from existing fragments.**
 
 ---
 
-## 8. MULTI-SYSTEM CONFLICT — REAL EXAMPLE
+## 8. MULTI-SYSTEM CONFLICT - REAL EXAMPLE
 
 ```
 GitHub says:
-  Engineer may merge PR #42 (branch protection allows, CODEOWNERS approved).
+ Engineer may merge PR #42 (branch protection allows, CODEOWNERS approved).
 
 Security system says:
-  Engineer may NOT approve security exception (security policy blocks).
+ Engineer may NOT approve security exception (security policy blocks).
 
 Jira says:
-  Product owner approved feature X (ticket approved).
+ Product owner approved feature X (ticket approved).
 
 CI says:
-  Tests passed (pipeline green).
+ Tests passed (pipeline green).
 
 Legal policy says:
-  Feature X cannot ship without DPO sign-off (GDPR requirement).
+ Feature X cannot ship without DPO sign-off (GDPR requirement).
 ```
 
 ### Where Does the "Winner" Come From?
@@ -315,23 +315,23 @@ This is a multi-system conflict with **five authorities**, each valid in its dom
 | CI (tests) | Technical verification | Technical gate |
 | Legal policy | Ship compliance | Regulatory constraint |
 
-**There is no single "winner" — there are five orthogonal decisions:**
-1. Merge? → GitHub allows
-2. Security exception? → Security blocks
-3. Feature approved? → Jira says yes
-4. Tests pass? → CI says yes
-5. Ship? → Legal says no
+**There is no single "winner" - there are five orthogonal decisions:**
+1. Merge? -> GitHub allows
+2. Security exception? -> Security blocks
+3. Feature approved? -> Jira says yes
+4. Tests pass? -> CI says yes
+5. Ship? -> Legal says no
 
 **The actual question is: "Can this feature ship to production?"**
 
 The answer requires:
 - Merge AND security-exception AND feature-approved AND tests-pass AND legal-signoff
 - Each is a gate. Each must pass.
-- Standing doesn't help here — this is AND logic, not precedence.
+- Standing doesn't help here - this is AND logic, not precedence.
 
 **BUT:** If security *reverses* (policy changes), or legal *signs off*, or product *withdraws approval*, the standing ledger tells you *whose authority changed* and *what the new effective standing is*.
 
-**Standing is most valuable when one authority *veto-overrides* another — not when all gates must be checked.**
+**Standing is most valuable when one authority *veto-overrides* another - not when all gates must be checked.**
 
 ---
 
@@ -343,14 +343,14 @@ A standing data model could be standardized:
 
 ```
 STANDING_RECORD {
-  subject: URI
-  authorities: Authority[]
-  precedence: number (higher wins)
-  overrides: URI[] (which authorities this defeats)
-  ratified_by: URI
-  contested_by: URI[]
-  expires: Timestamp
-  domain: URI (scope this applies to)
+ subject: URI
+ authorities: Authority[]
+ precedence: number (higher wins)
+ overrides: URI[] (which authorities this defeats)
+ ratified_by: URI
+ contested_by: URI[]
+ expires: Timestamp
+ domain: URI (scope this applies to)
 }
 ```
 
@@ -392,10 +392,10 @@ A developer runs `bridge standing-check` before allowing an agent to modify prod
 
 - Agent proposes: "Apply config change to production."
 - Standing check reveals:
-  - **Authorization:** Agent has `prod:config:write` permission (IAM says YES)
-  - **Standing:** Engineering Lead has standing over production config changes (precedence 80). But the proposed change was *not* reviewed by the Lead. Current standing requires Lead ratification for *this type* of change (infrastructure, not feature flag).
-  - **Conflict:** Authorization granted. Standing not satisfied.
-  - **Resolution:** Block the action. Require Lead ratification.
+ - **Authorization:** Agent has `prod:config:write` permission (IAM says YES)
+ - **Standing:** Engineering Lead has standing over production config changes (precedence 80). But the proposed change was *not* reviewed by the Lead. Current standing requires Lead ratification for *this type* of change (infrastructure, not feature flag).
+ - **Conflict:** Authorization granted. Standing not satisfied.
+ - **Resolution:** Block the action. Require Lead ratification.
 
 **Is this painful enough to pay for?**
 
@@ -426,29 +426,29 @@ For a *team with 10+ agents* making concurrent production changes: YES. Standing
 
 **The moat is NOT the standing primitive.** It's the *accumulated, project-specific standing data*:
 
-1. **Authority graph** — who has standing over what in your project (takes time to discover/encode)
-2. **Precedence assignments** — your org's specific priority ordering (sensitive, hard to extract from existing systems)
-3. **Ratification provenance** — who ratified which decisions, with what authority (accumulated committed decisions)
-4. **Cross-system integrations** — pulling standing from Git, Jira, IAM, HR, policy docs (integration work)
-5. **Standing history** — how authority evolved over time (time moat)
+1. **Authority graph** - who has standing over what in your project (takes time to discover/encode)
+2. **Precedence assignments** - your org's specific priority ordering (sensitive, hard to extract from existing systems)
+3. **Ratification provenance** - who ratified which decisions, with what authority (accumulated committed decisions)
+4. **Cross-system integrations** - pulling standing from Git, Jira, IAM, HR, policy docs (integration work)
+5. **Standing history** - how authority evolved over time (time moat)
 
 **The moat is project-specific institutional knowledge, encoded as standing.**
 
 ---
 
-## 12. NEXT ABSTRACTION — IF STANDING IS ALSO NOT THE ANSWER
+## 12. NEXT ABSTRACTION - IF STANDING IS ALSO NOT THE ANSWER
 
 If standing reduces to authorization + precedence metadata, and precedence is just RBAC hierarchy + policy rules, what's underneath?
 
 | Candidate | What It Is | Problem |
 |---|---|---|
 | **Decision Rights** | "Who may make which decisions" | DOA matrices already solve this in documents; Standing is the machine-readable version |
-| **Effective Authority** | "Who currently has authority over X, considering all delegations, policies, and overrides" | This IS standing — just renamed |
+| **Effective Authority** | "Who currently has authority over X, considering all delegations, policies, and overrides" | This IS standing - just renamed |
 | **Institutional State** | "What the institution currently accepts as authoritative" | Too vague. What's the primitive? |
 | **Mandate** | "Grant of authority with scope, precedence, expiry, delegation" | Standing *is* a mandate |
-| **Governed Intent** | "Intent that has been ratified by an authority" | Partial — standing is what makes intent governed |
+| **Governed Intent** | "Intent that has been ratified by an authority" | Partial - standing is what makes intent governed |
 | **Consequence Rights** | "Who is responsible for the consequences of an action" | Accountability is retrospective; standing is prospective (governs before action) |
-| **Something Else** | — | Unknown |
+| **Something Else** | - | Unknown |
 
 ### The Strongest Candidate After Standing
 
@@ -462,17 +462,17 @@ This is Bridge's potential role: **compute effective authority from fragmented s
 
 ### Verdict: REFRAME STANDING
 
-**Why:** Standing is real as a concept — it's the comparative/arbitration primitive that authorization lacks. But "owning a standing ledger" is less defensible than "computing effective standing from existing sources." The moat is not the ledger — it's the org-specific authority graph and the integration work to compute it.
+**Why:** Standing is real as a concept - it's the comparative/arbitration primitive that authorization lacks. But "owning a standing ledger" is less defensible than "computing effective standing from existing sources." The moat is not the ledger - it's the org-specific authority graph and the integration work to compute it.
 
 ### Final Statements
 
-> **Bridge should OWN:** The computation of *effective standing* — a unified, current, machine-readable view of who has authority over each decision, with precedence, domain scope, delegation chains, and temporal validity — aggregated from existing systems-of-record.
+> **Bridge should OWN:** The computation of *effective standing* - a unified, current, machine-readable view of who has authority over each decision, with precedence, domain scope, delegation chains, and temporal validity - aggregated from existing systems-of-record.
 
 > **Bridge should NOT OWN:** A separate standing ledger (that's a protocol artifact), IAM, Git, Jira, HR, or policy documents (those are existing systems-of-record).
 
-> **The smallest unique primitive:** `STANDING_QUERY(scopes, subject) → {authorities[], effective_winner, requires_ratification, contested}` — a query against the computed standing graph, not a stored ledger.
+> **The smallest unique primitive:** `STANDING_QUERY(scopes, subject) -> {authorities[], effective_winner, requires_ratification, contested}` - a query against the computed standing graph, not a stored ledger.
 
-> **The first product:** "Standing Diff" — run before an agent acts, show whether the proposed action has satisfying effective standing, and flag when authorization is granted but standing is contested/incomplete.
+> **The first product:** "Standing Diff" - run before an agent acts, show whether the proposed action has satisfying effective standing, and flag when authorization is granted but standing is contested/incomplete.
 
 > **The single best experiment:** Take a repo with known authority conflicts (security vs product, legal vs engineering). Run agent with and without standing query. Measure: does standing prevent the agent from taking an unauthorized action that authorization alone would permit?
 
@@ -487,7 +487,7 @@ This is Bridge's potential role: **compute effective authority from fragmented s
 | **AID-Guard** (arXiv 2608.21159, 2026) | Stateful authorization for delegated agent effects; revalidates authority graph at each operation | Focuses on authorization, not comparative standing between multiple authorized actors |
 | **HDP Protocol** (arXiv 2604.04522, 2026) | Cryptographically captures human-to-agent delegation provenance | Captures delegation chains, not precedence between conflicting delegations |
 | **UCAN** (IETF draft) | Decentralized capability tokens with delegation chains | Capability-based, not authority-ranking |
-| **Resolution Policy as Delegation Governance** (ACM 2025) | First-class resolution policy for when constraints conflict in autonomous agents | Closest to standing — explicitly models what happens when multiple authorities conflict |
+| **Resolution Policy as Delegation Governance** (ACM 2025) | First-class resolution policy for when constraints conflict in autonomous agents | Closest to standing - explicitly models what happens when multiple authorities conflict |
 | **AuthGraph / SEAgent** | Graph-based authorization for autonomous agents | Authorization graphs, not standing arbitration |
 | **Decision Rights Theory** (Diakopoulos 2016, cited in ResearchGate 2025) | How organizations distribute authority | Organizational theory, not computational primitive |
 | **MultiAgent Conflict Resolution** (Lorojournals 2026) | Goal conflict, resource conflict, control conflict | Treats authority as negotiated/consensus, not institutional standing |
@@ -502,13 +502,13 @@ This is Bridge's potential role: **compute effective authority from fragmented s
 2. Standing reframes it as an *org-wide authority graph* (project-centric, not agent-centric)
 3. Standing adds temporal validity, domain scoping, and cross-system federation that Resolution Policy doesn't require
 
-**Novelty claim:** Standing is a *reframing* of resolution policy into an org-wide, runtime-computable, project-specific authority graph — not a new primitive, but a new *application layer* of an existing concept.
+**Novelty claim:** Standing is a *reframing* of resolution policy into an org-wide, runtime-computable, project-specific authority graph - not a new primitive, but a new *application layer* of an existing concept.
 
 ---
 
 ## VERDICT
 
-Standing is a **real conceptual distinction** — it is not merely authorization repackaged. Authorization answers "can you do X?" Standing answers "when you and another actor both can do X, whose authority prevails?" This is a meaningful computational primitive that existing systems (RBAC, ABAC, IAM, OPA, delegation protocols, workflow engines) address only partially and incompletely. However, standing as a *separate owned ledger* is not the right product framing — it overestimates how much new data Bridge would create and underestimates how much standing information already exists in IAM, DOA matrices, org charts, policy docs, HDP tokens, and Git authority records. The more defensible position is that Bridge computes *effective standing* — a federated, current, machine-readable standing view from existing fragments — and the moat is the project-specific authority graph and integration work, not the standing primitive itself. Standing is real, but Bridge's opportunity is in the *computation and federation*, not the *invention* of standing.
+Standing is a **real conceptual distinction** - it is not merely authorization repackaged. Authorization answers "can you do X?" Standing answers "when you and another actor both can do X, whose authority prevails?" This is a meaningful computational primitive that existing systems (RBAC, ABAC, IAM, OPA, delegation protocols, workflow engines) address only partially and incompletely. However, standing as a *separate owned ledger* is not the right product framing - it overestimates how much new data Bridge would create and underestimates how much standing information already exists in IAM, DOA matrices, org charts, policy docs, HDP tokens, and Git authority records. The more defensible position is that Bridge computes *effective standing* - a federated, current, machine-readable standing view from existing fragments - and the moat is the project-specific authority graph and integration work, not the standing primitive itself. Standing is real, but Bridge's opportunity is in the *computation and federation*, not the *invention* of standing.
 
 ---
 
@@ -516,8 +516,8 @@ Standing is a **real conceptual distinction** — it is not merely authorization
 
 1. Does standing actually prevent bad agent actions in practice, or is the conflict rate low enough that authorization alone suffices?
 2. Can standing be computed purely from existing systems-of-record, or does it require new organizational practices (encoded DOA matrices, policy-as-code)?
-3. Is the "effective standing" computation tractable at scale — can it be done cheaply enough for every agent action?
-4. Does the business case hold — do organizations actually pay for authority arbitration, or do they solve it through existing governance (human review, committee approval)?
+3. Is the "effective standing" computation tractable at scale - can it be done cheaply enough for every agent action?
+4. Does the business case hold - do organizations actually pay for authority arbitration, or do they solve it through existing governance (human review, committee approval)?
 5. Is standing a feature that agent vendors (Anthropic, OpenAI, Google) will absorb, or is it project-specific enough to remain a standalone product?
 
 ---

@@ -1,4 +1,4 @@
-# BRIDGE — Agent Behavior & Instruction Hierarchy Research
+# BRIDGE - Agent Behavior & Instruction Hierarchy Research
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -17,7 +17,7 @@ OpenAI published "Improving instruction hierarchy in frontier LLMs" with concret
 | System <> User Conflict | 0.84 | 0.95 | +0.11 |
 | Developer <> User Conflict | 0.83 | 0.95 | +0.12 |
 
-OpenAI's Model Spec hardcodes five authority levels: root, system, developer, user, guideline — encoded through special role tokens within chat templates.
+OpenAI's Model Spec hardcodes five authority levels: root, system, developer, user, guideline - encoded through special role tokens within chat templates.
 
 **Key insight:** Instruction hierarchy is a MODEL TRAINING problem, not an external resolution problem. OpenAI is baking authority into the model's behavior through training and prompt engineering.
 
@@ -33,7 +33,7 @@ Academic work introducing "Many-Tier Instruction Hierarchy in LLM Agents":
 
 ### ICML 2026: Reward-Free Alignment for Conflicting Objectives
 
-ICML oral presentation on "Reward-free Alignment framework for Conflicted" — RACO adjusts training direction to reduce conflict while respecting user's desired trade-offs.
+ICML oral presentation on "Reward-free Alignment framework for Conflicted" - RACO adjusts training direction to reduce conflict while respecting user's desired trade-offs.
 
 ---
 
@@ -78,9 +78,9 @@ Conflicts arise at the intersections:
 
 1. **Models are improving at instruction hierarchy.** OpenAI's March 2026 results show +0.11-0.12 improvement on conflict resolution through training. Many-Tier IH paper shows scalar privilege models can handle arbitrary tiers.
 
-2. **Models are improving at context engineering.** Anthropic's context engineering guidance, Mem0's 91% reduction in response time, PROJECTMEM's event-sourced memory — all point to models getting better at using structured context.
+2. **Models are improving at context engineering.** Anthropic's context engineering guidance, Mem0's 91% reduction in response time, PROJECTMEM's event-sourced memory - all point to models getting better at using structured context.
 
-3. **Agent platforms are building instruction hierarchy in.** Claude Managed Agents with memory (April 2026), Codex AGENTS.md hierarchy, Copilot workspace instructions — platforms are absorbing the resolution problem into the agent runtime.
+3. **Agent platforms are building instruction hierarchy in.** Claude Managed Agents with memory (April 2026), Codex AGENTS.md hierarchy, Copilot workspace instructions - platforms are absorbing the resolution problem into the agent runtime.
 
 4. **If models can resolve conflicts internally, external resolution is redundant.** Why run a separate resolver when the model already knows that AGENTS.md overrides stale docs?
 
@@ -94,7 +94,7 @@ Conflicts arise at the intersections:
 
 4. **Determinism matters for audit and compliance.** EU AI Act (August 2026) requires tamper-evident logs and traceable decisions. A model's internal resolution is probabilistic and unverifiable. A deterministic resolver produces an auditable standing record. For regulated environments, external deterministic resolution is not optional.
 
-5. **The resolver provides citation and rationale.** Even if the model makes the "right" decision, it may not explain why. The resolver's citation-backed output is valuable for accountability, precedent, and memory — independent of whether the model would have made the same decision.
+5. **The resolver provides citation and rationale.** Even if the model makes the "right" decision, it may not explain why. The resolver's citation-backed output is valuable for accountability, precedent, and memory - independent of whether the model would have made the same decision.
 
 6. **Prompt injection and adversarial instructions.** Models are vulnerable to injected instructions. A deterministic resolver that evaluates instruction sources against authority tiers provides a defense layer that model-internal reasoning cannot guarantee.
 
@@ -102,8 +102,8 @@ Conflicts arise at the intersections:
 
 **Better reasoning makes external resolution LESS necessary for the AVERAGE case, but MORE valuable for the CRITICAL case.**
 
-- Average case: clear hierarchy, no conflict, model follows the most prominent instruction — resolver adds little value
-- Critical case: conflicting instructions, unclear authority, security-relevant action, auditable decision needed — resolver adds significant value
+- Average case: clear hierarchy, no conflict, model follows the most prominent instruction - resolver adds little value
+- Critical case: conflicting instructions, unclear authority, security-relevant action, auditable decision needed - resolver adds significant value
 
 **As models improve, the resolver's value shifts from "preventing obvious errors" to "handling the hard cases that models still get wrong."**
 
@@ -121,11 +121,11 @@ This is a narrowing but not eliminating niche. The question is whether the niche
 
 2. **Agent memory is becoming standard.** Anthropic shipped Claude Managed Agents with memory (April 2026). agentmemory project supports 7+ agent platforms. Zep, Mem0, Letta, Cognee all targeting agent memory.
 
-3. **Governance and audit trails are emerging as a distinct category.** EU AI Act enforcement (August 2026) is driving audit trail adoption. MakerChecker (AGPL-3.0, 2026), auditable (Apache-2.0, 2026), Agent-Sentry, Decision Provenance papers — all targeting agent accountability.
+3. **Governance and audit trails are emerging as a distinct category.** EU AI Act enforcement (August 2026) is driving audit trail adoption. MakerChecker (AGPL-3.0, 2026), auditable (Apache-2.0, 2026), Agent-Sentry, Decision Provenance papers - all targeting agent accountability.
 
-4. **Runtime policy enforcement is a growing category.** AWS AgentCore Policy (Cedar, July 2026), Databricks Unity AI Gateway, NeuralTrust TrustGate, ElixirData Context OS — all targeting "govern agent actions at runtime."
+4. **Runtime policy enforcement is a growing category.** AWS AgentCore Policy (Cedar, July 2026), Databricks Unity AI Gateway, NeuralTrust TrustGate, ElixirData Context OS - all targeting "govern agent actions at runtime."
 
-5. **Instruction hierarchy is a recognized problem.** OpenAI, academic community, and agent platform vendors all investing in instruction hierarchy. It is not a Bridge-specific insight — it is an industry-wide recognition.
+5. **Instruction hierarchy is a recognized problem.** OpenAI, academic community, and agent platform vendors all investing in instruction hierarchy. It is not a Bridge-specific insight - it is an industry-wide recognition.
 
 ### The Implication for Bridge
 
@@ -135,7 +135,7 @@ If instruction conflict is a recognized industry problem, and multiple vendors a
 - **Project-specific authority** (not generic hierarchy, but project-configured standing)
 - **Auditable standing records** (not just the decision, but the record for compliance and precedent)
 
-These are defensible differentiators IF they matter to buyers. The question is whether developers or enterprises care about deterministic, citation-backed, project-specific, auditable resolution — or whether they're satisfied with "the model mostly gets it right."
+These are defensible differentiators IF they matter to buyers. The question is whether developers or enterprises care about deterministic, citation-backed, project-specific, auditable resolution - or whether they're satisfied with "the model mostly gets it right."
 
 ---
 
@@ -144,9 +144,9 @@ These are defensible differentiators IF they matter to buyers. The question is w
 **Does the resolver improve agent behavior in live execution?**
 
 EXP-005 is designed to answer this. The methodology document defines the falsification criteria:
-1. Bridge outcome ≤ RAW outcome + 0.05 → falsified
-2. HUMAN outcome − BRIDGE outcome > 0.40 → falsified
-3. False blocks > useful prevented violations → falsified
+1. Bridge outcome <= RAW outcome + 0.05 -> falsified
+2. HUMAN outcome − BRIDGE outcome > 0.40 -> falsified
+3. False blocks > useful prevented violations -> falsified
 
 Until EXP-005 completes, the answer is unknown. The research corpus strongly suggests the resolver helps (EXP-004: 76% accuracy, 0% false allow), but the live agent experiment is the only way to know if the agent actually acts on the directive or ignores it.
 

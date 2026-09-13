@@ -1,14 +1,14 @@
-# BRIDGE — Distributed Systems Analogy Map
+# BRIDGE - Distributed Systems Analogy Map
 
 **Status:** Research analysis
 **Date:** 2026-08-27
-**Scope:** Map Bridge's problem onto analogous problems in distributed systems, consensus, conflict resolution, transaction systems, access control, policy engines, Kubernetes, Git, financial clearing, network routing, operating systems, database concurrency, event sourcing, legal systems, corporate governance, supply chain control. Determine which analogy is closest — WITHOUT copying terminology.
+**Scope:** Map Bridge's problem onto analogous problems in distributed systems, consensus, conflict resolution, transaction systems, access control, policy engines, Kubernetes, Git, financial clearing, network routing, operating systems, database concurrency, event sourcing, legal systems, corporate governance, supply chain control. Determine which analogy is closest - WITHOUT copying terminology.
 
 ---
 
 ## THE BRIDGE PROBLEM (REFORMULATED)
 
-Multiple legitimate actors (humans, agents, systems, documents) make claims about what state an action should produce. The system must determine, for each action, which claim is effective — accounting for authority, staleness, scope, conflict, and evidence — and produce an auditable record of the determination.
+Multiple legitimate actors (humans, agents, systems, documents) make claims about what state an action should produce. The system must determine, for each action, which claim is effective - accounting for authority, staleness, scope, conflict, and evidence - and produce an auditable record of the determination.
 
 This is NOT:
 - Consensus (all actors agree on one state)
@@ -30,9 +30,9 @@ This IS closer to:
 
 **Closest Bridge parallel:** None. Consensus assumes all nodes want the same log. Bridge assumes actors genuinely disagree and some disagreements are legitimate (not errors to be voted out).
 
-**Key distinction:** Consensus resolves disagreement through majority or leader primacy. Bridge resolves disagreement through authority evaluation. In consensus, a minority view is overruled. In Bridge, a lower-authority claim is superseded by a higher-authority claim — but the lower-authority claim is recorded, not discarded.
+**Key distinction:** Consensus resolves disagreement through majority or leader primacy. Bridge resolves disagreement through authority evaluation. In consensus, a minority view is overruled. In Bridge, a lower-authority claim is superseded by a higher-authority claim - but the lower-authority claim is recorded, not discarded.
 
-**What Bridge can learn:** Term numbers / versioning for temporal ordering. Quorum is NOT applicable — Bridge is not democratic.
+**What Bridge can learn:** Term numbers / versioning for temporal ordering. Quorum is NOT applicable - Bridge is not democratic.
 
 ---
 
@@ -42,11 +42,11 @@ This IS closer to:
 
 **Mechanism:** Election protocols, leases, heartbeats, fencing tokens.
 
-**Closest Bridge parallel:** Authority tier assignment is a form of leader election — but static, not dynamic. The "leader" for a given action is determined by the authority graph, not by election.
+**Closest Bridge parallel:** Authority tier assignment is a form of leader election - but static, not dynamic. The "leader" for a given action is determined by the authority graph, not by election.
 
 **Key distinction:** Leader election produces one leader for all decisions in a domain. Bridge produces a different effective authority for each action, based on scope and context. A human developer is the leader for "what function name to use in this PR" but not for "what security policy applies."
 
-**What Bridge can learn:** Fencing tokens — a mechanism to prevent stale authorities from acting after they've been superseded. Bridge's staleness detector is a form of fencing.
+**What Bridge can learn:** Fencing tokens - a mechanism to prevent stale authorities from acting after they've been superseded. Bridge's staleness detector is a form of fencing.
 
 ---
 
@@ -69,7 +69,7 @@ This IS closer to:
 - Legal arbitration produces a binary outcome (who wins); Bridge produces a nuanced outcome (PERMITTED / BLOCKED / AMBIGUOUS / REQUIRES_AUTHORIZATION)
 - Legal arbitration is ad-hoc; Bridge's authority framework is systematic
 
-**What Bridge can learn:** The arbitration framing is valuable — it correctly captures that conflicts are resolved by evaluation, not consensus. The "arbitrator neutrality" question is critical: Bridge's resolver should not favor any source beyond what the authority framework specifies.
+**What Bridge can learn:** The arbitration framing is valuable - it correctly captures that conflicts are resolved by evaluation, not consensus. The "arbitrator neutrality" question is critical: Bridge's resolver should not favor any source beyond what the authority framework specifies.
 
 ---
 
@@ -83,9 +83,9 @@ This IS closer to:
 - Database transactions conflict on data access (two writes to the same row)
 - Bridge conflicts on instruction/claim authority (two sources say different things about what to do)
 
-**Key distinction:** Database conflict resolution is about serializing concurrent operations. Bridge conflict resolution is about evaluating which source has authority for a given operation. The conflict is not about timing — it's about authority.
+**Key distinction:** Database conflict resolution is about serializing concurrent operations. Bridge conflict resolution is about evaluating which source has authority for a given operation. The conflict is not about timing - it's about authority.
 
-**What Bridge can learn:** MVCC (Multi-Version Concurrency Control) — keeping multiple versions of state and determining which version is visible to which reader. Bridge's temporal reasoning (staleness detection) is a form of MVCC for claims.
+**What Bridge can learn:** MVCC (Multi-Version Concurrency Control) - keeping multiple versions of state and determining which version is visible to which reader. Bridge's temporal reasoning (staleness detection) is a form of MVCC for claims.
 
 ---
 
@@ -97,9 +97,9 @@ This IS closer to:
 
 **Closest Bridge parallel:** **MODERATE but misaligned.** Access control asks "can X do Y?" Bridge asks "what should happen when X tries to do Y, given conflicting instructions about Y?"
 
-**Key distinction:** Access control is about permission (yes/no). Bridge is about effective directive (what is the right action, given all the sources of advice about what to do?). Access control says "the developer can push to main." Bridge says "the developer's prompt says push to main, but the security policy says never force-push to main — the effective directive is BLOCKED."
+**Key distinction:** Access control is about permission (yes/no). Bridge is about effective directive (what is the right action, given all the sources of advice about what to do?). Access control says "the developer can push to main." Bridge says "the developer's prompt says push to main, but the security policy says never force-push to main - the effective directive is BLOCKED."
 
-**What Bridge can learn:** Policy evaluation engines (OPA, Cedar) are the infrastructure for evaluating rules. Bridge needs to sit ABOVE policy evaluation — it determines which policy applies, not just whether a rule fires.
+**What Bridge can learn:** Policy evaluation engines (OPA, Cedar) are the infrastructure for evaluating rules. Bridge needs to sit ABOVE policy evaluation - it determines which policy applies, not just whether a rule fires.
 
 ---
 
@@ -116,7 +116,7 @@ This IS closer to:
 
 **Key distinction:** OPA/Cedar answer "does this request violate policy?" Bridge answers "given all the conflicting guidance about this action, what is the effective directive?" The policy engine is a component, not the whole system.
 
-**What Bridge can learn:** Policy-as-code (versioned, testable, reviewable policies) is a good model for Bridge's authority rules. The determinism guarantee (same input → same output) is essential.
+**What Bridge can learn:** Policy-as-code (versioned, testable, reviewable policies) is a good model for Bridge's authority rules. The determinism guarantee (same input -> same output) is essential.
 
 ---
 
@@ -126,9 +126,9 @@ This IS closer to:
 
 **Mechanism:** Admission webhooks, mutating/validating controllers, policy enforcement points.
 
-**Closest Bridge parallel:** **MODERATE.** Admission control is a "governed action" pattern — every request passes through a policy evaluation before acceptance. Bridge's effective directive is conceptually similar: before an agent acts, the directive is evaluated.
+**Closest Bridge parallel:** **MODERATE.** Admission control is a "governed action" pattern - every request passes through a policy evaluation before acceptance. Bridge's effective directive is conceptually similar: before an agent acts, the directive is evaluated.
 
-**Key distinction:** Kubernetes admission control is about cluster resource policy (the cluster decides what resources are allowed). Bridge is about project instruction policy (the project decides what the agent should do). The scope is different, but the pattern (intercept → evaluate → decide) is the same.
+**Key distinction:** Kubernetes admission control is about cluster resource policy (the cluster decides what resources are allowed). Bridge is about project instruction policy (the project decides what the agent should do). The scope is different, but the pattern (intercept -> evaluate -> decide) is the same.
 
 **What Bridge can learn:** The admission control pattern is the right enforcement architecture: a policy decision point (PDP) that evaluates requests before they execute. Bridge should be the PDP for agent actions, not the agent itself.
 
@@ -145,7 +145,7 @@ This IS closer to:
 - Git has authority (the committer, the signer, the branch protection rules)
 - Git detects conflicts (merge conflicts when two branches modify the same file)
 - Git has temporal reasoning (commits are ordered; "stale" branches exist)
-- Git produces provenance (git log, blame — who changed what and when)
+- Git produces provenance (git log, blame - who changed what and when)
 
 **Key distinction:** Git resolves file-content conflicts. Bridge resolves instruction-authority conflicts. Git's merge conflict is "these two commits changed the same line differently." Bridge's conflict is "these two instruction sources say different things about what the agent should do."
 
@@ -155,7 +155,7 @@ This IS closer to:
 
 ## ANALOGY 9: FINANCIAL CLEARING AND SETTLEMENT
 
-**What it solves:** Multiple parties submit payment orders. A clearing system determines which orders are valid, nets them, and settles the resulting obligations. Finality is critical — once settled, a transaction cannot be reversed.
+**What it solves:** Multiple parties submit payment orders. A clearing system determines which orders are valid, nets them, and settles the resulting obligations. Finality is critical - once settled, a transaction cannot be reversed.
 
 **Mechanism:** Clearing houses, central counterparties (CCPs), netting, margin requirements, settlement finality.
 
@@ -165,9 +165,9 @@ This IS closer to:
 - Conflicts (double-spend, insufficient funds, regulatory block) are resolved before settlement
 - Settlement is final and auditable
 
-**Key distinction:** Financial clearing deals with financial obligations, not instructional claims. But the structure is identical: multiple claims → evaluation against rules → conflict resolution → final, auditable determination.
+**Key distinction:** Financial clearing deals with financial obligations, not instructional claims. But the structure is identical: multiple claims -> evaluation against rules -> conflict resolution -> final, auditable determination.
 
-**What Bridge can learn:** The concept of "finality" — once a directive is resolved and the agent acts, the determination should be final and auditable. The clearing model of netting (combining multiple claims into a single settlement) is interesting for multi-action scenarios.
+**What Bridge can learn:** The concept of "finality" - once a directive is resolved and the agent acts, the determination should be final and auditable. The clearing model of netting (combining multiple claims into a single settlement) is interesting for multi-action scenarios.
 
 ---
 
@@ -195,7 +195,7 @@ This IS closer to:
 
 **Key distinction:** OS allocation is about resource scarcity (not enough CPU for all processes). Bridge is about instructional conflict (not one "right" answer, but multiple legitimate claims). OS policy is typically fixed (nice values, cgroups). Bridge policy is project-specific.
 
-**What Bridge can learn:** Priority inheritance — when a high-priority task blocks on a low-priority resource, the low-priority task inherits priority. Bridge's "explicit human override" is a form of priority inheritance: a human claim inherits priority over a static rule.
+**What Bridge can learn:** Priority inheritance - when a high-priority task blocks on a low-priority resource, the low-priority task inherits priority. Bridge's "explicit human override" is a form of priority inheritance: a human claim inherits priority over a static rule.
 
 ---
 
@@ -209,7 +209,7 @@ This IS closer to:
 
 **Key distinction:** Database conflicts are detected at commit time (or earlier, with locks). Bridge conflicts should be detected BEFORE the agent acts (proactive, not reactive). The "isolation level" concept maps to Bridge's "how much conflict resolution is required before acting?"
 
-**What Bridge can learn:** MVCC's visibility rules — a reader sees a consistent snapshot of the data as of a point in time. Bridge's "effective standing at time T" is a visibility rule for claims.
+**What Bridge can learn:** MVCC's visibility rules - a reader sees a consistent snapshot of the data as of a point in time. Bridge's "effective standing at time T" is a visibility rule for claims.
 
 ---
 
@@ -228,7 +228,7 @@ This IS closer to:
 
 **Key distinction:** Event sourcing is typically used for system state (orders, accounts, inventory). Bridge would apply it to institutional state (decisions, claims, authority, standing). The pattern is the same; the domain is different.
 
-**What Bridge can learn:** Event sourcing's "upcasting" — old events are transformed to new schemas when the schema evolves. Bridge's authority framework will evolve; the standing records for past actions need to remain interpretable.
+**What Bridge can learn:** Event sourcing's "upcasting" - old events are transformed to new schemas when the schema evolves. Bridge's authority framework will evolve; the standing records for past actions need to remain interpretable.
 
 ---
 
@@ -241,14 +241,14 @@ This IS closer to:
 **Closest Bridge parallel:** **VERY STRONG.** Legal systems are the most sophisticated existing model for Bridge's problem:
 - Multiple legitimate sources of authority (constitution, statute, precedent, contract)
 - Hierarchical precedence (higher authority overrides lower)
-- Temporal rules (newer law supersedes older; but not always — some laws take effect on a schedule)
+- Temporal rules (newer law supersedes older; but not always - some laws take effect on a schedule)
 - Jurisdiction (which authority applies to which domain)
 - Precedent (past decisions influence future ones)
 - Conflict rules (when two sources conflict, which wins and why)
 
 **Key distinction:** Legal systems are human-run, adversarial, and centrally coordinated by courts. Bridge is computational, non-adversarial, and decentralized (each project defines its own authority framework). But the conceptual structure is identical.
 
-**What Bridge can learn:** The legal concept of "stare decisis" — past decisions create precedent that constrains future decisions. Bridge's standing records could create precedent: "in this project, when X and Y conflict, X has prevailed in 3 of the last 4 cases, suggesting X has higher effective standing for this type of conflict."
+**What Bridge can learn:** The legal concept of "stare decisis" - past decisions create precedent that constrains future decisions. Bridge's standing records could create precedent: "in this project, when X and Y conflict, X has prevailed in 3 of the last 4 cases, suggesting X has higher effective standing for this type of conflict."
 
 ---
 
@@ -261,12 +261,12 @@ This IS closer to:
 **Closest Bridge parallel:** **STRONG.** Corporate governance is about authority distribution across decision types:
 - Board decides strategy; CEO decides execution; managers decide tactics
 - Delegation: authority flows down; accountability flows up
-- Conflicts: board vs CEO, shareholder vs management — resolved through governance structures
+- Conflicts: board vs CEO, shareholder vs management - resolved through governance structures
 - Standing: who has effective authority for this decision at this time?
 
 **Key distinction:** Corporate governance is organizational and human. Bridge would be computational and agent-facing. But the structure (who decides what, with what override powers, with what record) is the same.
 
-**What Bridge can learn:** Delegation chains — authority is not just tiers but chains of delegation. Bridge's authority graph could model delegation: "the tech lead delegated the coding-style decision to the senior engineer, who delegated the function-naming decision to the AGENTS.md file."
+**What Bridge can learn:** Delegation chains - authority is not just tiers but chains of delegation. Bridge's authority graph could model delegation: "the tech lead delegated the coding-style decision to the senior engineer, who delegated the function-naming decision to the AGENTS.md file."
 
 ---
 
@@ -280,7 +280,7 @@ This IS closer to:
 
 **Key distinction:** Supply chain control towers are about coordination across independent organizations. Bridge is about coordination within a single project (or across projects for enterprise Bridge). The scale is different.
 
-**What Bridge can learn:** The "control tower" concept — a central point that sees all claims and determines effective standing — is a useful architectural metaphor. But Bridge should not be a control tower that dictates; it should be a standing evaluator that computes.
+**What Bridge can learn:** The "control tower" concept - a central point that sees all claims and determines effective standing - is a useful architectural metaphor. But Bridge should not be a control tower that dictates; it should be a standing evaluator that computes.
 
 ---
 
@@ -290,15 +290,15 @@ Bridge's problem is a hybrid. No single analogy captures it fully.
 
 **Closest analogies, ranked:**
 
-1. **LEGAL SYSTEMS (precedent, jurisdiction, hierarchy)** — Best conceptual fit for multiple legitimate authorities with precedence, conflict, and temporal reasoning. Bridge is "computational common law" for project instructions.
+1. **LEGAL SYSTEMS (precedent, jurisdiction, hierarchy)** - Best conceptual fit for multiple legitimate authorities with precedence, conflict, and temporal reasoning. Bridge is "computational common law" for project instructions.
 
-2. **ARBITRATION** — Best fit for the resolver's role: evaluating conflicting claims and issuing a binding, reasoned determination.
+2. **ARBITRATION** - Best fit for the resolver's role: evaluating conflicting claims and issuing a binding, reasoned determination.
 
-3. **GIT** — Best fit for the data model: claims as commits, conflicts as merge conflicts, provenance as history, temporal reasoning as commit ordering.
+3. **GIT** - Best fit for the data model: claims as commits, conflicts as merge conflicts, provenance as history, temporal reasoning as commit ordering.
 
-4. **EVENT SOURCING** — Best fit for the architecture: institutional state as a projection of an immutable event log of claims, decisions, and standing records.
+4. **EVENT SOURCING** - Best fit for the architecture: institutional state as a projection of an immutable event log of claims, decisions, and standing records.
 
-5. **FINANCIAL CLEARING** — Best fit for finality and auditability: once a directive is resolved and acted upon, the determination is final and recorded.
+5. **FINANCIAL CLEARING** - Best fit for finality and auditability: once a directive is resolved and acted upon, the determination is final and recorded.
 
 **What Bridge is NOT like:**
 

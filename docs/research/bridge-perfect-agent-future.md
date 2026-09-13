@@ -1,8 +1,8 @@
-# BRIDGE — Perfect Agent Future: What's Still Missing?
+# BRIDGE - Perfect Agent Future: What's Still Missing?
 
 **Status:** Research analysis
 **Date:** 2026-08-27
-**Scope:** Assume perfect reasoning, perfect memory, perfect retrieval, perfect protocol interoperability, perfect verification, perfect instruction following. What does the agent STILL not possess? Identify a formal machine-relevant primitive — not vague "human judgment."
+**Scope:** Assume perfect reasoning, perfect memory, perfect retrieval, perfect protocol interoperability, perfect verification, perfect instruction following. What does the agent STILL not possess? Identify a formal machine-relevant primitive - not vague "human judgment."
 
 ---
 
@@ -22,35 +22,35 @@ Assume a future agent with:
 
 ## 2. CANDIDATE ANSWERS AND THEIR WEAKNESSES
 
-### "Human judgment" — REJECTED
+### "Human judgment" - REJECTED
 
 Too vague. "Human judgment" is not a formal machine-relevant primitive. It's a hand-wavy whatever-it-takes answer that doesn't guide product design.
 
-### "Creativity" — REJECTED
+### "Creativity" - REJECTED
 
 Perfect reasoning includes creative reasoning. A perfect reasoner can generate and evaluate novel ideas.
 
-### "Values" — REJECTED
+### "Values" - REJECTED
 
 Values are preferences. Perfect instruction following means the agent follows the values it's given. The question is where values come from, not whether the agent has them.
 
-### "Intent" — REJECTED
+### "Intent" - REJECTED
 
 Perfect instruction following includes understanding intent. If the agent can perfectly follow instructions, it can infer intent from instructions.
 
-### "Context" — REJECTED
+### "Context" - REJECTED
 
 Perfect memory and perfect retrieval mean the agent has all context. Context is not the missing piece.
 
-### "Authority" — PLAUSIBLE BUT INSUFFICIENT
+### "Authority" - PLAUSIBLE BUT INSUFFICIENT
 
 If the agent reasons perfectly, it can evaluate which instruction source has higher authority based on any criteria it's given. But authority is a property of the sources, not the agent. The agent's perfection doesn't create authority where none exists.
 
-### "Decision rights" — STRONGER
+### "Decision rights" - STRONGER
 
 Even a perfect agent cannot decide who has the right to decide. Authority and decision rights are properties of the institution, not the agent. A perfect agent can follow the institution's decision rights, but it cannot create them.
 
-### "Accepted state" — STRONGEST
+### "Accepted state" - STRONGEST
 
 This is the formal primitive that survives the perfect agent hypothesis.
 
@@ -78,22 +78,22 @@ This is the formal primitive that survives the perfect agent hypothesis.
 
 ```
 Institution I has:
-  - A set of authorities A = {a₁, a₂, ...} with scopes and delegation
-  - A set of claims C = {c₁, c₂, ...} from various sources
-  - A decision process D that evaluates claims under authority framework
-  - An acceptance function Accept(D) → AcceptedState
+ - A set of authorities A = {a₁, a₂, ...} with scopes and delegation
+ - A set of claims C = {c₁, c₂, ...} from various sources
+ - A decision process D that evaluates claims under authority framework
+ - An acceptance function Accept(D) -> AcceptedState
 
 AcceptedState = {
-  - What state is accepted (the directive, the decision, the commit)
-  - By which authority (who decided)
-  - On what basis (which claims, which authority framework)
-  - At what time (timestamp)
-  - With what record (rationale, citations, standing record)
-  - Subject to what supersession (can be changed by higher authority, new evidence, etc.)
+ - What state is accepted (the directive, the decision, the commit)
+ - By which authority (who decided)
+ - On what basis (which claims, which authority framework)
+ - At what time (timestamp)
+ - With what record (rationale, citations, standing record)
+ - Subject to what supersession (can be changed by higher authority, new evidence, etc.)
 }
 ```
 
-**What the perfect agent lacks:** The ability to accept. The agent can propose, recommend, reason, verify, and execute. But acceptance — the institutional act of binding the institution to a state — is outside the agent's perfection.
+**What the perfect agent lacks:** The ability to accept. The agent can propose, recommend, reason, verify, and execute. But acceptance - the institutional act of binding the institution to a state - is outside the agent's perfection.
 
 **The agent can:**
 - Propose an action
@@ -164,7 +164,7 @@ In a world with perfect agents:
 | Authority framework | **YES** | The institution defines its authority framework. Perfect agents follow it; they don't create it. |
 | Standing computation | **YES** | Standing is a computation on claims + authority + context. Perfect agents can do this computation, but they still need the inputs (claims, authority). |
 | Standing records | **YES** | Records are the institutional memory of acceptance. Perfect agents need them for precedent, audit, and consistency. |
-| Directive output | **PARTIALLY** | A perfect agent might not need a directive — it can compute standing itself. But the directive format (standardized, citation-backed) is useful for interoperability. |
+| Directive output | **PARTIALLY** | A perfect agent might not need a directive - it can compute standing itself. But the directive format (standardized, citation-backed) is useful for interoperability. |
 | Conflict detection | **YES** | Conflicts are properties of the claims, not the agent's reasoning. Perfect agents still need to know when claims conflict. |
 | Ambiguity flagging | **YES** | Ambiguity is a property of equal-tier conflicts. Perfect agents can detect it but still need to flag it (they can't resolve what the institution hasn't resolved). |
 | Acceptance enforcement | **NO** | A perfect agent follows accepted directives perfectly. Enforcement is unnecessary. |
@@ -199,13 +199,13 @@ In a world with perfect agents:
 
 **The perfect agent still lacks: the institution's accepted state.**
 
-The agent can reason, remember, retrieve, communicate, verify, and follow instructions. But the institution's accepted state — what the institution has formally accepted as binding, with what authority, on what basis, at what time, with what record — is a property of the institution, not the agent.
+The agent can reason, remember, retrieve, communicate, verify, and follow instructions. But the institution's accepted state - what the institution has formally accepted as binding, with what authority, on what basis, at what time, with what record - is a property of the institution, not the agent.
 
 The agent can interact with the accepted state (read it, propose changes to it, act within it). But the accepted state itself is created, maintained, and modified by the institution's authorities, not by the agent's perfection.
 
 **Bridge's irreducible core:** Compute and record the institution's accepted state for any proposed action, given the institution's claims, authority framework, and temporal context.
 
-This is the formal machine-relevant primitive that survives the perfect agent hypothesis. It is not "human judgment." It is "institutional acceptance" — structured, computable, recordable, and operational.
+This is the formal machine-relevant primitive that survives the perfect agent hypothesis. It is not "human judgment." It is "institutional acceptance" - structured, computable, recordable, and operational.
 
 ---
 

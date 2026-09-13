@@ -1,18 +1,18 @@
-# Bridge Phase 2 — Hermes Report
+# Bridge Phase 2 - Hermes Report
 
-**Status:** COMPLETE  
-**Generated:** Phase 13 — final synthesis of all prior phases  
-**Author:** Hermes Agent (Research Lead / Evaluation Lead / Strategic Coordinator)  
-**Date:** Phase 2 reconstruction  
+**Status:** COMPLETE 
+**Generated:** Phase 13 - final synthesis of all prior phases 
+**Author:** Hermes Agent (Research Lead / Evaluation Lead / Strategic Coordinator) 
+**Date:** Phase 2 reconstruction 
 **Related documents:**
 
-- `docs/research/hermes-current-state.md` — Phase 0: repository and state reconstruction
-- `docs/research/exp-005-forensic-truth.md` — Phase 1: trial-by-trial forensic reconstruction
-- `docs/research/exp-005-root-cause-analysis.md` — Phase 2: root cause identification and repair plan
-- `docs/research/exp-005-evaluation-science.md` — Phase 3: evaluation science application
-- `docs/research/bridge-current-interoperability-map.md` — Phase 5: original product assessment and competitive map
+- `docs/research/hermes-current-state.md` - Phase 0: repository and state reconstruction
+- `docs/research/exp-005-forensic-truth.md` - Phase 1: trial-by-trial forensic reconstruction
+- `docs/research/exp-005-root-cause-analysis.md` - Phase 2: root cause identification and repair plan
+- `docs/research/exp-005-evaluation-science.md` - Phase 3: evaluation science application
+- `docs/research/bridge-current-interoperability-map.md` - Phase 5: original product assessment and competitive map
 
-**Tavily research:** `docs/research/bridge-tavily-competitive-research.md` — full source list from competitive landscape research
+**Tavily research:** `docs/research/bridge-tavily-competitive-research.md` - full source list from competitive landscape research
 
 ---
 
@@ -32,7 +32,7 @@ The methodology passed correction gates in prior sessions: directive phrasing pa
 
 This is the central fact. On-disk evidence shows:
 
-- **`exp005-manifest.json` does not exist** — no trial records, no completion counts, no evaluation scores
+- **`exp005-manifest.json` does not exist** - no trial records, no completion counts, no evaluation scores
 - **Only 1 worktree directory survives** (`trial-exp005-scn-006-B-rep2-1787827019225`), and it is empty (no `.git` pointer, no trial artifacts)
 - **No runner stdout/stderr logs** are available
 - **No telemetry or task logs** with trial granularity are available
@@ -45,7 +45,7 @@ Three conflicting reports exist in the record:
 
 | Report | Claim | Verdict |
 |---|---|---|
-| Antigravity progress | ~44–45/60 completed | Unverifiable. No manifest, no worktrees, no artifacts. May have been a progress message, not a completion count. |
+| Antigravity progress | ~44-45/60 completed | Unverifiable. No manifest, no worktrees, no artifacts. May have been a progress message, not a completion count. |
 | Forensic inspection | 25 manifest entries | Unverifiable. Manifest file does not exist on disk. May have been written from a transient read or memory. |
 | Forensic inspection | 24 surviving worktrees | Unverifiable. Only 1 empty directory exists. The other 23 may have been cleaned up, pruned, or never created. |
 
@@ -62,7 +62,7 @@ The experimental design, correction gates, evaluator logic, and resolver validat
 ### 2.1 Surviving data
 
 1. **Experiment design:** Fully documented in `research/experiments/exp-005/methodology.md`, `schema.ts`, `scenarios.ts`, `payload-builder.ts`, `security.ts`, `smoke-tests.ts`, `validate.ts`
-2. **Runner source code:** `run-pilot.ts`, `harness.ts`, `agent-runners.ts`, `evaluator.ts` — all intact
+2. **Runner source code:** `run-pilot.ts`, `harness.ts`, `agent-runners.ts`, `evaluator.ts` - all intact
 3. **Resolver code:** Frozen at `fc322c6`, validated 10/10 in dry-run
 4. **Correction gate records:** 10 checkpoints verified in prior sessions
 5. **Tavily competitive research:** `docs/research/bridge-tavily-competitive-research.md` (43KB, 200+ sources)
@@ -71,16 +71,16 @@ The experimental design, correction gates, evaluator logic, and resolver validat
 
 ### 2.2 Lost data
 
-1. **All EXP-005 trial records** — manifest, worktrees, logs, outputs
+1. **All EXP-005 trial records** - manifest, worktrees, logs, outputs
 2. **Any evaluation scores** from EXP-005
 3. **Any evidence about agent behavior under different conditions** from EXP-005
 4. **The ability to answer:** Does the SPADE resolver improve agent directive resolution accuracy compared to human resolution or no resolution?
 
 ### 2.3 Partially surviving signals
 
-1. **One empty worktree directory** — suggestive of partial execution, but provides no trial data
-2. **Git reflog** — shows normal branch activity, no detached HEAD, single worktree
-3. **Filesystem state** — C: drive at 97% capacity, no manifest, no worktrees
+1. **One empty worktree directory** - suggestive of partial execution, but provides no trial data
+2. **Git reflog** - shows normal branch activity, no detached HEAD, single worktree
+3. **Filesystem state** - C: drive at 97% capacity, no manifest, no worktrees
 
 ---
 
@@ -100,23 +100,23 @@ The experiment design is valid. The infrastructure failed. The only way to get v
 
 From `exp-005-root-cause-analysis.md`:
 
-1. **Free disk space** — C: drive at 97% is a hard blocker
-2. **Install dependencies** — ensure `node_modules` present, TypeScript compilable, all CLI tools available
-3. **Fix shell consistency** — ensure runner uses a single, consistent shell (Git Bash recommended)
-4. **Verify git worktree capability** — test `git worktree add` / `git worktree remove`
+1. **Free disk space** - C: drive at 97% is a hard blocker
+2. **Install dependencies** - ensure `node_modules` present, TypeScript compilable, all CLI tools available
+3. **Fix shell consistency** - ensure runner uses a single, consistent shell (Git Bash recommended)
+4. **Verify git worktree capability** - test `git worktree add` / `git worktree remove`
 5. **Strengthen checkpointing:**
-   - Write manifest after every trial (not just at end)
-   - Write to multiple locations (local + backup)
-   - Log stdout/stderr to files per trial
-   - Record filesystem timestamps
-   - Add manifest integrity check (valid JSON verification after each write)
-   - Add heartbeat (record runner alive at intervals)
+ - Write manifest after every trial (not just at end)
+ - Write to multiple locations (local + backup)
+ - Log stdout/stderr to files per trial
+ - Record filesystem timestamps
+ - Add manifest integrity check (valid JSON verification after each write)
+ - Add heartbeat (record runner alive at intervals)
 
 ### 3.3 Rerun scope
 
-**Option A: Full rerun** — 60 trials (10 scenarios × 3 conditions × 2 replications, seed 42), identical to original plan. Preferred if infrastructure is fully repaired.
+**Option A: Full rerun** - 60 trials (10 scenarios × 3 conditions × 2 replications, seed 42), identical to original plan. Preferred if infrastructure is fully repaired.
 
-**Option B: Validation run** — 9 trials (3 scenarios × 3 conditions, single replication) to validate the infrastructure fix before committing to the full 60. Preferred if there is uncertainty about whether the infrastructure is fully fixed.
+**Option B: Validation run** - 9 trials (3 scenarios × 3 conditions, single replication) to validate the infrastructure fix before committing to the full 60. Preferred if there is uncertainty about whether the infrastructure is fully fixed.
 
 **Recommendation:** Start with Option B (9-trial validation run). If it completes with full data persistence, proceed to Option A (60-trial full run). If it fails, diagnose and fix before retrying.
 
@@ -139,36 +139,36 @@ These are the questions the Bridge project needs answered before it can claim th
 
 The original product idea is:
 
-> ONE PLACE → MULTIPLE AI AGENTS → SHARED PROJECT → AUTOMATIC WORK TRANSFER → NO MANUAL COPY/PASTE
+> ONE PLACE -> MULTIPLE AI AGENTS -> SHARED PROJECT -> AUTOMATIC WORK TRANSFER -> NO MANUAL COPY/PASTE
 
 The interoperability map (`bridge-current-interoperability-map.md`) assesses each component:
 
 | Component | Status | Gap |
 |---|---|---|
-| One place (shared project) | **Partially solved** — Git repo works, but no unified coordination layer | Coordination, not storage |
-| Multiple AI agents | **Solved** — Claude Code, Codex, Gemini, OpenCode, Cursor, Copilot all exist | Heterogeneous coordination is unsolved |
-| Shared project | **Solved** — Git repo is shared; all agents can read/write | Conflict resolution is unsolved |
-| Automatic work transfer | **NOT SOLVED** — no tool transfers structured work between different agent types automatically | This is Bridge's core product |
-| No manual copy/paste | **NOT SOLVED** — human is the middleware today | This is the user experience Bridge promises |
+| One place (shared project) | **Partially solved** - Git repo works, but no unified coordination layer | Coordination, not storage |
+| Multiple AI agents | **Solved** - Claude Code, Codex, Gemini, OpenCode, Cursor, Copilot all exist | Heterogeneous coordination is unsolved |
+| Shared project | **Solved** - Git repo is shared; all agents can read/write | Conflict resolution is unsolved |
+| Automatic work transfer | **NOT SOLVED** - no tool transfers structured work between different agent types automatically | This is Bridge's core product |
+| No manual copy/paste | **NOT SOLVED** - human is the middleware today | This is the user experience Bridge promises |
 
 ### 4.2 What Bridge must build (MVP)
 
 From the interoperability map, §6.3:
 
-1. **WorkTransfer object** — standardized, machine-readable handoff format with fields: objective, task, changedFiles, relevantFiles, artifacts, commands, tests, results, failures, decisions, unresolvedQuestions, gitState, provenance
-2. **Work transfer pipeline** — Agent A → Bridge → WorkTransfer → Agent B, automatic, no manual copy/paste
-3. **Cross-agent coordination** — dependency-aware sequencing, conflict detection, agent status tracking
-4. **Heterogeneous agent support** — Claude ↔ Codex ↔ Gemini ↔ OpenCode ↔ any MCP-compatible agent
-5. **Decision log / provenance tracking** — what was decided, by whom, why, with what evidence
+1. **WorkTransfer object** - standardized, machine-readable handoff format with fields: objective, task, changedFiles, relevantFiles, artifacts, commands, tests, results, failures, decisions, unresolvedQuestions, gitState, provenance
+2. **Work transfer pipeline** - Agent A -> Bridge -> WorkTransfer -> Agent B, automatic, no manual copy/paste
+3. **Cross-agent coordination** - dependency-aware sequencing, conflict detection, agent status tracking
+4. **Heterogeneous agent support** - Claude <-> Codex <-> Gemini <-> OpenCode <-> any MCP-compatible agent
+5. **Decision log / provenance tracking** - what was decided, by whom, why, with what evidence
 
 ### 4.3 What Bridge should build next (post-MVP)
 
 From the interoperability map, §6.2:
 
-1. **Automatic context selection** — beyond CLAUDE.md + git + agent search
-2. **Effective Directive integration** — if validated by experiment, provides structured context selection and conflict elimination
-3. **Precedent tracking** — if validated, provides way to track and reuse prior resolutions
-4. **Reconciliation** — if validated, provides cross-agent conflict resolution
+1. **Automatic context selection** - beyond CLAUDE.md + git + agent search
+2. **Effective Directive integration** - if validated by experiment, provides structured context selection and conflict elimination
+3. **Precedent tracking** - if validated, provides way to track and reuse prior resolutions
+4. **Reconciliation** - if validated, provides cross-agent conflict resolution
 
 ### 4.4 What Bridge should NOT build (yet)
 
@@ -192,7 +192,7 @@ From the interoperability map, §6.4:
 
 **Why now:** This is the core product. It is buildable with existing infrastructure (Git, file system, MCP, CLAUDE.md). It does not depend on experiment results. It directly addresses the original product gap.
 
-**Scope:** MVP — a WorkTransfer object (JSON schema), a producer (captures relevant state from agent A's work directory), a consumer (reads WorkTransfer and sets up agent B's context), and a simple orchestrator that connects them. CLI-first. No UI required.
+**Scope:** MVP - a WorkTransfer object (JSON schema), a producer (captures relevant state from agent A's work directory), a consumer (reads WorkTransfer and sets up agent B's context), and a simple orchestrator that connects them. CLI-first. No UI required.
 
 **Estimated effort:** Small. The schema is defined in the interoperability map. The producer and consumer are straightforward file operations plus context setup.
 
@@ -248,7 +248,7 @@ If EXP-005 fails again, the research question may need to be reframed, and EXP-0
 
 ### 7.1 The current EXP-005 data
 
-The data from the failed run is gone. **Abandon any attempt to reconstruct it from conflicting reports.** The reports (44–45/60, 25 manifest entries, 24 worktrees) are unverifiable and should not be treated as evidence.
+The data from the failed run is gone. **Abandon any attempt to reconstruct it from conflicting reports.** The reports (44-45/60, 25 manifest entries, 24 worktrees) are unverifiable and should not be treated as evidence.
 
 ### 7.2 The idea that EXP-005 proved anything
 
@@ -296,7 +296,7 @@ The forensic truth is clear: 0/60 valid completions. **Abandon any hope that som
 ### 8.5 What is REJECTED
 
 1. **That EXP-005 produced valid results:** Rejected. The data is gone.
-2. **That the conflicting reports (44–45/60, 25 entries, 24 worktrees) are reliable:** Rejected. Unverifiable.
+2. **That the conflicting reports (44-45/60, 25 entries, 24 worktrees) are reliable:** Rejected. Unverifiable.
 3. **That the methodology is at fault:** Rejected. The methodology passed correction gates and is intact in source code.
 
 ### 8.6 What is NOT TESTED
@@ -361,7 +361,7 @@ This is the largest product uncertainty because:
 1. The gap exists (confirmed by interoperability map, 200+ sources)
 2. No existing tool fills it (confirmed by competitive research)
 3. The MVP is buildable (WorkTransfer object + pipeline, Git + files + MCP + CLAUDE.md)
-4. The original product idea is focused and coherent (ONE PLACE → MULTIPLE AGENTS → SHARED PROJECT → AUTOMATIC WORK TRANSFER)
+4. The original product idea is focused and coherent (ONE PLACE -> MULTIPLE AGENTS -> SHARED PROJECT -> AUTOMATIC WORK TRANSFER)
 
 ### 11.2 The research thesis (weakened but not dead)
 
@@ -395,7 +395,7 @@ The product thesis does not depend on the research thesis. Bridge can build the 
 2. **The correction gates:** The 10 methodology checkpoints are sound. Keep them as the standard for future experiments.
 3. **The resolver at fc322c6:** Frozen and validated. Use it as the condition A treatment in the rerun.
 4. **The Bridge research corpus:** 25+ documents covering strategy, moat, MVP, category research, falsification, decision tree, paper strategy. Keep as the strategic foundation.
-5. **The original product idea:** ONE PLACE → MULTIPLE AGENTS → SHARED PROJECT → AUTOMATIC WORK TRANSFER. Focused and buildable. Keep as the north star.
+5. **The original product idea:** ONE PLACE -> MULTIPLE AGENTS -> SHARED PROJECT -> AUTOMATIC WORK TRANSFER. Focused and buildable. Keep as the north star.
 6. **The WorkTransfer object concept:** Defined in the interoperability map. Keep as the core product artifact.
 7. **The Tavily competitive research:** 200+ sources saved. Keep as the competitive baseline.
 
@@ -403,7 +403,7 @@ The product thesis does not depend on the research thesis. Bridge can build the 
 
 1. **The current EXP-005 data:** Gone. Abandon any reconstruction attempts. Start fresh.
 2. **Any claims about agent behavior from EXP-005:** No data, no claims.
-3. **The conflicting reports as evidence:** 44–45/60, 25 entries, 24 worktrees — unverifiable, not evidence.
+3. **The conflicting reports as evidence:** 44-45/60, 25 entries, 24 worktrees - unverifiable, not evidence.
 4. **Enterprise governance scope:** Not justified. Cut.
 5. **Cloud control plane:** Local-first is preferred. Cut.
 6. **Custom protocol from scratch:** Use MCP/ACP/Git. Cut.
@@ -473,4 +473,4 @@ No further planning is needed. The work is defined. Execute.
 
 ---
 
-*End of Bridge Phase 2 — Hermes Report.*
+*End of Bridge Phase 2 - Hermes Report.*

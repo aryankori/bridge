@@ -1,4 +1,4 @@
-# BRIDGE — Paper Strategy: The Smallest Coherent Contribution
+# BRIDGE - Paper Strategy: The Smallest Coherent Contribution
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -36,7 +36,7 @@
 - Demonstrates resolver works at computation level
 
 **Weaknesses:**
-- 76% accuracy is "honest baseline" — not groundbreaking
+- 76% accuracy is "honest baseline" - not groundbreaking
 - Benchmark alone doesn't prove the resolver improves agent behavior
 - Doesn't connect to the broader institutional state thesis
 
@@ -54,7 +54,7 @@
 - Addresses a recognized problem (instruction hierarchy, conflict resolution)
 
 **Weaknesses:**
-- "Effective directive" is a narrow framing — may not generalize
+- "Effective directive" is a narrow framing - may not generalize
 - The paper would be about a feature (resolution), not a platform
 - Doesn't capture the institutional state vision
 
@@ -64,10 +64,10 @@
 
 ### Option D: Framework for Agent Authority (Standing)
 
-**Contribution:** A framework for computing agent authority standing — which instruction source governs which action, with what authority, under what conditions — with deterministic evaluation, project-specific authority configuration, and standing records as institutional memory.
+**Contribution:** A framework for computing agent authority standing - which instruction source governs which action, with what authority, under what conditions - with deterministic evaluation, project-specific authority configuration, and standing records as institutional memory.
 
 **Strengths:**
-- Broader than "effective directive" — captures the standing concept
+- Broader than "effective directive" - captures the standing concept
 - Connects to authority, delegation, precedence literature
 - Opens the door to institutional state platform vision
 - More defensible as a category contribution
@@ -83,14 +83,14 @@
 
 ### Option E: Cross-Agent Project State (EXP-001 + EXP-004 + EXP-005)
 
-**Contribution:** A comprehensive framework for cross-agent project state — interoperability, transfer, memory, intelligence, reconciliation, commitment, authority, standing — showing how these layers combine to enable coherent multi-agent development.
+**Contribution:** A comprehensive framework for cross-agent project state - interoperability, transfer, memory, intelligence, reconciliation, commitment, authority, standing - showing how these layers combine to enable coherent multi-agent development.
 
 **Strengths:**
 - Ambitious, comprehensive
 - Connects all the Bridge research threads
 
 **Weaknesses:**
-- Kitchen-sink paper — tries to do too much
+- Kitchen-sink paper - tries to do too much
 - The layers are at different maturity levels (transfer proven? resolver proven? standing unproven?)
 - Hard to tell a coherent story when some layers are experimental and others are visionary
 
@@ -100,7 +100,7 @@
 
 ### Option F: Computational Institutional State (Papers D + C combined over time)
 
-**Contribution:** A framework for computing institutional state — the claims, authority, decisions, standing, and accepted state of an organization — in a form that any agent or actor can query and use.
+**Contribution:** A framework for computing institutional state - the claims, authority, decisions, standing, and accepted state of an organization - in a form that any agent or actor can query and use.
 
 **Strengths:**
 - Ambitious and novel
@@ -137,7 +137,7 @@
 
 ### Paper 2 (Next-next, after EXP-006/007): "Standing and Authority for AI Agents"
 
-**Contribution:** A framework for computing agent authority standing — which instruction source governs which action, under what conditions — with project-specific authority configuration, standing records as institutional memory, and precedent reasoning.
+**Contribution:** A framework for computing agent authority standing - which instruction source governs which action, under what conditions - with project-specific authority configuration, standing records as institutional memory, and precedent reasoning.
 
 **Structure:**
 1. Problem: Authority is not static; standing is action-specific and temporal
@@ -154,7 +154,7 @@
 
 ### Paper 3 (Long-term, if platform vision materializes): "Computational Institutional State"
 
-**Contribution:** A comprehensive framework for computing institutional state — claims, authority, decisions, standing, precedent, accepted state — as a queryable, interoperable layer for any actor in an organization.
+**Contribution:** A comprehensive framework for computing institutional state - claims, authority, decisions, standing, precedent, accepted state - as a queryable, interoperable layer for any actor in an organization.
 
 **Structure:**
 1. Problem: Organizations have fragmented state; no systematic way to compute what is effective
@@ -171,7 +171,7 @@
 
 ## 3. WHAT THE PAPER MUST NOT BE
 
-1. **A product pitch.** Papers are about contributions to knowledge, not product promotion. Bridge's paper should present the framework, the evidence, and the limitations — not "Bridge is a great product."
+1. **A product pitch.** Papers are about contributions to knowledge, not product promotion. Bridge's paper should present the framework, the evidence, and the limitations - not "Bridge is a great product."
 
 2. **A kitchen sink.** One coherent contribution per paper. Don't try to cover transfer, memory, reconciliation, commitment, authority, directive, and standing in one paper.
 
@@ -191,7 +191,7 @@ This paper contributes:
 1. A formalization of the instruction conflict problem in AI coding agent workflows
 2. A deterministic framework for resolving conflicts through authority evaluation, with citation-backed output
 3. A blind benchmark demonstrating 76% accuracy with 0% false allow on 40 scenarios
-4. A live agent experiment design (EXP-005) — methodology only, results pending
+4. A live agent experiment design (EXP-005) - methodology only, results pending
 
 This is the smallest coherent contribution. It establishes the problem, the framework, the benchmark, and the live validation design. If EXP-005 is positive, add the behavioral results. If EXP-005 is negative, report the negative result honestly and discuss implications.
 

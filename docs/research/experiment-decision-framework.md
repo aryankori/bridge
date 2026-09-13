@@ -1,8 +1,8 @@
-# BRIDGE — EXPERIMENT DECISION FRAMEWORK
+# BRIDGE - EXPERIMENT DECISION FRAMEWORK
 
 **Author:** Hermes Agent (Independent Research Synthesizer)
 **Date:** 2026-08-27
-**Status:** Pre-EXP-001 execution — defines decision rules before seeing results
+**Status:** Pre-EXP-001 execution - defines decision rules before seeing results
 
 ---
 
@@ -15,7 +15,7 @@
 - Git owns code state; CI/CD owns verification; Jira/Linear owns work state
 
 ### Evidence
-- A2A Specification v1.0, Section 1.2: "Opaque Execution" — agents don't share internal state
+- A2A Specification v1.0, Section 1.2: "Opaque Execution" - agents don't share internal state
 - SPIFFE Workload API: "explicitly does not include an authentication handshake"
 - Singh (1996): "S-commitments play a similarly important role in coordinating and structuring multiagent systems"
 - NIST AI RMF 1.0, Section 3: "Accountable and Transparent" is a characteristic of trustworthy AI
@@ -26,16 +26,16 @@
 ### Proposed Architecture
 ```
 HUMAN / INSTITUTION
-        │
-   COMMITMENT LAYER (Bridge) ← proposed
-        │
-   AGENT EXECUTION (A2A/MCP)
-        │
-   EVIDENCE / RESULTS
-        │
-   VERIFICATION (CI/CD, tests)
-        │
-   DOMAIN SYSTEMS (Git, Jira, etc.)
+ │
+ COMMITMENT LAYER (Bridge) <- proposed
+ │
+ AGENT EXECUTION (A2A/MCP)
+ │
+ EVIDENCE / RESULTS
+ │
+ VERIFICATION (CI/CD, tests)
+ │
+ DOMAIN SYSTEMS (Git, Jira, etc.)
 ```
 
 ---
@@ -79,61 +79,61 @@ HUMAN / INSTITUTION
 | Aspect | Interpretation |
 |---|---|
 | **Meaning** | Structured transfer is best; prior knowledge helps |
-| **H1 support** | ✅ Strong |
-| **H2 support** | ✅ Strong |
-| **H3 support** | ✅ Strong |
+| **H1 support** | Strong |
+| **H2 support** | Strong |
+| **H3 support** | Strong |
 | **Next experiment** | EXP-002 (persistent intelligence) |
-| **Bridge continues?** | ✅ Yes — work-state transfer is validated |
+| **Bridge continues?** | Yes - work-state transfer is validated |
 
 ### Outcome 2: C ≈ B > A
 | Aspect | Interpretation |
 |---|---|
 | **Meaning** | Prior knowledge helps, but structure adds no value |
-| **H1 support** | ✅ Strong |
-| **H2 support** | ❌ Rejected |
-| **H3 support** | ❌ Rejected — overhead not justified |
+| **H1 support** | Strong |
+| **H2 support** | Rejected |
+| **H3 support** | Rejected - overhead not justified |
 | **Next experiment** | Redesign transfer schema; test with different tasks |
-| **Bridge continues?** | ⚠️ Conditional — only if schema can be improved |
+| **Bridge continues?** | Conditional - only if schema can be improved |
 
 ### Outcome 3: B > A and B ≈ C
 | Aspect | Interpretation |
 |---|---|
 | **Meaning** | Raw transcript is as good as structured transfer |
-| **H1 support** | ✅ Strong |
-| **H2 support** | ❌ Rejected |
-| **H3 support** | ❌ Rejected — structure is waste |
+| **H1 support** | Strong |
+| **H2 support** | Rejected |
+| **H3 support** | Rejected - structure is waste |
 | **Next experiment** | Abandon structured transfer; focus on memory/intelligence |
-| **Bridge continues?** | ⚠️ Pivot to T4 (Project Intelligence) |
+| **Bridge continues?** | Pivot to T4 (Project Intelligence) |
 
 ### Outcome 4: A > B ≈ C
 | Aspect | Interpretation |
 |---|---|
 | **Meaning** | Prior knowledge actually hurts performance |
-| **H1 support** | ❌ Rejected — noise exceeds signal |
-| **H2 support** | ❌ Rejected |
-| **H3 support** | ❌ Rejected |
+| **H1 support** | Rejected - noise exceeds signal |
+| **H2 support** | Rejected |
+| **H3 support** | Rejected |
 | **Next experiment** | Diagnose why (transcript quality? task mismatch?) |
-| **Bridge continues?** | ❌ Likely kill T2; consider T8 (no additional layer needed) |
+| **Bridge continues?** | Likely kill T2; consider T8 (no additional layer needed) |
 
 ### Outcome 5: A ≈ B ≈ C
 | Aspect | Interpretation |
 |---|---|
 | **Meaning** | No detectable effect of prior knowledge or structure |
-| **H1 support** | ❌ Rejected |
-| **H2 support** | ❌ Rejected |
-| **H3 support** | ❌ Rejected |
-| **Next experiment** | A > B ≈ C — diagnose task design; consider T8 |
-| **Bridge continues?** | ❌ Strong evidence for T8 |
+| **H1 support** | Rejected |
+| **H2 support** | Rejected |
+| **H3 support** | Rejected |
+| **Next experiment** | A > B ≈ C - diagnose task design; consider T8 |
+| **Bridge continues?** | Strong evidence for T8 |
 
 ### Outcome 6: C < B
 | Aspect | Interpretation |
 |---|---|
 | **Meaning** | Structure actively harms performance |
-| **H1 support** | ⚠️ Weak (B might still > A) |
-| **H2 support** | ❌ Rejected — structure is harmful |
-| **H3 support** | ❌ Rejected |
+| **H1 support** | Weak (B might still > A) |
+| **H2 support** | Rejected - structure is harmful |
+| **H3 support** | Rejected |
 | **Next experiment** | Diagnose: is schema misleading? Are diagnostics wrong? |
-| **Bridge continues?** | ❌ Strong evidence against T2 |
+| **Bridge continues?** | Strong evidence against T2 |
 
 ---
 
@@ -143,8 +143,8 @@ HUMAN / INSTITUTION
 
 EXP-002 is justified if and only if:
 
-1. **C > A** (structured transfer beats baseline) — minimum 20% improvement in test pass rate
-2. **OR B > A** (raw transcript beats baseline) — minimum 20% improvement
+1. **C > A** (structured transfer beats baseline) - minimum 20% improvement in test pass rate
+2. **OR B > A** (raw transcript beats baseline) - minimum 20% improvement
 3. **AND** the effect is consistent across at least 2 of 3 trials
 
 ### If EXP-001 Fails (A ≈ B ≈ C)
@@ -153,7 +153,7 @@ EXP-002 is justified if and only if:
 
 ### If EXP-001 Succeeds (C > B > A)
 - **Proceed to EXP-002** with commitment-aware condition added:
-  - Condition D: OpenCode + commitment context (active commitments with evidence status)
+ - Condition D: OpenCode + commitment context (active commitments with evidence status)
 
 ---
 
@@ -182,8 +182,8 @@ EXP-002 is justified if and only if:
 | Human interventions | Count of human corrections |
 
 **Success Criteria:**
-- Contradictory output reduced by ≥50%
-- Rework reduced by ≥25%
+- Contradictory output reduced by >=50%
+- Rework reduced by >=25%
 - No significant increase in time to first useful output
 
 **Failure Criteria:**
@@ -195,7 +195,7 @@ EXP-002 is justified if and only if:
 ## 7. PRODUCT BOUNDARY
 
 ### Bridge Should OWN
-- Commitment lifecycle (proposed → decided → implemented → verified → superseded)
+- Commitment lifecycle (proposed -> decided -> implemented -> verified -> superseded)
 - Human ratification gates
 - Contradiction detection between agent claims and verified state
 - Evidence binding (linking claims to Git commits, test results, file refs)
@@ -232,14 +232,14 @@ EXP-002 is justified if and only if:
 
 | Search Term | Findings | Implication |
 |---|---|---|
-| **Commitment reconciliation** | No existing system implements this for AI agents | ✅ Novel |
-| **Agent authorization** | IAM/OIDC/SPIFFE own technical authorization; semantic authority is open | ⚠️ Partially novel |
-| **Agent acceptance** | No existing system has human ratification gates for agent output | ✅ Novel |
-| **Agent governance state** | NIST requires it; no system implements it | ✅ Novel |
-| **Proposal → approval → execution** | Workflow engines exist; but not for AI agent proposals | ⚠️ Partially novel |
-| **Cross-agent project state** | No existing system maintains state across heterogeneous agents | ✅ Novel |
-| **Institutional agent memory** | Honcho/Mem0/Cognee store memory; don't reconcile it | ✅ Novel |
-| **Authoritative AI project state** | No existing system claims this | ✅ Novel (but risky claim) |
+| **Commitment reconciliation** | No existing system implements this for AI agents | Novel |
+| **Agent authorization** | IAM/OIDC/SPIFFE own technical authorization; semantic authority is open | Partially novel |
+| **Agent acceptance** | No existing system has human ratification gates for agent output | Novel |
+| **Agent governance state** | NIST requires it; no system implements it | Novel |
+| **Proposal -> approval -> execution** | Workflow engines exist; but not for AI agent proposals | Partially novel |
+| **Cross-agent project state** | No existing system maintains state across heterogeneous agents | Novel |
+| **Institutional agent memory** | Honcho/Mem0/Cognee store memory; don't reconcile it | Novel |
+| **Authoritative AI project state** | No existing system claims this | Novel (but risky claim) |
 
 ### Novelty Classification
 
@@ -274,7 +274,7 @@ EXP-002 is justified if and only if:
 ### If EXP-001 is Inconclusive (mixed results)
 **Paper thesis:** "Measuring the effect of structured work transfer: lessons from a pilot study"
 
-**Contribution:** Methodological contribution — how to design agent transfer experiments, what metrics matter, what confounds arise.
+**Contribution:** Methodological contribution - how to design agent transfer experiments, what metrics matter, what confounds arise.
 
 **Venue:** RAISE / arXiv
 
@@ -283,22 +283,22 @@ EXP-002 is justified if and only if:
 ## FINAL QUESTIONS
 
 ### 1. What result from EXP-001 would be genuinely exciting?
-**C > B > A with ≥30% improvement** — this would strongly validate structured transfer and justify EXP-002.
+**C > B > A with >=30% improvement** - this would strongly validate structured transfer and justify EXP-002.
 
 ### 2. What result would seriously weaken Bridge?
-**A > B ≈ C** — prior knowledge actually hurts, suggesting agents are better off without cross-agent context.
+**A > B ≈ C** - prior knowledge actually hurts, suggesting agents are better off without cross-agent context.
 
 ### 3. What result would kill the current work-transfer thesis?
-**A ≈ B ≈ C** — no detectable effect of any prior knowledge, suggesting the entire work-transfer approach is misguided.
+**A ≈ B ≈ C** - no detectable effect of any prior knowledge, suggesting the entire work-transfer approach is misguided.
 
 ### 4. What evidence would justify EXP-002?
-**C > A with ≥20% improvement** — minimum evidence that structured transfer works.
+**C > A with >=20% improvement** - minimum evidence that structured transfer works.
 
 ### 5. What evidence would justify building a commitment engine?
-**EXP-002 shows ≥50% reduction in contradictory output** — evidence that commitment context actually changes agent behavior.
+**EXP-002 shows >=50% reduction in contradictory output** - evidence that commitment context actually changes agent behavior.
 
 ### 6. What evidence would justify abandoning Bridge entirely?
-**EXP-001 shows A ≈ B ≈ C AND EXP-002 shows no effect** — two consecutive experiments showing no value from cross-agent context.
+**EXP-001 shows A ≈ B ≈ C AND EXP-002 shows no effect** - two consecutive experiments showing no value from cross-agent context.
 
 ---
 
@@ -306,10 +306,10 @@ EXP-002 is justified if and only if:
 
 | Decision | Rule |
 |---|---|
-| **Proceed to EXP-002** | If C > A or B > A by ≥20% |
+| **Proceed to EXP-002** | If C > A or B > A by >=20% |
 | **Kill T2 (work-transfer)** | If A ≈ B ≈ C |
 | **Pivot to T4 (intelligence)** | If B > A but C ≈ B |
-| **Build commitment engine** | If EXP-002 shows ≥50% contradiction reduction |
+| **Build commitment engine** | If EXP-002 shows >=50% contradiction reduction |
 | **Abandon Bridge** | If EXP-001 and EXP-002 both show no effect |
 
 ---

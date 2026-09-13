@@ -1,4 +1,4 @@
-# BRIDGE — Red Team the Concept: One Product or Two?
+# BRIDGE - Red Team the Concept: One Product or Two?
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -81,25 +81,25 @@
 
 ```
 Core Engine (shared)
-  ├── Claim extraction (project files, enterprise systems)
-  ├── Authority framework (project tiers, enterprise delegation)
-  ├── Conflict detection (same anomaly detectors)
-  ├── Standing computation (deterministic resolver)
-  ├── Standing records (local + database storage)
-  └── Citation format (same format)
+ ├── Claim extraction (project files, enterprise systems)
+ ├── Authority framework (project tiers, enterprise delegation)
+ ├── Conflict detection (same anomaly detectors)
+ ├── Standing computation (deterministic resolver)
+ ├── Standing records (local + database storage)
+ └── Citation format (same format)
 
 Developer Interface (Bridge A)
-  ├── CLI: bridge check, bridge prep, bridge lint
-  ├── Local standing records
-  ├── Agent prompt injection
-  └── Open source / npm distribution
+ ├── CLI: bridge check, bridge prep, bridge lint
+ ├── Local standing records
+ ├── Agent prompt injection
+ └── Open source / npm distribution
 
 Enterprise Interface (Bridge B)
-  ├── Dashboard: standing visualization, authority configuration
-  ├── Standing record database + query API
-  ├── Compliance export (EU AI Act, SOC 2, etc.)
-  ├── Governance platform integration
-  └── Enterprise sales / license distribution
+ ├── Dashboard: standing visualization, authority configuration
+ ├── Standing record database + query API
+ ├── Compliance export (EU AI Act, SOC 2, etc.)
+ ├── Governance platform integration
+ └── Enterprise sales / license distribution
 ```
 
 **The argument for one platform:** The core computation (standing) is the same. Building two separate products would duplicate the core engine. A unified platform serves both markets with a shared foundation.

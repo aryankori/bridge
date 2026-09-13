@@ -1,6 +1,6 @@
 # EXP-004: Blind Benchmark for Effective Directive Resolution
 
-> **MANDATORY NOTICE:**  
+> **MANDATORY NOTICE:** 
 > *This benchmark evaluates agreement with an independently defined gold standard. It does not establish real-world authority correctness.*
 
 EXP-004 provides a scientifically defensible, reproducible benchmark for evaluating directive conflict detection, standing precedence resolution, safety gates, and explanation quality.

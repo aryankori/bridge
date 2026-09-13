@@ -1,9 +1,9 @@
 # Bridge - Experiment Results: EXP-001-WORK-TRANSFER
 
-**Experiment ID:** `EXP-001-WORK-TRANSFER`  
-**Date:** 2026-08-25  
-**Auditor / Engineer:** Experimental Systems Engineer (Antigravity)  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Experiment ID:** `EXP-001-WORK-TRANSFER` 
+**Date:** 2026-08-25 
+**Auditor / Engineer:** Experimental Systems Engineer (Antigravity) 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 

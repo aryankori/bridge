@@ -20,15 +20,15 @@ To isolate the effect of directive resolution, all three conditions execute agai
 
 ```mermaid
 flowchart TD
-    subgraph Env["Identical Execution Environment"]
-        M["Model: nvidia/nvidia/nemotron-3-super-120b-a12b"]
-        A["Agent: OpenCode (--pure --auto --format json)"]
-        T["Tools & Worktree Confinement"]
-    end
+ subgraph Env["Identical Execution Environment"]
+ M["Model: nvidia/nvidia/nemotron-3-super-120b-a12b"]
+ A["Agent: OpenCode (--pure --auto --format json)"]
+ T["Tools & Worktree Confinement"]
+ end
 
-    C_A["Condition A: RAW\n(Complete conflicting instruction set)"] --> Env
-    C_B["Condition B: HUMAN\n(Raw + Independent Human Gold Directive)"] --> Env
-    C_C["Condition C: BRIDGE\n(Raw + Frozen Bridge Effective Directive fc322c6)"] --> Env
+ C_A["Condition A: RAW\n(Complete conflicting instruction set)"] --> Env
+ C_B["Condition B: HUMAN\n(Raw + Independent Human Gold Directive)"] --> Env
+ C_C["Condition C: BRIDGE\n(Raw + Frozen Bridge Effective Directive fc322c6)"] --> Env
 ```
 
 ### 2.1 Directive Phrasing Parity (Correction 1)
@@ -69,7 +69,7 @@ The experiment tests 10 real executable software engineering tasks stratified ac
 ## 4. Replication & Randomization Protocol (Corrections 4 & 5)
 
 1. **Replications**: Default $N = 2$ replications per scenario-condition pair.
-   $$\text{Total Trials} = 10 \text{ scenarios} \times 3 \text{ conditions} \times 2 \text{ replications} = 60 \text{ trials}$$
+ $$\text{Total Trials} = 10 \text{ scenarios} \times 3 \text{ conditions} \times 2 \text{ replications} = 60 \text{ trials}$$
 2. **Deterministic Pseudo-Random Shuffling**: All 60 trials are shuffled using a deterministic Mulberry32 PRNG with fixed seed `seed = 42`.
 3. **Traceability**: Every trial records `randomizationSeed`, `trialOrderIndex`, `replicationIndex`, and `payloadHash`.
 

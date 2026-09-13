@@ -1,15 +1,15 @@
 # EXP-005 Evaluation Science Application
 
-**Status:** Forensic reconstruction complete  
-**Generated:** Phase 3 — evaluation science  
-**Related documents:** `docs/research/exp-005-forensic-truth.md`, `docs/research/exp-005-root-cause-analysis.md`  
+**Status:** Forensic reconstruction complete 
+**Generated:** Phase 3 - evaluation science 
+**Related documents:** `docs/research/exp-005-forensic-truth.md`, `docs/research/exp-005-root-cause-analysis.md` 
 **Methodological grounding:** EXP-004 methodology (effective directive design, resolver evaluation), EXP-005 methodology (agent behavior under different resolution conditions)
 
 ---
 
 ## 1. Purpose
 
-Apply evaluation science to EXP-005 — both the experiment that was designed and the failure to execute it. Separate what we know about experimental validity, evaluator validity, agent behavior, infrastructure behavior, and measurement validity. Identify what would be required for a defensible result.
+Apply evaluation science to EXP-005 - both the experiment that was designed and the failure to execute it. Separate what we know about experimental validity, evaluator validity, agent behavior, infrastructure behavior, and measurement validity. Identify what would be required for a defensible result.
 
 ---
 
@@ -30,30 +30,30 @@ Apply evaluation science to EXP-005 — both the experiment that was designed an
 
 ### 2.2 Observations (what we can see but not necessarily establish as ground truth)
 
-1. The harness code appears correctly implemented — there is no obvious code bug in the checkpointing logic
+1. The harness code appears correctly implemented - there is no obvious code bug in the checkpointing logic
 2. Environmental factors (disk capacity, shell mismatch, missing dependencies) are present and consistent with infrastructure failure
-3. Prior session reports claimed 25 manifest entries, 24 worktrees, and 44–45/60 completed — but none of these can be verified from on-disk artifacts
+3. Prior session reports claimed 25 manifest entries, 24 worktrees, and 44-45/60 completed - but none of these can be verified from on-disk artifacts
 4. The surviving worktree directory name follows the expected naming convention, suggesting the runner's worktree creation logic was at least partially executed
 5. Git history shows the experiment harness was committed at commit 5f53d12
 6. Git reflog shows normal branch activity, no detached HEAD, single worktree at the main repo path
 
 ### 2.3 Inferences (plausible conclusions, not established facts)
 
-1. The runner executed at least partially — the empty worktree directory suggests worktree creation logic ran
-2. The manifest write path failed at some point — otherwise the file would exist
-3. Environmental factors contributed to the failure — disk capacity, shell mismatch, and missing dependencies are all present
+1. The runner executed at least partially - the empty worktree directory suggests worktree creation logic ran
+2. The manifest write path failed at some point - otherwise the file would exist
+3. Environmental factors contributed to the failure - disk capacity, shell mismatch, and missing dependencies are all present
 4. The "25 manifest entries" report may have been accurate at the time it was made, but the file was subsequently lost
 5. The "24 worktrees" report may have been accurate at the time, but 23 were subsequently cleaned up or lost
 6. The failure was likely a combination of infrastructure issues rather than a single cause
 
 ### 2.4 Hypotheses (untested explanations that would require evidence to confirm)
 
-1. **H1:** Disk capacity caused write failures — the manifest write failed when the disk was full, and worktree creation also failed or was rolled back
-2. **H2:** Process crash — the runner process was killed or crashed mid-execution, losing in-flight writes
-3. **H3:** Checkpointing bug — the manifest write path threw an unhandled exception that stopped persistence but allowed worktree creation to continue (then worktrees were cleaned up)
-4. **H4:** Shell mismatch — git worktree operations failed because of path resolution differences between bash and PowerShell, leaving incomplete worktrees
-5. **H5:** Manual or automated cleanup — worktrees and manifest were created but later deleted by a cleanup process or manual action
-6. **H6:** The runner never actually executed — the worktree directory was created manually or by a different process, and no trials ran at all
+1. **H1:** Disk capacity caused write failures - the manifest write failed when the disk was full, and worktree creation also failed or was rolled back
+2. **H2:** Process crash - the runner process was killed or crashed mid-execution, losing in-flight writes
+3. **H3:** Checkpointing bug - the manifest write path threw an unhandled exception that stopped persistence but allowed worktree creation to continue (then worktrees were cleaned up)
+4. **H4:** Shell mismatch - git worktree operations failed because of path resolution differences between bash and PowerShell, leaving incomplete worktrees
+5. **H5:** Manual or automated cleanup - worktrees and manifest were created but later deleted by a cleanup process or manual action
+6. **H6:** The runner never actually executed - the worktree directory was created manually or by a different process, and no trials ran at all
 
 ### 2.5 Results (conclusions that require valid experimental data)
 
@@ -62,7 +62,7 @@ Apply evaluation science to EXP-005 — both the experiment that was designed an
 ### 2.6 Limitations (known constraints on what can be concluded)
 
 1. **No data limitation:** Without trial data, no conclusions about agent behavior under different conditions are possible from EXP-005
-2. **Survivorship bias:** The one surviving worktree directory (empty) is not representative of any execution — it tells us nothing about trial outcomes
+2. **Survivorship bias:** The one surviving worktree directory (empty) is not representative of any execution - it tells us nothing about trial outcomes
 3. **Retrospective reconstruction limit:** We can infer that the runner executed partially, but we cannot reconstruct what it did trial-by-trial
 4. **Conflicting reports:** Prior session reports cannot be verified and must be treated as unverified claims
 5. **Infrastructure confound:** Any future rerun must control for the infrastructure issues that caused the original failure, or the results will be confounded
@@ -75,11 +75,11 @@ Apply evaluation science to EXP-005 — both the experiment that was designed an
 
 The experimental design is valid:
 
-- **Factorial design:** 10 scenarios × 3 conditions × 2 replications — appropriate for detecting condition effects across diverse scenarios
-- **Randomization:** Seed 42, Mulberry32 + Fisher-Yates — properly implemented per source code
-- **Replication:** 2 per combination — allows estimation of within-condition variance
-- **Condition isolation:** A/B/C differ only in the resolution method (SPADE vs HUMAN vs AMBIGUITY) — correct treatment isolation
-- **Scenario diversity:** 10 scenarios covering different types of directive ambiguity — appropriate for generalization claims
+- **Factorial design:** 10 scenarios × 3 conditions × 2 replications - appropriate for detecting condition effects across diverse scenarios
+- **Randomization:** Seed 42, Mulberry32 + Fisher-Yates - properly implemented per source code
+- **Replication:** 2 per combination - allows estimation of within-condition variance
+- **Condition isolation:** A/B/C differ only in the resolution method (SPADE vs HUMAN vs AMBIGUITY) - correct treatment isolation
+- **Scenario diversity:** 10 scenarios covering different types of directive ambiguity - appropriate for generalization claims
 
 **Conclusion:** If the experiment had executed and persisted data, the design would support valid conclusions about condition effects.
 
@@ -111,7 +111,7 @@ The evaluator is designed to assess agent outputs against gold-standard resoluti
 
 - **What is being measured?** Agent ability to resolve directives under different conditions (SPADE, HUMAN, AMBIGUITY)
 - **What is the source of truth?** Gold-standard resolutions, presumably created by humans or by a trusted resolver
-- **How is the evaluator itself validated?** This is a critical question — if the evaluator has systematic biases, the experiment measures the evaluator's biases, not agent behavior
+- **How is the evaluator itself validated?** This is a critical question - if the evaluator has systematic biases, the experiment measures the evaluator's biases, not agent behavior
 
 ### 4.2 Evaluator validity questions
 
@@ -125,8 +125,8 @@ The evaluator is designed to assess agent outputs against gold-standard resoluti
 
 Per prior session memory:
 - The resolver was pre-validated at 10/10 exact matches (100%) in a dry-run against pre-validated scenarios
-- The methodology correction gates included "resolver input isolation" and "gold-standard independence" — suggesting these were identified as risks and addressed
-- The correction gate also included "condition-label stripping" — suggesting condition-label bias was a recognized risk
+- The methodology correction gates included "resolver input isolation" and "gold-standard independence" - suggesting these were identified as risks and addressed
+- The correction gate also included "condition-label stripping" - suggesting condition-label bias was a recognized risk
 
 **Conclusion:** The evaluator validity challenges were identified and addressed in the correction gates. If the experiment executes correctly, the evaluator validity should be adequate. But without execution data, this is an inference, not a result.
 
@@ -138,7 +138,7 @@ Per prior session memory:
 
 In EXP-005, the measured outcome is agent behavior (how well agents resolve directives under different conditions). But the infrastructure is what executes the agents, captures their outputs, and persists the results.
 
-**If the infrastructure fails, we cannot measure agent behavior.** This is not a subtle point — it is the entire problem. A failed infrastructure does not produce evidence about agent behavior one way or the other.
+**If the infrastructure fails, we cannot measure agent behavior.** This is not a subtle point - it is the entire problem. A failed infrastructure does not produce evidence about agent behavior one way or the other.
 
 ### 5.2 What we CANNOT conclude about agent behavior
 
@@ -159,12 +159,12 @@ In EXP-005, the measured outcome is agent behavior (how well agents resolve dire
 
 ### 6.1 What is being measured
 
-The experiment measures **agent directive resolution accuracy** — the degree to which agents correctly resolve ambiguous directives under different resolution conditions.
+The experiment measures **agent directive resolution accuracy** - the degree to which agents correctly resolve ambiguous directives under different resolution conditions.
 
 ### 6.2 Measurement chain
 
 ```
-Agent receives prompt → Agent produces output → Evaluator scores output → Score recorded in manifest → Analysis
+Agent receives prompt -> Agent produces output -> Evaluator scores output -> Score recorded in manifest -> Analysis
 ```
 
 Each link in this chain must be valid for the measurement to be valid:
@@ -177,7 +177,7 @@ Each link in this chain must be valid for the measurement to be valid:
 
 ### 6.3 Where measurement validity broke
 
-The measurement chain broke at step 4 (manifest recording). Even if steps 1–3 worked perfectly, the scores were not persisted, so step 5 (analysis) has no data to analyze.
+The measurement chain broke at step 4 (manifest recording). Even if steps 1-3 worked perfectly, the scores were not persisted, so step 5 (analysis) has no data to analyze.
 
 **This means the measurement is entirely invalid for EXP-005 as executed.** Not because the metric is wrong, but because the measurement was not completed.
 
@@ -220,7 +220,7 @@ If the missingness were random (e.g., each trial had an independent 50% chance o
 - Estimate variance
 - Test any hypothesis about agent behavior
 
-The data is not "missing at random" — it is "missing because the infrastructure failed." This is a structural missingness, not a statistical one.
+The data is not "missing at random" - it is "missing because the infrastructure failed." This is a structural missingness, not a statistical one.
 
 ### 8.3 What would be required to address missingness
 
@@ -234,7 +234,7 @@ The data is not "missing at random" — it is "missing because the infrastructur
 
 ### 9.1 How timeouts would be classified
 
-Per the methodology, timeouts are a valid trial outcome — not a failure, but a bounded result indicating that the agent did not complete within the allotted time. Timeouts are informative: they tell us that the task was too hard, the agent was too slow, or the condition made the task harder.
+Per the methodology, timeouts are a valid trial outcome - not a failure, but a bounded result indicating that the agent did not complete within the allotted time. Timeouts are informative: they tell us that the task was too hard, the agent was too slow, or the condition made the task harder.
 
 ### 9.2 Why timeouts matter for interpretation
 
@@ -277,9 +277,9 @@ The correction gates addressed several of these:
 
 ### 11.1 Sources of stochasticity
 
-1. **Agent sampling:** LLM agents are stochastic — the same prompt can produce different outputs on different runs
+1. **Agent sampling:** LLM agents are stochastic - the same prompt can produce different outputs on different runs
 2. **Randomization:** The trial order is randomized, which is good for controlling order effects but adds variance
-3. **Infrastructure variation:** Disk speed, network latency, process scheduling — all introduce variance in execution time and potentially in outcomes
+3. **Infrastructure variation:** Disk speed, network latency, process scheduling - all introduce variance in execution time and potentially in outcomes
 
 ### 11.2 Signal-to-noise considerations
 
@@ -293,7 +293,7 @@ If agent stochasticity is high (outputs vary a lot across replications), 2 repli
 
 ### 11.3 What would be required to separate signal from noise
 
-1. **More replications:** 5–10 replications per condition-scenario combination would provide more reliable estimates of within-condition variance
+1. **More replications:** 5-10 replications per condition-scenario combination would provide more reliable estimates of within-condition variance
 2. **Controlled execution environment:** Minimizing infrastructure variation reduces noise
 3. **Multiple evaluators:** If human evaluation is used, multiple evaluators with inter-rater reliability checks reduce evaluator noise
 4. **Pre-registered analysis:** Pre-specifying the analysis prevents p-hacking and data-dependent analysis choices
@@ -316,7 +316,7 @@ If executed correctly with valid data, EXP-005 tests whether the SPADE resolver 
 
 ### 12.3 What the failed execution means for the evaluation
 
-The failed execution means that **no evaluation results exist**. The experiment design may be valid, the evaluator may be valid, the methodology may be sound — but without executed trials and persisted data, there is nothing to evaluate.
+The failed execution means that **no evaluation results exist**. The experiment design may be valid, the evaluator may be valid, the methodology may be sound - but without executed trials and persisted data, there is nothing to evaluate.
 
 ### 12.4 What must happen next
 
@@ -324,7 +324,7 @@ The failed execution means that **no evaluation results exist**. The experiment 
 2. **Rerun the experiment** with the same design (10 × 3 × 2, seed 42) or a validated subset
 3. **Ensure data persistence** (manifest + worktrees + logs survive)
 4. **Analyze the results** only after data validity is established
-5. **Report the infrastructure failure transparently** in any resulting paper or report — it is part of the scientific record
+5. **Report the infrastructure failure transparently** in any resulting paper or report - it is part of the scientific record
 
 ---
 

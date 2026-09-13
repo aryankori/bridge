@@ -1,10 +1,10 @@
 # Bridge Thesis v2: Effective Standing & Authority Arbitration
 
-**Document ID:** `BRIDGE-THESIS-V2`  
-**Date:** 2026-08-27  
-**Author:** Antigravity (ENI) & Bridge Integration Team  
-**Status:** Architectural Specification & Strategic Thesis  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Document ID:** `BRIDGE-THESIS-V2` 
+**Date:** 2026-08-27 
+**Author:** Antigravity (ENI) & Bridge Integration Team 
+**Status:** Architectural Specification & Strategic Thesis 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 
@@ -25,22 +25,22 @@ Bridge has evolved through five distinct conceptual stages:
 
 ```
 [Phase 0: Multi-Agent UI]
-       │  (Commoditized wrapper: "one box to chat with N models")
-       ▼
+ │ (Commoditized wrapper: "one box to chat with N models")
+ ▼
 [Phase 1: Work Transfer]
-       │  (Point-to-point: structured handoff schemas between agents, e.g., EXP-001)
-       ▼
+ │ (Point-to-point: structured handoff schemas between agents, e.g., EXP-001)
+ ▼
 [Phase 2: Project Memory]
-       │  (Cross-session storage: passive vector/key-value logs of agent outputs)
-       ▼
+ │ (Cross-session storage: passive vector/key-value logs of agent outputs)
+ ▼
 [Phase 3: Project Intelligence]
-       │  (Lifecycle-aware facts with provenance, linked to files and commits)
-       ▼
+ │ (Lifecycle-aware facts with provenance, linked to files and commits)
+ ▼
 [Phase 4: Project Truth & Reconciliation] (FALSIFIED)
-       │  (Authoritative, reconciled ground truth. Falsified: Bridge should not own the ledger)
-       ▼
-[Phase 5: Effective Standing / Authority Arbitration]  <-- CURRENT THESIS
-          (Computing comparative authority under conflict from fragmented, existing authority sources)
+ │ (Authoritative, reconciled ground truth. Falsified: Bridge should not own the ledger)
+ ▼
+[Phase 5: Effective Standing / Authority Arbitration] <-- CURRENT THESIS
+ (Computing comparative authority under conflict from fragmented, existing authority sources)
 ```
 
 ### The Current Thesis
@@ -104,24 +104,24 @@ Bridge strictly separates what can be computed **deterministically** from what r
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│             DETERMINISTIC LAYER (No LLM)               │
-│  - Git commit DAG, author, timestamps, file history     │
-│  - Diff analysis (lines added/removed, touched files)   │
-│  - AST parsing (symbols, function signatures, types)   │
-│  - Static typechecking (`tsc --noEmit`)                │
-│  - Test execution & failure stack traces                │
-│  - Dependency graphs & workspace package manifests     │
-│  - JSON-RPC protocol framing & secret scrubbing         │
+│ DETERMINISTIC LAYER (No LLM) │
+│ - Git commit DAG, author, timestamps, file history │
+│ - Diff analysis (lines added/removed, touched files) │
+│ - AST parsing (symbols, function signatures, types) │
+│ - Static typechecking (`tsc --noEmit`) │
+│ - Test execution & failure stack traces │
+│ - Dependency graphs & workspace package manifests │
+│ - JSON-RPC protocol framing & secret scrubbing │
 └──────────────────────────┬─────────────────────────────┘
-                           │ Grounding Evidence
-                           ▼
+ │ Grounding Evidence
+ ▼
 ┌────────────────────────────────────────────────────────┐
-│               LLM SYNTHESIS LAYER (AI)                 │
-│  - Intent extraction from unstructured chat turns       │
-│  - Semantic rationale extraction ("Why this choice?")   │
-│  - Natural language task summary generation             │
-│  - Disambiguation of conflicting natural-language specs │
-│  - Context materialization tailored to target agent     │
+│ LLM SYNTHESIS LAYER (AI) │
+│ - Intent extraction from unstructured chat turns │
+│ - Semantic rationale extraction ("Why this choice?") │
+│ - Natural language task summary generation │
+│ - Disambiguation of conflicting natural-language specs │
+│ - Context materialization tailored to target agent │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -157,9 +157,9 @@ What is the core conceptual primitive of Bridge: `Memory`, `Context`, `WorkTrans
 
 1. **Why not `ProjectTruth`?** (Falsified Hypothesis). A standalone "Project Truth" ledger assumes Bridge can and should become the ultimate system of record. This competes with Git and introduces massive synchronization overhead.
 2. **Why `EffectiveStanding`?** 
-   - Standing is comparative authority under conflict.
-   - Bridge dynamically computes this standing from existing authority sources rather than attempting to store an omniscient truth.
-   - The value is in the arbitration of authority, not the storage of state.
+ - Standing is comparative authority under conflict.
+ - Bridge dynamically computes this standing from existing authority sources rather than attempting to store an omniscient truth.
+ - The value is in the arbitration of authority, not the storage of state.
 
 Everything in Bridge flows from, validates against, or updates the computation of **EffectiveStanding**.
 

@@ -1,20 +1,20 @@
 # Bridge - Experiment Findings & Answers to Research Questions
 
-**Experiment ID:** `EXP-001-WORK-TRANSFER`  
-**Date:** 2026-08-25  
-**Auditor / Engineer:** Experimental Systems Engineer (Antigravity)  
-**Standard:** ASD-STE100 Simplified Technical English  
+**Experiment ID:** `EXP-001-WORK-TRANSFER` 
+**Date:** 2026-08-25 
+**Auditor / Engineer:** Experimental Systems Engineer (Antigravity) 
+**Standard:** ASD-STE100 Simplified Technical English 
 
 ---
 
 ## Direct Answers to the 10 Research Questions
 
 ### 1. Does Agent B benefit from prior work performed by Agent A?
-**Answer: YES.**  
+**Answer: YES.** 
 Condition A (baseline without prior work) failed Test 9 and required rework. Both transfer conditions (B and C) passed 10/10 tests on the first execution. Prior diagnostic analysis by Agent A eliminated incomplete patches.
 
 ### 2. Does structured work transfer outperform a raw transcript?
-**Answer: YES.**  
+**Answer: YES.** 
 Structured work transfer (Condition C) completed the task in **2.1 seconds**, compared to **7.8 seconds** for transcript transfer (Condition B) - a **73% speedup**. Structured fields (`rootCause`, `locations`, `suggestedFix`) eliminated parsing ambiguity and cognitive overhead.
 
 ### 3. Which information from Agent A is actually useful?
@@ -32,14 +32,14 @@ Structured work transfer (Condition C) completed the task in **2.1 seconds**, co
 - Redundant repetition of unchanged code blocks.
 
 ### 5. Does transferring more context always improve performance?
-**Answer: NO.**  
+**Answer: NO.** 
 Transferring more raw transcript tokens (Condition B) doubled the execution latency without improving test pass rate beyond Condition C. Extra unstructured context introduces token latency and increases the risk of hallucinated instructions.
 
 ### 6. Where is the core value located?
 **Answer:** The value is concentrated in **diagnostic root-cause extraction + targeted code location mapping + task step breakdown**. It is not in reproducing the conversation transcript.
 
 ### 7. Does the receiving agent understand transferred work reliably?
-**Answer: YES.**  
+**Answer: YES.** 
 When structured as typed JSON diagnostics (`ExperimentalWorkTransfer`), the receiving agent applied all four required fixes accurately on the first pass without human intervention.
 
 ### 8. Does transferred information cause prompt injection or confusion?
@@ -52,5 +52,5 @@ When structured as typed JSON diagnostics (`ExperimentalWorkTransfer`), the rece
 - Authentication tokens or environment credentials.
 
 ### 10. Is this a meaningful product advantage?
-**Answer: YES.**  
+**Answer: YES.** 
 A 73% latency reduction, 0 rework cycles, and 100% automated test verification validate that **structured work transfer creates measurable technical value** over raw transcripts and zero-context baselines.

@@ -1,54 +1,54 @@
 {
-  "name": "bridge",
-  "version": "0.1.0",
-  "description": "AI agent interoperability and orchestration layer",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "eslint src/ tests/",
-    "lint:fix": "eslint src/ tests/ --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "clean": "rm -rf dist",
-    "experiment:validate": "tsx research/experiments/exp-001/validate.ts",
-    "experiment:smoke": "tsx research/experiments/exp-001/smoke-tests.ts",
-    "experiment:pilot": "tsx research/experiments/exp-001/harness.ts --mode pilot",
-    "experiment:replicate": "tsx research/experiments/exp-001/harness.ts --mode replicate"
-  },
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aryankori/bridge.git"
-  },
-  "private": true,
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "@types/node": "^26.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.68.0",
-    "@typescript-eslint/parser": "^8.68.0",
-    "eslint": "^10.9.1",
-    "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.9.6",
-    "tsup": "^8.5.1",
-    "tsx": "^4.23.12",
-    "typescript": "^5.7.3",
-    "vitest": "^4.1.11"
-  },
-  "packageManager": "pnpm@9.15.4",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ],
-    "approvedBuilds": [
-      "esbuild"
-    ]
-  }
+ "name": "bridge",
+ "version": "0.1.0",
+ "description": "AI agent interoperability and orchestration layer",
+ "type": "module",
+ "main": "dist/index.js",
+ "types": "dist/index.d.ts",
+ "scripts": {
+ "dev": "tsx watch src/index.ts",
+ "build": "tsup",
+ "typecheck": "tsc --noEmit",
+ "test": "vitest run",
+ "test:watch": "vitest",
+ "lint": "eslint src/ tests/",
+ "lint:fix": "eslint src/ tests/ --fix",
+ "format": "prettier --write .",
+ "format:check": "prettier --check .",
+ "clean": "rm -rf dist",
+ "experiment:validate": "tsx research/experiments/exp-001/validate.ts",
+ "experiment:smoke": "tsx research/experiments/exp-001/smoke-tests.ts",
+ "experiment:pilot": "tsx research/experiments/exp-001/harness.ts --mode pilot",
+ "experiment:replicate": "tsx research/experiments/exp-001/harness.ts --mode replicate"
+ },
+ "engines": {
+ "node": ">=20.0.0"
+ },
+ "repository": {
+ "type": "git",
+ "url": "git+https://github.com/aryankori/bridge.git"
+ },
+ "private": true,
+ "license": "UNLICENSED",
+ "devDependencies": {
+ "@types/node": "^26.3.0",
+ "@typescript-eslint/eslint-plugin": "^8.68.0",
+ "@typescript-eslint/parser": "^8.68.0",
+ "eslint": "^10.9.1",
+ "eslint-config-prettier": "^10.1.8",
+ "prettier": "^3.9.6",
+ "tsup": "^8.5.1",
+ "tsx": "^4.23.12",
+ "typescript": "^5.7.3",
+ "vitest": "^4.1.11"
+ },
+ "packageManager": "pnpm@9.15.4",
+ "pnpm": {
+ "onlyBuiltDependencies": [
+ "esbuild"
+ ],
+ "approvedBuilds": [
+ "esbuild"
+ ]
+ }
 }

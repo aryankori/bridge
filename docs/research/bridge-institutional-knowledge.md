@@ -1,4 +1,4 @@
-# BRIDGE — Institutional Knowledge: Memory vs. Decision System
+# BRIDGE - Institutional Knowledge: Memory vs. Decision System
 
 **Status:** Research analysis
 **Date:** 2026-08-27
@@ -10,7 +10,7 @@
 
 ### Institutional Memory
 
-**Definition:** The accumulated knowledge of an institution — what it has done, what it has decided, what it knows, how it operates — stored in a form that survives individual participants and can be retrieved by future actors.
+**Definition:** The accumulated knowledge of an institution - what it has done, what it has decided, what it knows, how it operates - stored in a form that survives individual participants and can be retrieved by future actors.
 
 **Examples:**
 - Documentation (RFCs, ADRs, wikis, READMEs)
@@ -30,16 +30,16 @@
 
 ### Institutional Decision System
 
-**Definition:** The system by which an institution makes, records, and enforces decisions — who decides what, with what authority, under what rules, with what record.
+**Definition:** The system by which an institution makes, records, and enforces decisions - who decides what, with what authority, under what rules, with what record.
 
 **Examples:**
 - Legal systems (courts, precedent, statutes)
 - Corporate governance (board, CEO, delegation, bylaws)
-- Policy engines (OPA, Cedar — for infrastructure)
+- Policy engines (OPA, Cedar - for infrastructure)
 - Approval workflows (PR approvals, change management)
 - Delegation of authority matrices (enterprise DOA)
 
-**Existing products:** OPA, Cedar, approval workflow tools, governance platforms, RBAC systems — but none specifically for institutional decision-making in the project/development context
+**Existing products:** OPA, Cedar, approval workflow tools, governance platforms, RBAC systems - but none specifically for institutional decision-making in the project/development context
 
 **Properties:**
 - Defines who can decide what
@@ -98,7 +98,7 @@ The memory components (standing records, claim records) are necessary but not su
 | **Authority** | Implicit (trust the source) | Explicit (who can decide) | Explicit (SourceTier, delegation, override) |
 | **Precedent** | Past records exist | Past decisions bind future ones | Standing records are precedent for future actions |
 | **Auditability** | Who wrote what | Who decided what, why, when | What was determined, by what authority, with what rationale |
-| **Determinism** | N/A (retrieval is query-dependent) | Human-run (variable) | Deterministic (same input → same output) |
+| **Determinism** | N/A (retrieval is query-dependent) | Human-run (variable) | Deterministic (same input -> same output) |
 
 **Bridge's unique contribution:** Deterministic, computational institutional decision-making. Not human-run like legal systems. Not static like policy engines. Not retrieval-based like memory systems. A computational adjudication layer that operates on the institution's own claims and authority.
 
@@ -106,7 +106,7 @@ The memory components (standing records, claim records) are necessary but not su
 
 ## 4. THE INSTITUTIONAL KNOWLEDGE HYPOTHESIS
 
-**Hypothesis:** Bridge's true asset is not the resolver, not the standing records, not the directive format. It is the computational model of how a specific institution makes decisions — encoded in the authority framework, the claim structure, the resolution logic, and the standing records.
+**Hypothesis:** Bridge's true asset is not the resolver, not the standing records, not the directive format. It is the computational model of how a specific institution makes decisions - encoded in the authority framework, the claim structure, the resolution logic, and the standing records.
 
 **This is "knowledge of how the organization makes decisions" operationalized:**
 
@@ -122,11 +122,11 @@ The memory components (standing records, claim records) are necessary but not su
 
 ---
 
-## 5. INSTITUTIONAL INTELLIGENCE — THE ABOVE-STANDING CATEGORY
+## 5. INSTITUTIONAL INTELLIGENCE - THE ABOVE-STANDING CATEGORY
 
 **Institutional intelligence** is the category above standing:
 
-> The ability to compute, query, and operate within an institution's decision model — what is effective, what was decided, who decided, why, and when — in a form that any actor (human, agent, system) can use.
+> The ability to compute, query, and operate within an institution's decision model - what is effective, what was decided, who decided, why, and when - in a form that any actor (human, agent, system) can use.
 
 **Components:**
 1. **Claim layer:** What the institution's sources assert (files, prompts, policies, documents, agents, humans)
@@ -156,11 +156,11 @@ If Bridge's true asset is institutional decision-making knowledge, the moat is:
 
 5. **Interoperability across agents and platforms:** If Bridge becomes the neutral standing layer for multi-agent, multi-platform development, the network effect of shared standing records creates a moat. The more agents use Bridge, the more valuable the standing records become.
 
-**The moat is NOT in the resolver algorithm.** The resolver is deterministic graph traversal — it can be reimplemented. The moat is in the project-specific authority configuration, the accumulated standing records, the claim extraction pipeline, and the interoperability network.
+**The moat is NOT in the resolver algorithm.** The resolver is deterministic graph traversal - it can be reimplemented. The moat is in the project-specific authority configuration, the accumulated standing records, the claim extraction pipeline, and the interoperability network.
 
 ---
 
-## 7. INSTITUTIONAL MEMORY vs. INSTITUTIONAL DECISION SYSTEM — FINAL ASSESSMENT
+## 7. INSTITUTIONAL MEMORY vs. INSTITUTIONAL DECISION SYSTEM - FINAL ASSESSMENT
 
 **Bridge is primarily an institutional decision system with memory components.**
 

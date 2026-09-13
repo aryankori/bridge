@@ -1,8 +1,8 @@
-# BRIDGE — EFFECTIVE DIRECTIVE PROTOTYPE
+# BRIDGE - EFFECTIVE DIRECTIVE PROTOTYPE
 
-**Author:** Bridge Research & Core Architecture  
-**Date:** 2026-08-27  
-**Status:** Validated Research Prototype (Local Read-Only)  
+**Author:** Bridge Research & Core Architecture 
+**Date:** 2026-08-27 
+**Status:** Validated Research Prototype (Local Read-Only) 
 **Output Class:** `EFFECTIVE DIRECTIVE` (Strictly non-truth claim: `isObjectiveTruthClaim = false`)
 
 ---
@@ -23,33 +23,33 @@ When an agent acts, what matters is not abstract truth, but **Effective Directiv
 > *Given an intended action and the available project instruction sources, which directive possesses legitimate standing to govern this action, what does it override, and what is the exact evidence trail?*
 
 ```
-                                  [ INSTRUCTION SOURCES ]
-                                             │
-      ┌──────────────────────────────────────┼──────────────────────────────────────┐
-      ▼                                      ▼                                      ▼
-[EXPLICIT HUMAN]                        [TASK SPEC]                            [AGENT RULES]
-(Weight: 100)                           (Weight: 80)                           (Weight: 60)
-Prompt / CLI                            Issue / Task                           AGENTS.md / CLAUDE.md
-      │                                      │                                      │
-      └──────────────────────────────────────┼──────────────────────────────────────┘
-                                             ▼
-                             [ STANDING PRECEDENCE GRAPH ]
-                                             │
-                       ┌─────────────────────┴─────────────────────┐
-                       ▼                                           ▼
-             [ CONFLICT DETECTOR ]                       [ EVIDENCE EXTRACTOR ]
-             - Contradictions                            - Source Paths & Lines
-             - Stale Documentation                       - Exact Quotations
-             - Missing Authorization                     - Standing Justifications
-             - Precedence Ambiguities                    
-                       │                                           │
-                       └─────────────────────┬─────────────────────┘
-                                             ▼
-                                   [ EFFECTIVE DIRECTIVE ]
-                                   Status: PERMITTED_WITH_OVERRIDE | BLOCKED | AMBIGUOUS
-                                   Governing Tier: EXPLICIT_HUMAN (100)
-                                   Overridden: AGENT_RULES (60)
-                                   Truth Claim: FALSE (Non-objective)
+ [ INSTRUCTION SOURCES ]
+ │
+ ┌──────────────────────────────────────┼──────────────────────────────────────┐
+ ▼ ▼ ▼
+[EXPLICIT HUMAN] [TASK SPEC] [AGENT RULES]
+(Weight: 100) (Weight: 80) (Weight: 60)
+Prompt / CLI Issue / Task AGENTS.md / CLAUDE.md
+ │ │ │
+ └──────────────────────────────────────┼──────────────────────────────────────┘
+ ▼
+ [ STANDING PRECEDENCE GRAPH ]
+ │
+ ┌─────────────────────┴─────────────────────┐
+ ▼ ▼
+ [ CONFLICT DETECTOR ] [ EVIDENCE EXTRACTOR ]
+ - Contradictions - Source Paths & Lines
+ - Stale Documentation - Exact Quotations
+ - Missing Authorization - Standing Justifications
+ - Precedence Ambiguities 
+ │ │
+ └─────────────────────┬─────────────────────┘
+ ▼
+ [ EFFECTIVE DIRECTIVE ]
+ Status: PERMITTED_WITH_OVERRIDE | BLOCKED | AMBIGUOUS
+ Governing Tier: EXPLICIT_HUMAN (100)
+ Overridden: AGENT_RULES (60)
+ Truth Claim: FALSE (Non-objective)
 ```
 
 ---
@@ -99,73 +99,73 @@ const metrics = runEvaluation(REAL_DEVELOPER_FIXTURES);
 
 | Metric | Target | Measured Result | Status |
 |---|---|---|---|
-| **Total Test Cases** | $\ge 6$ | **6 cases** | ✅ PASS |
-| **Conflict Detection Accuracy** | $\ge 80\%$ | **100.0% (1.000)** | ✅ PASS |
-| **Resolution Accuracy** | $\ge 80\%$ | **100.0% (1.000)** | ✅ PASS |
-| **False Positives** | $0$ | **0** | ✅ PASS |
-| **False Negatives** | $0$ | **0** | ✅ PASS |
-| **Average Resolution Latency** | $< 100\text{ ms}$ | **0.35 ms** | ✅ PASS (Sub-millisecond) |
-| **Explanation Quality Score** | $\ge 85\%$ | **100.0% (1.000)** | ✅ PASS |
-| **Objective Truth Invariant** | $100\%$ | **`isObjectiveTruthClaim: false` on all outputs** | ✅ PASS |
+| **Total Test Cases** | $\ge 6$ | **6 cases** | PASS |
+| **Conflict Detection Accuracy** | $\ge 80\%$ | **100.0% (1.000)** | PASS |
+| **Resolution Accuracy** | $\ge 80\%$ | **100.0% (1.000)** | PASS |
+| **False Positives** | $0$ | **0** | PASS |
+| **False Negatives** | $0$ | **0** | PASS |
+| **Average Resolution Latency** | $< 100\text{ ms}$ | **0.35 ms** | PASS (Sub-millisecond) |
+| **Explanation Quality Score** | $\ge 85\%$ | **100.0% (1.000)** | PASS |
+| **Objective Truth Invariant** | $100\%$ | **`isObjectiveTruthClaim: false` on all outputs** | PASS |
 
 ### Case-by-Case Breakdown
 
 ```json
 [
-  {
-    "fixtureId": "fix-01-pkg-mgr-override",
-    "name": "Package Manager Override (Human vs Repo Rules)",
-    "expectedStatus": "PERMITTED_WITH_OVERRIDE",
-    "actualStatus": "PERMITTED_WITH_OVERRIDE",
-    "conflictDetected": true,
-    "latencyMs": 1.33,
-    "result": "PASSED"
-  },
-  {
-    "fixtureId": "fix-02-protected-branch-push",
-    "name": "Unprompted Direct Push to Protected Main Branch",
-    "expectedStatus": "REQUIRES_AUTHORIZATION",
-    "actualStatus": "REQUIRES_AUTHORIZATION",
-    "conflictDetected": true,
-    "latencyMs": 0.21,
-    "result": "PASSED"
-  },
-  {
-    "fixtureId": "fix-03-precedence-ambiguity",
-    "name": "Equal-Tier Naming Convention Contradiction",
-    "expectedStatus": "AMBIGUOUS",
-    "actualStatus": "AMBIGUOUS",
-    "conflictDetected": true,
-    "latencyMs": 0.13,
-    "result": "PASSED"
-  },
-  {
-    "fixtureId": "fix-04-stale-doc-vs-active-config",
-    "name": "Stale Documentation vs Active Package Config",
-    "expectedStatus": "PERMITTED",
-    "actualStatus": "PERMITTED",
-    "conflictDetected": true,
-    "latencyMs": 0.24,
-    "result": "PASSED"
-  },
-  {
-    "fixtureId": "fix-05-direct-negative-rule-block",
-    "name": "Direct Negative Standing Rule Block",
-    "expectedStatus": "REQUIRES_AUTHORIZATION",
-    "actualStatus": "REQUIRES_AUTHORIZATION",
-    "conflictDetected": true,
-    "latencyMs": 0.12,
-    "result": "PASSED"
-  },
-  {
-    "fixtureId": "fix-06-harmonious-conforming-action",
-    "name": "Harmonious Conforming Action",
-    "expectedStatus": "PERMITTED",
-    "actualStatus": "PERMITTED",
-    "conflictDetected": false,
-    "latencyMs": 0.10,
-    "result": "PASSED"
-  }
+ {
+ "fixtureId": "fix-01-pkg-mgr-override",
+ "name": "Package Manager Override (Human vs Repo Rules)",
+ "expectedStatus": "PERMITTED_WITH_OVERRIDE",
+ "actualStatus": "PERMITTED_WITH_OVERRIDE",
+ "conflictDetected": true,
+ "latencyMs": 1.33,
+ "result": "PASSED"
+ },
+ {
+ "fixtureId": "fix-02-protected-branch-push",
+ "name": "Unprompted Direct Push to Protected Main Branch",
+ "expectedStatus": "REQUIRES_AUTHORIZATION",
+ "actualStatus": "REQUIRES_AUTHORIZATION",
+ "conflictDetected": true,
+ "latencyMs": 0.21,
+ "result": "PASSED"
+ },
+ {
+ "fixtureId": "fix-03-precedence-ambiguity",
+ "name": "Equal-Tier Naming Convention Contradiction",
+ "expectedStatus": "AMBIGUOUS",
+ "actualStatus": "AMBIGUOUS",
+ "conflictDetected": true,
+ "latencyMs": 0.13,
+ "result": "PASSED"
+ },
+ {
+ "fixtureId": "fix-04-stale-doc-vs-active-config",
+ "name": "Stale Documentation vs Active Package Config",
+ "expectedStatus": "PERMITTED",
+ "actualStatus": "PERMITTED",
+ "conflictDetected": true,
+ "latencyMs": 0.24,
+ "result": "PASSED"
+ },
+ {
+ "fixtureId": "fix-05-direct-negative-rule-block",
+ "name": "Direct Negative Standing Rule Block",
+ "expectedStatus": "REQUIRES_AUTHORIZATION",
+ "actualStatus": "REQUIRES_AUTHORIZATION",
+ "conflictDetected": true,
+ "latencyMs": 0.12,
+ "result": "PASSED"
+ },
+ {
+ "fixtureId": "fix-06-harmonious-conforming-action",
+ "name": "Harmonious Conforming Action",
+ "expectedStatus": "PERMITTED",
+ "actualStatus": "PERMITTED",
+ "conflictDetected": false,
+ "latencyMs": 0.10,
+ "result": "PASSED"
+ }
 ]
 ```
 
@@ -177,72 +177,72 @@ When resolving `fix-01-pkg-mgr-override`, the resolver produces:
 
 ```json
 {
-  "status": "PERMITTED_WITH_OVERRIDE",
-  "intendedAction": {
-    "id": "act-npm-install",
-    "description": "Install dependency using npm",
-    "category": "PACKAGE_MANAGER",
-    "command": "npm install express"
-  },
-  "effectiveDecision": "PERMITTED_WITH_OVERRIDE",
-  "governingDirective": {
-    "id": "dir-pkg-src-human-prompt-1",
-    "sourceId": "src-human-prompt",
-    "sourceTier": "EXPLICIT_HUMAN",
-    "sourceLocation": "Developer Prompt:L1",
-    "category": "PACKAGE_MANAGER",
-    "polarity": "REQUIRE",
-    "statement": "Use npm to install express for a quick standalone test.",
-    "precedence": 100
-  },
-  "overriddenDirectives": [
-    {
-      "id": "dir-pkg-src-agents-md-1",
-      "sourceId": "src-agents-md",
-      "sourceTier": "AGENT_RULES",
-      "sourceLocation": "AGENTS.md:L1",
-      "statement": "You MUST always use pnpm as the package manager for this repository.",
-      "precedence": 60
-    }
-  ],
-  "conflicts": [
-    {
-      "id": "conflict-contradiction-dir-pkg-src-agents-md-1-dir-pkg-src-human-prompt-1",
-      "type": "CONTRADICTION",
-      "category": "PACKAGE_MANAGER",
-      "severity": "MEDIUM",
-      "description": "Contradiction detected: [You MUST always use pnpm...] vs [Use npm to install express...]. Overridden by EXPLICIT_HUMAN",
-      "evidence": [
-        {
-          "sourceId": "src-agents-md",
-          "sourceTier": "AGENT_RULES",
-          "path": "AGENTS.md",
-          "snippet": "You MUST always use pnpm as the package manager for this repository.",
-          "relevance": "Mandates [You MUST always use pnpm...]"
-        },
-        {
-          "sourceId": "src-human-prompt",
-          "sourceTier": "EXPLICIT_HUMAN",
-          "path": "Developer Prompt",
-          "snippet": "Use npm to install express for a quick standalone test.",
-          "relevance": "Mandates [Use npm to install express...]"
-        }
-      ]
-    }
-  ],
-  "evidenceTrail": [
-    {
-      "sourceId": "src-human-prompt",
-      "sourceTier": "EXPLICIT_HUMAN",
-      "path": "Developer Prompt",
-      "snippet": "Use npm to install express for a quick standalone test.",
-      "relevance": "Governing directive"
-    }
-  ],
-  "explanation": "EFFECTIVE DIRECTIVE: [PERMITTED_WITH_OVERRIDE] for action: \"Install dependency using npm\".\nGoverned by authority tier [EXPLICIT_HUMAN] from [Developer Prompt:L1]: \"Use npm to install express for a quick standalone test.\".\nOverrides lower-standing directives from: [AGENT_RULES] AGENTS.md:L1.\nConflicts identified: [CONTRADICTION] Contradiction detected: [You MUST always use pnpm as the package manager for this repository.] vs [Use npm to install express for a quick standalone test.]. Overridden by EXPLICIT_HUMAN.\n",
-  "isObjectiveTruthClaim": false,
-  "generatedAt": "2026-08-27T09:32:00.000Z",
-  "latencyMs": 1.33
+ "status": "PERMITTED_WITH_OVERRIDE",
+ "intendedAction": {
+ "id": "act-npm-install",
+ "description": "Install dependency using npm",
+ "category": "PACKAGE_MANAGER",
+ "command": "npm install express"
+ },
+ "effectiveDecision": "PERMITTED_WITH_OVERRIDE",
+ "governingDirective": {
+ "id": "dir-pkg-src-human-prompt-1",
+ "sourceId": "src-human-prompt",
+ "sourceTier": "EXPLICIT_HUMAN",
+ "sourceLocation": "Developer Prompt:L1",
+ "category": "PACKAGE_MANAGER",
+ "polarity": "REQUIRE",
+ "statement": "Use npm to install express for a quick standalone test.",
+ "precedence": 100
+ },
+ "overriddenDirectives": [
+ {
+ "id": "dir-pkg-src-agents-md-1",
+ "sourceId": "src-agents-md",
+ "sourceTier": "AGENT_RULES",
+ "sourceLocation": "AGENTS.md:L1",
+ "statement": "You MUST always use pnpm as the package manager for this repository.",
+ "precedence": 60
+ }
+ ],
+ "conflicts": [
+ {
+ "id": "conflict-contradiction-dir-pkg-src-agents-md-1-dir-pkg-src-human-prompt-1",
+ "type": "CONTRADICTION",
+ "category": "PACKAGE_MANAGER",
+ "severity": "MEDIUM",
+ "description": "Contradiction detected: [You MUST always use pnpm...] vs [Use npm to install express...]. Overridden by EXPLICIT_HUMAN",
+ "evidence": [
+ {
+ "sourceId": "src-agents-md",
+ "sourceTier": "AGENT_RULES",
+ "path": "AGENTS.md",
+ "snippet": "You MUST always use pnpm as the package manager for this repository.",
+ "relevance": "Mandates [You MUST always use pnpm...]"
+ },
+ {
+ "sourceId": "src-human-prompt",
+ "sourceTier": "EXPLICIT_HUMAN",
+ "path": "Developer Prompt",
+ "snippet": "Use npm to install express for a quick standalone test.",
+ "relevance": "Mandates [Use npm to install express...]"
+ }
+ ]
+ }
+ ],
+ "evidenceTrail": [
+ {
+ "sourceId": "src-human-prompt",
+ "sourceTier": "EXPLICIT_HUMAN",
+ "path": "Developer Prompt",
+ "snippet": "Use npm to install express for a quick standalone test.",
+ "relevance": "Governing directive"
+ }
+ ],
+ "explanation": "EFFECTIVE DIRECTIVE: [PERMITTED_WITH_OVERRIDE] for action: \"Install dependency using npm\".\nGoverned by authority tier [EXPLICIT_HUMAN] from [Developer Prompt:L1]: \"Use npm to install express for a quick standalone test.\".\nOverrides lower-standing directives from: [AGENT_RULES] AGENTS.md:L1.\nConflicts identified: [CONTRADICTION] Contradiction detected: [You MUST always use pnpm as the package manager for this repository.] vs [Use npm to install express for a quick standalone test.]. Overridden by EXPLICIT_HUMAN.\n",
+ "isObjectiveTruthClaim": false,
+ "generatedAt": "2026-08-27T09:32:00.000Z",
+ "latencyMs": 1.33
 }
 ```
 

@@ -1,20 +1,20 @@
 <div align="center">
-  <img src="docs/assets/bridge-logo.jpg" alt="Bridge Logo" width="280" style="border-radius: 12px; margin-bottom: 12px;" />
+ <img src="docs/assets/bridge-logo.jpg" alt="Bridge Logo" width="280" style="border-radius: 12px; margin-bottom: 12px;" />
 
-  <h1>Bridge</h1>
+ <h1>Bridge</h1>
 
-  <p>
-    <strong>The epistemological boundary and orchestration substrate between AI agents.</strong>
-  </p>
+ <p>
+ <strong>The epistemological boundary and orchestration substrate between AI agents.</strong>
+ </p>
 
-  <p>
-    <a href="https://gitlab.com/aryankori/bridge/-/pipelines"><img src="https://img.shields.io/badge/gitlab%20ci-ready-FC6D26?style=flat-square&logo=gitlab&logoColor=white" alt="GitLab CI" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Private-107C41.svg?style=flat-square" alt="License" /></a>
-    <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%E2%89%A520.0.0-339933.svg?style=flat-square&logo=node.js&logoColor=white" alt="Node" /></a>
-    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-5.7-3178C6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /></a>
-    <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-4.1-FCC72B.svg?style=flat-square&logo=vitest&logoColor=black" alt="Vitest" /></a>
-    <img src="https://img.shields.io/badge/protocols-ACP%20%7C%20MCP%20%7C%20A2A-6E40C9?style=flat-square" alt="Protocols" />
-  </p>
+ <p>
+ <a href="https://gitlab.com/aryankori/bridge/-/pipelines"><img src="https://img.shields.io/badge/gitlab%20ci-ready-FC6D26?style=flat-square&logo=gitlab&logoColor=white" alt="GitLab CI" /></a>
+ <a href="LICENSE"><img src="https://img.shields.io/badge/license-Private-107C41.svg?style=flat-square" alt="License" /></a>
+ <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%E2%89%A520.0.0-339933.svg?style=flat-square&logo=node.js&logoColor=white" alt="Node" /></a>
+ <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-5.7-3178C6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+ <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-4.1-FCC72B.svg?style=flat-square&logo=vitest&logoColor=black" alt="Vitest" /></a>
+ <img src="https://img.shields.io/badge/protocols-ACP%20%7C%20MCP%20%7C%20A2A-6E40C9?style=flat-square" alt="Protocols" />
+ </p>
 </div>
 
 ---
@@ -31,38 +31,38 @@ Bridge is **not** a chat UI or wrapper around LLM APIs. It is a systems-level in
 
 ```mermaid
 graph TD
-    User([👤 Human Lead / Engineer]) -->|Directives & Intent| BridgeCore
+ User([Human Lead / Engineer]) -->|Directives & Intent| BridgeCore
 
-    subgraph BridgeCore["🌉 BRIDGE SYSTEM SUBSTRATE"]
-        direction TB
-        Truth["Project Truth & Reconciliation Core"]
-        Router["AgentRouter (Capability & Authority Matrix)"]
-        Resolver["Authority Conflict Resolver (EXP-005)"]
-        Ledger["Deterministic Evidence Ledger"]
-        Truth <--> Router
-        Router <--> Resolver
-        Resolver <--> Ledger
-    end
+ subgraph BridgeCore["BRIDGE SYSTEM SUBSTRATE"]
+ direction TB
+ Truth["Project Truth & Reconciliation Core"]
+ Router["AgentRouter (Capability & Authority Matrix)"]
+ Resolver["Authority Conflict Resolver (EXP-005)"]
+ Ledger["Deterministic Evidence Ledger"]
+ Truth <--> Router
+ Router <--> Resolver
+ Resolver <--> Ledger
+ end
 
-    subgraph ProtocolLayer["⚡ UNIFIED PROTOCOL TRANSLATION"]
-        ACP["ACP Adapter<br/><i>(Editor ↔ Agent JSON-RPC 2.0)</i>"]
-        MCP["MCP Adapter<br/><i>(Agent ↔ Tool Substrate)</i>"]
-        A2A["A2A Protocol<br/><i>(Agent ↔ Agent Transfer)</i>"]
-    end
+ subgraph ProtocolLayer["UNIFIED PROTOCOL TRANSLATION"]
+ ACP["ACP Adapter<br/><i>(Editor <-> Agent JSON-RPC 2.0)</i>"]
+ MCP["MCP Adapter<br/><i>(Agent <-> Tool Substrate)</i>"]
+ A2A["A2A Protocol<br/><i>(Agent <-> Agent Transfer)</i>"]
+ end
 
-    BridgeCore --> ProtocolLayer
+ BridgeCore --> ProtocolLayer
 
-    subgraph AgentFleet["🤖 MULTI-AGENT RUNTIME FLEET"]
-        Claude["Claude Code"]
-        OpenCode["OpenCode"]
-        Hermes["Hermes Agent"]
-        Antigravity["Antigravity / Gemini CLI"]
-    end
+ subgraph AgentFleet["MULTI-AGENT RUNTIME FLEET"]
+ Claude["Claude Code"]
+ OpenCode["OpenCode"]
+ Hermes["Hermes Agent"]
+ Antigravity["Antigravity / Gemini CLI"]
+ end
 
-    ACP <---> Claude
-    ACP <---> OpenCode
-    A2A <---> Hermes
-    MCP <---> Antigravity
+ ACP <---> Claude
+ ACP <---> OpenCode
+ A2A <---> Hermes
+ MCP <---> Antigravity
 ```
 
 ---
@@ -87,17 +87,17 @@ Foundational research documents:
 
 ## 3. Current Milestones & Empirical Status
 
-### Phase 0: Reconnaissance & Foundation (Completed ✅)
+### Phase 0: Reconnaissance & Foundation (Completed)
 - Mapped process topologies, session storage, and communication protocols for primary coding agents (Claude Code, OpenCode, Hermes).
 - Selected **ACP (Agent Client Protocol)** as the lowest-common-denominator editor substrate.
 - Implemented core type system, event bus, `WorkTransfer` primitive, and `AgentRouter` (`62f47e5`).
 
-### Phase 1: Empirical Conflict Resolution Benchmark (Active 🚧)
+### Phase 1: Empirical Conflict Resolution Benchmark (Active)
 - **Benchmark `EXP-005`**: 10-scenario cross-agent behavior benchmark testing conflict detection across Unambiguous, Ambiguous, and Unsolvable conditions.
 - **Pre-Verification Result**: The deterministic conflict resolver achieved **10/10 (100%) accuracy** against gold standards:
-  - 5/5 Unambiguous Scenarios correctly resolved with directive overrides (`PERMITTED_WITH_OVERRIDE` / `PERMITTED`).
-  - 3/3 Ambiguous Scenarios correctly flagged as `AMBIGUOUS`.
-  - 2/2 Unsolvable Scenarios correctly gated (`BLOCKED_CONFLICT` / `REQUIRES_AUTHORIZATION`).
+ - 5/5 Unambiguous Scenarios correctly resolved with directive overrides (`PERMITTED_WITH_OVERRIDE` / `PERMITTED`).
+ - 3/3 Ambiguous Scenarios correctly flagged as `AMBIGUOUS`.
+ - 2/2 Unsolvable Scenarios correctly gated (`BLOCKED_CONFLICT` / `REQUIRES_AUTHORIZATION`).
 - **Upcoming Wedge**: Autonomous Developer CLI resolver (`bridge resolve` npm package) to resolve branch divergences and agent collisions at the git worktree layer.
 
 ---
@@ -106,8 +106,8 @@ Foundational research documents:
 
 | Layer | Protocol | Wire Format | Functional Boundary |
 | :--- | :--- | :--- | :--- |
-| **ACP** | Agent Client Protocol | JSON-RPC 2.0 over stdio/HTTP | Client/IDE ↔ Agent command execution |
-| **MCP** | Model Context Protocol | JSON-RPC 2.0 over stdio | Agent ↔ Specialized external tools |
+| **ACP** | Agent Client Protocol | JSON-RPC 2.0 over stdio/HTTP | Client/IDE <-> Agent command execution |
+| **MCP** | Model Context Protocol | JSON-RPC 2.0 over stdio | Agent <-> Specialized external tools |
 | **A2A** | Agent-to-Agent Transfer | HTTP + JSON-RPC + SSE | Asynchronous task transfer between peer agents |
 
 ---
@@ -115,7 +115,7 @@ Foundational research documents:
 ## 5. Development & Local Setup
 
 ### Prerequisites
-- Node.js ≥ 20.0.0
+- Node.js >= 20.0.0
 - [pnpm](https://pnpm.io/) (`corepack enable && corepack prepare pnpm@latest --activate`)
 
 ### Installation
@@ -140,7 +140,7 @@ pnpm install
 
 ## 6. Continuous Verification (CI/CD)
 
-> ℹ️ **Deterministic CI Guarantee:** Automated pipelines (GitLab CI / GitHub Actions) strictly run deterministic static checks, TypeScript typechecking, and offline unit tests. Outbound LLM API calls and non-deterministic agent runs are strictly segregated to local research harnesses (`pnpm experiment:pilot`).
+> **Deterministic CI Guarantee:** Automated pipelines (GitLab CI / GitHub Actions) strictly run deterministic static checks, TypeScript typechecking, and offline unit tests. Outbound LLM API calls and non-deterministic agent runs are strictly segregated to local research harnesses (`pnpm experiment:pilot`).
 
 ---
 

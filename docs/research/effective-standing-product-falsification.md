@@ -1,4 +1,4 @@
-# BRIDGE — EFFECTIVE STANDING PRODUCT FALSIFICATION
+# BRIDGE - EFFECTIVE STANDING PRODUCT FALSIFICATION
 
 **Author:** Hermes Agent (Independent Product Falsification Reviewer)
 **Date:** 2026-08-27
@@ -10,7 +10,7 @@
 
 ### IAM Systems (AWS IAM, Azure AD, GCP IAM, Okta)
 
-**What they compute:** Binary authorization — "Can principal P perform action A on resource R?"
+**What they compute:** Binary authorization - "Can principal P perform action A on resource R?"
 
 **What they do NOT compute:**
 - Authority conflicts between multiple authorized principals
@@ -24,7 +24,7 @@
 
 ### Policy Engines (OPA/Rego, Cedar, Amazon Verified Permissions)
 
-**What they compute:** Policy evaluation — "Given policy set P and input I, what is the decision?"
+**What they compute:** Policy evaluation - "Given policy set P and input I, what is the decision?"
 
 **Can they express standing?**
 
@@ -34,13 +34,13 @@ Partially. OPA/Rego can encode precedence logic:
 # deny overrides allow (built-in pattern)
 default allow := false
 allow {
-    input.authority == "security-reviewer"
-    input.action == "block-deployment"
+ input.authority == "security-reviewer"
+ input.action == "block-deployment"
 }
 allow {
-    input.authority == "product-manager"
-    input.action == "approve-deployment"
-    not input.security_reviewer_veto
+ input.authority == "product-manager"
+ input.action == "approve-deployment"
+ not input.security_reviewer_veto
 }
 ```
 
@@ -86,20 +86,20 @@ Amazon Verified Permissions / Cedar can express:
 
 ```cedar
 permit(
-    principal in SecurityReviewerRole,
-    action == Action::"block-deployment",
-    resource in ProductionService
+ principal in SecurityReviewerRole,
+ action == Action::"block-deployment",
+ resource in ProductionService
 );
 
  forbid(
-    principal in ProductManagerRole,
-    action == Action::"approve-deployment",
-    resource in ProductionService,
-    conditions [DelegationExceedsLimit]
+ principal in ProductManagerRole,
+ action == Action::"approve-deployment",
+ resource in ProductionService,
+ conditions [DelegationExceedsLimit]
 );
 ```
 
-Cedar's `forbid` overrides `permit` — this IS a form of standing (deny overrides allow). But again:
+Cedar's `forbid` overrides `permit` - this IS a form of standing (deny overrides allow). But again:
 - Cedar needs the policy rules given to it
 - Cedar doesn't discover standing from existing systems
 - Cedar doesn't maintain authority graphs
@@ -133,12 +133,12 @@ Cedar's `forbid` overrides `permit` — this IS a form of standing (deny overrid
 - Policy rules from documents (if parsed)
 
 **What they collectively MISS:**
-1. **Precedence across domains** — No system says "security veto > product approval for deployment decisions"
-2. **Authority graph** — No system connects "Alice's agent is delegated from Alice, who reports to Bob, who has standing over engineering decisions"
-3. **Domain-scoped precedence** — No system encodes "security > product for deployment, but product > security for feature prioritization"
-4. **Temporal validity** — No system tracks "this standing expired when policy v2 was ratified"
-5. **Conflict detection** — No system detects "two authorities both satisfied, no precedence rule exists"
-6. **Delegation chain standing** — No system propagates "A delegated to B, B delegated to C, C's standing inherits A's precedence"
+1. **Precedence across domains** - No system says "security veto > product approval for deployment decisions"
+2. **Authority graph** - No system connects "Alice's agent is delegated from Alice, who reports to Bob, who has standing over engineering decisions"
+3. **Domain-scoped precedence** - No system encodes "security > product for deployment, but product > security for feature prioritization"
+4. **Temporal validity** - No system tracks "this standing expired when policy v2 was ratified"
+5. **Conflict detection** - No system detects "two authorities both satisfied, no precedence rule exists"
+6. **Delegation chain standing** - No system propagates "A delegated to B, B delegated to C, C's standing inherits A's precedence"
 
 ### Can a Custom Integration Solve This Without Bridge?
 
@@ -214,11 +214,11 @@ An enterprise could build:
 
 ### Key Insight
 
-**Most authority conflicts are low-stakes** — they're caught by existing tools (branch protection, manual review, CI gates) before causing harm.
+**Most authority conflicts are low-stakes** - they're caught by existing tools (branch protection, manual review, CI gates) before causing harm.
 
-**High-stakes conflicts are rare but consequential** — when they occur, they cause incidents, compliance violations, or liability issues.
+**High-stakes conflicts are rare but consequential** - when they occur, they cause incidents, compliance violations, or liability issues.
 
-**The value of standing is disproportionate to frequency** — it's valuable not because conflicts are common, but because the rare high-stakes conflict is very expensive.
+**The value of standing is disproportionate to frequency** - it's valuable not because conflicts are common, but because the rare high-stakes conflict is very expensive.
 
 ---
 
@@ -252,10 +252,10 @@ An enterprise could build:
 
 This is the core question standing must answer. Options:
 
-1. **Most restrictive wins** — DOA limit ($25K) and policy threshold ($10K) both restrict IAM's unlimited permission
-2. **Most recent wins** — If policy was ratified after DOA matrix, policy wins
-3. **Highest precedence wins** — CFO authority > Finance agent authority
-4. **Domain-specific rule** — For financial approvals, DOA + policy combined > IAM
+1. **Most restrictive wins** - DOA limit ($25K) and policy threshold ($10K) both restrict IAM's unlimited permission
+2. **Most recent wins** - If policy was ratified after DOA matrix, policy wins
+3. **Highest precedence wins** - CFO authority > Finance agent authority
+4. **Domain-specific rule** - For financial approvals, DOA + policy combined > IAM
 
 **Standing requires a resolution rule for each conflict domain.**
 
@@ -380,7 +380,7 @@ Precedence rules are **organizational knowledge**, not technical configuration. 
 
 ### Verdict
 
-**This is NOT a developer problem.** It is an **enterprise governance** or **regulated compliance** problem. The buyer is not the developer — it's the governance, security, or compliance team.
+**This is NOT a developer problem.** It is an **enterprise governance** or **regulated compliance** problem. The buyer is not the developer - it's the governance, security, or compliance team.
 
 ---
 
@@ -388,18 +388,18 @@ Precedence rules are **organizational knowledge**, not technical configuration. 
 
 ### Product Arguments
 
-1. **Solves a specific business problem** — agent governance, compliance, audit trails
-2. **Has a clear buyer** — enterprise governance/security/compliance teams
-3. **Has a clear value proposition** — prevent unauthorized actions, prove authority
-4. **Requires integration work** — connectors to existing systems, precedence encoding
-5. **Has a clear wrapper** — could be packaged as SaaS or self-hosted
+1. **Solves a specific business problem** - agent governance, compliance, audit trails
+2. **Has a clear buyer** - enterprise governance/security/compliance teams
+3. **Has a clear value proposition** - prevent unauthorized actions, prove authority
+4. **Requires integration work** - connectors to existing systems, precedence encoding
+5. **Has a clear wrapper** - could be packaged as SaaS or self-hosted
 
 ### Infrastructure Arguments
 
-1. **Standing could become a standard primitive** — like authorization in IAM
-2. **Agent gateways could absorb it** — AgentCore Gateway, Databricks Unity AI Gateway already do admission control
-3. **Policy engines could extend to standing** — OPA/Cedar could add standing computation
-4. **DOA matrices could become machine-readable** — if enterprises encode DOA in computable form
+1. **Standing could become a standard primitive** - like authorization in IAM
+2. **Agent gateways could absorb it** - AgentCore Gateway, Databricks Unity AI Gateway already do admission control
+3. **Policy engines could extend to standing** - OPA/Cedar could add standing computation
+4. **DOA matrices could become machine-readable** - if enterprises encode DOA in computable form
 
 ### Verdict
 
@@ -417,7 +417,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 - Cross-system integration is the moat (connectors, precedence encoding)
 - Accumulated standing history is the moat (time moat)
 
-**But if standing becomes a protocol standard, Bridge's moat shrinks to "who has the most standing data" — which is a weaker moat than "who invented standing."**
+**But if standing becomes a protocol standard, Bridge's moat shrinks to "who has the most standing data" - which is a weaker moat than "who invented standing."**
 
 ---
 
@@ -430,7 +430,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 - Security agent (monitoring, not acting)
 
 **Conflicting directives:**
-- Engineer agent: "Apply auto-scaling config change to production (threshold: 80% → 90%)."
+- Engineer agent: "Apply auto-scaling config change to production (threshold: 80% -> 90%)."
 - Security policy: "All production config changes require security team review per Security Policy v3.2 §4.2."
 
 **Existing authority sources:**
@@ -449,7 +449,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 **What Bridge would compute:**
 - Effective standing: security-review-required for production config changes
 - Precedence: security-policy-standing > IAM-permission for production configuration
-- Result: BLOCK — requires security team ratification
+- Result: BLOCK - requires security team ratification
 
 **What happens if Bridge is absent:**
 - Agent applies change
@@ -468,9 +468,9 @@ If any of these happens, Bridge's standalone product thesis weakens.
 - Project security policy: "All production services must use Organization-Approved Encryption Library v2. Service X uses unapproved library v1."
 
 **Existing authority sources:**
-- GitHub: CODEOWNERS approved, branch protection passed (code authority — satisfied)
-- CI: Tests pass (technical authority — satisfied)
-- IAM: Developer has `deploy:prod` permission (deployment authority — satisfied)
+- GitHub: CODEOWNERS approved, branch protection passed (code authority - satisfied)
+- CI: Tests pass (technical authority - satisfied)
+- IAM: Developer has `deploy:prod` permission (deployment authority - satisfied)
 - Project security policy: Confluence page, not machine-readable (exists but not computable)
 - Organization-approved library list: Managed in security system, not connected to deployment pipeline
 
@@ -483,7 +483,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 **What Bridge would compute:**
 - Effective standing: security-policy-standing requires approved encryption for production services
 - Precedence: security-policy-standing > deployment-authorization for production services
-- Result: BLOCK — requires security approval or exemption
+- Result: BLOCK - requires security approval or exemption
 
 **What happens if Bridge is absent:**
 - Agent deploys
@@ -517,7 +517,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 **What Bridge would compute:**
 - Effective standing: DBA-lead-ratification-required for production schema changes
 - Precedence: data-policy-standing > IAM-permission for destructive database operations
-- Result: BLOCK — requires DBA lead approval
+- Result: BLOCK - requires DBA lead approval
 
 **What happens if Bridge is absent:**
 - Agent migrates
@@ -540,7 +540,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 
 **Existing authority sources:**
 - DOA matrix: Finance agent limit $25K (document, not machine-readable)
-- IAM: Finance agent has `billing:approve` permission with no limit (authorized — no cap)
+- IAM: Finance agent has `billing:approve` permission with no limit (authorized - no cap)
 - AWS/GCP billing: No concept of delegation authority (just permission)
 - CFO delegation: Not in IAM, not in billing system
 
@@ -556,7 +556,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 - Effective standing: finance-agent-standing capped at $25K (from DOA matrix)
 - Policy threshold: CFO sign-off required for > $10K
 - Result: $50K approval VIOLATES standing (exceeds DOA limit and policy threshold)
-- Action: FLAG — requires CFO sign-off for > $25K
+- Action: FLAG - requires CFO sign-off for > $25K
 
 **What happens if Bridge is absent:**
 - Finance agent approves $50K
@@ -577,8 +577,8 @@ If any of these happens, Bridge's standalone product thesis weakens.
 - Org security policy: "Only Organization-Approved Libraries may be used. Library X is not on approved list."
 
 **Existing authority sources:**
-- Jira: VP Engineering approved library X for project A (business authority — exists)
-- Org security policy: "Approved libraries only" (security authority — exists as policy doc)
+- Jira: VP Engineering approved library X for project A (business authority - exists)
+- Org security policy: "Approved libraries only" (security authority - exists as policy doc)
 - GitHub: No library approval tracking (no authority capture)
 - IAM: No library approval concept (no authority capture)
 - Organization approved library list: Managed in security system, not connected to project workflow
@@ -601,7 +601,7 @@ If any of these happens, Bridge's standalone product thesis weakens.
 - Project A uses library X
 - Org security discovers violation
 - Conflict escalates to executive level
-- "VP approved it" vs "Policy prohibits it" — no standing resolution
+- "VP approved it" vs "Policy prohibits it" - no standing resolution
 
 ---
 
@@ -611,12 +611,12 @@ If any of these happens, Bridge's standalone product thesis weakens.
 
 | Option | Description | Pros | Cons | Viability |
 |---|---|---|---|---|
-| **A. CLI** | `bridge standing-check --action ... --agent ...` | Simplest, developer-friendly, proves concept | Requires manual rule input; no integrations; can't scale | ✅ Proof of concept |
-| **B. MCP server** | MCP server that agents query before acting | Agent-native, can be deployed independently | Requires connectors; MCP adoption uncertain | ✅ Best wedge |
-| **C. GitHub app** | GitHub app that checks standing before PR merges | Proves value for code changes; GitHub-native | Too narrow (only code); doesn't cover other agent actions | ⚠️ Partial |
-| **D. Policy engine plugin** | OPA/Rego plugin for standing computation | Integrates with existing policy infra | Requires OPA adoption; plugin is invisible | ⚠️ Hidden |
-| **E. Agent gateway** | Gateway that intercepts all agent actions | Comprehensive, enforcement | Largest product; competes with existing gateways | ❌ Too big |
-| **F. Cross-system authority API** | API that computes standing from multiple sources | Flexible, can be used by CLI/MCP/GitHub/gateway | Middleware, not end product; needs consumer | ✅ Foundation |
+| **A. CLI** | `bridge standing-check --action ... --agent ...` | Simplest, developer-friendly, proves concept | Requires manual rule input; no integrations; can't scale | Proof of concept |
+| **B. MCP server** | MCP server that agents query before acting | Agent-native, can be deployed independently | Requires connectors; MCP adoption uncertain | Best wedge |
+| **C. GitHub app** | GitHub app that checks standing before PR merges | Proves value for code changes; GitHub-native | Too narrow (only code); doesn't cover other agent actions | Partial |
+| **D. Policy engine plugin** | OPA/Rego plugin for standing computation | Integrates with existing policy infra | Requires OPA adoption; plugin is invisible | Hidden |
+| **E. Agent gateway** | Gateway that intercepts all agent actions | Comprehensive, enforcement | Largest product; competes with existing gateways | Too big |
+| **F. Cross-system authority API** | API that computes standing from multiple sources | Flexible, can be used by CLI/MCP/GitHub/gateway | Middleware, not end product; needs consumer | Foundation |
 
 ### Smallest Product: **Option B: MCP Server** + **Option A: CLI** for bootstrap
 
@@ -637,16 +637,16 @@ If any of these happens, Bridge's standalone product thesis weakens.
 ```
 # Phase 1: CLI with manual rules (prove concept)
 bridge standing-check \
-  --action "apply config to production" \
-  --agent "engineer-agent" \
-  --rules "security-review required for production config changes" \
-  --authority "security-team has veto over production config changes"
+ --action "apply config to production" \
+ --agent "engineer-agent" \
+ --rules "security-review required for production config changes" \
+ --authority "security-team has veto over production config changes"
 
 # Output:
 # STANDING: NOT-SATISFIED
 # Reason: security-review-required for production config changes
 # Authority: security-team has veto (precedence 90) > engineer-agent (precedence 70)
-# Action: BLOCK — requires security team ratification
+# Action: BLOCK - requires security team ratification
 
 # Phase 2: MCP server with connectors (prove value)
 # Agent queries MCP server before acting
@@ -695,7 +695,7 @@ bridge standing-check \
 - Developers/small teams: NOT payable (no budget, no pain)
 
 **Total addressable market:** Enterprise + regulated organizations with 50+ agents.
-**Market size:** Unclear — agent adoption is early, standing conflicts are rare, compliance drivers are emerging.
+**Market size:** Unclear - agent adoption is early, standing conflicts are rare, compliance drivers are emerging.
 
 ---
 
@@ -742,23 +742,23 @@ Too vague. No specific trigger. No compelling event.
 
 ### What Survives
 
-1. **Standing is a real computational primitive** — it's comparative/arbitration, distinct from binary authorization. Authorization = "can you do X?" Standing = "when A and B both can do X, whose wins?"
+1. **Standing is a real computational primitive** - it's comparative/arbitration, distinct from binary authorization. Authorization = "can you do X?" Standing = "when A and B both can do X, whose wins?"
 
-2. **Effective standing computation is a real gap** — existing systems (IAM, GitHub, Jira, HR, policy docs) capture authority fragments but don't compute unified standing. No system resolves cross-domain authority conflicts.
+2. **Effective standing computation is a real gap** - existing systems (IAM, GitHub, Jira, HR, policy docs) capture authority fragments but don't compute unified standing. No system resolves cross-domain authority conflicts.
 
-3. **There is a market** — enterprise governance and regulated compliance teams would pay for standing computation if conflicts are costing them.
+3. **There is a market** - enterprise governance and regulated compliance teams would pay for standing computation if conflicts are costing them.
 
-4. **MCP server + CLI is a viable wedge** — smallest product that proves value without requiring full infrastructure.
+4. **MCP server + CLI is a viable wedge** - smallest product that proves value without requiring full infrastructure.
 
 ### What Fails
 
-1. **"Standing ledger" as a standalone product** — overestimates new data; standing already exists fragmented. The opportunity is computation, not ledger ownership.
+1. **"Standing ledger" as a standalone product** - overestimates new data; standing already exists fragmented. The opportunity is computation, not ledger ownership.
 
-2. **"Developer tool" framing** — developers don't have this problem at scale. The buyer is governance/security/compliance, not the developer.
+2. **"Developer tool" framing** - developers don't have this problem at scale. The buyer is governance/security/compliance, not the developer.
 
-3. **"We invented standing"** — standing is a reframing of resolution policy (ACM 2025), DOA matrices, and authorization precedence. The novelty is in the *computation and federation*, not the *invention*.
+3. **"We invented standing"** - standing is a reframing of resolution policy (ACM 2025), DOA matrices, and authorization precedence. The novelty is in the *computation and federation*, not the *invention*.
 
-4. **"This is a company"** — the market is unclear (agent adoption is early, standing conflicts are rare), the buyer is narrow (enterprise/regulated), and the product could be commoditized by agent gateways or policy engines.
+4. **"This is a company"** - the market is unclear (agent adoption is early, standing conflicts are rare), the buyer is narrow (enterprise/regulated), and the product could be commoditized by agent gateways or policy engines.
 
 ### The Honest Assessment
 
@@ -783,11 +783,11 @@ Too vague. No specific trigger. No compelling event.
 
 ## 16. WHAT WE STILL DON'T KNOW
 
-1. **Do standing conflicts actually cause costly incidents in practice?** — Anecdotal evidence suggests yes, but no systematic data.
-2. **Would enterprises build in-house or buy?** — Depends on engineering capacity, pain level, and available solutions.
-3. **Can standing be commoditized by agent gateways?** — AgentCore Gateway, Databricks Unity AI Gateway, and agentgateway.dev already do admission control. If they add standing, Bridge's standalone thesis weakens.
-4. **Will standing become a standard protocol?** — If A2A or a new standard defines standing, Bridge becomes a library, not a company.
-5. **What's the actual market size?** — Agent adoption is early; standing conflicts are rare; compliance drivers are emerging. TAM is unclear.
+1. **Do standing conflicts actually cause costly incidents in practice?** - Anecdotal evidence suggests yes, but no systematic data.
+2. **Would enterprises build in-house or buy?** - Depends on engineering capacity, pain level, and available solutions.
+3. **Can standing be commoditized by agent gateways?** - AgentCore Gateway, Databricks Unity AI Gateway, and agentgateway.dev already do admission control. If they add standing, Bridge's standalone thesis weakens.
+4. **Will standing become a standard protocol?** - If A2A or a new standard defines standing, Bridge becomes a library, not a company.
+5. **What's the actual market size?** - Agent adoption is early; standing conflicts are rare; compliance drivers are emerging. TAM is unclear.
 
 ---
 
