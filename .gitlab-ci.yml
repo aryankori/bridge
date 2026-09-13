@@ -7,7 +7,7 @@ stages:
 default:
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest --activate
+    - corepack prepare pnpm@9.15.4 --activate
     - pnpm config set store-dir .pnpm-store
     - pnpm install --frozen-lockfile
 
