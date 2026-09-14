@@ -17,6 +17,11 @@ cache:
     - .pnpm-store
     - node_modules/
 
+lint:
+  stage: test
+  script:
+    - pnpm lint
+
 typecheck:
   stage: test
   script:
@@ -26,6 +31,11 @@ unit-tests:
   stage: test
   script:
     - pnpm test
+
+experiment-validate:
+  stage: test
+  script:
+    - pnpm experiment:validate
 
 build:
   stage: build

@@ -7,14 +7,16 @@
  <strong>The epistemological boundary and orchestration substrate between AI agents.</strong>
  </p>
 
- <p>
- <a href="https://gitlab.com/aryankori/bridge/-/pipelines"><img src="https://img.shields.io/badge/gitlab%20ci-ready-FC6D26?style=flat-square&logo=gitlab&logoColor=white" alt="GitLab CI" /></a>
- <a href="LICENSE"><img src="https://img.shields.io/badge/license-Private-107C41.svg?style=flat-square" alt="License" /></a>
- <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%E2%89%A520.0.0-339933.svg?style=flat-square&logo=node.js&logoColor=white" alt="Node" /></a>
- <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-5.7-3178C6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /></a>
- <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-4.1-FCC72B.svg?style=flat-square&logo=vitest&logoColor=black" alt="Vitest" /></a>
- <img src="https://img.shields.io/badge/protocols-ACP%20%7C%20MCP%20%7C%20A2A-6E40C9?style=flat-square" alt="Protocols" />
- </p>
+  <p>
+    <a href="https://github.com/aryankori/bridge/actions/workflows/ci.yml"><img src="https://github.com/aryankori/bridge/actions/workflows/ci.yml/badge.svg" alt="GitHub CI" /></a>
+    <a href="https://gitlab.com/aryankori/bridge/-/pipelines"><img src="https://gitlab.com/aryankori/bridge/badges/main/pipeline.svg" alt="GitLab CI" /></a>
+    <a href="https://bridge-rho-wine.vercel.app"><img src="https://img.shields.io/badge/website-live-000000?style=flat-square&logo=vercel" alt="Website" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Private-107C41.svg?style=flat-square" alt="License" /></a>
+    <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%E2%89%A520.0.0-339933.svg?style=flat-square&logo=node.js&logoColor=white" alt="Node" /></a>
+    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-5.7-3178C6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+    <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-4.1-FCC72B.svg?style=flat-square&logo=vitest&logoColor=black" alt="Vitest" /></a>
+    <img src="https://img.shields.io/badge/protocols-ACP%20%7C%20MCP%20%7C%20A2A-6E40C9?style=flat-square" alt="Protocols" />
+  </p>
 </div>
 
 ---
