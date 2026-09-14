@@ -240,14 +240,141 @@ export function serializeWorkTransfer(pkg: WorkTransferPackage): string {
 }
 
 export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
- const parsed = JSON.parse(jsonText);
- if (!parsed || typeof parsed !== 'object') {
- throw new Error('Malformed WorkTransferPackage: must be a JSON object');
- }
- if (!parsed.id || !parsed.task || !parsed.objective || !parsed.sourceAgentId) {
- throw new Error('Malformed WorkTransferPackage: missing required fields (id, task, objective, sourceAgentId)');
- }
- return parsed as WorkTransferPackage;
+  const parsed = JSON.parse(jsonText);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('Malformed WorkTransferPackage: must be a JSON object');
+  }
+
+  // Guard against prototype pollution
+  const pollutionKeys = ['__proto__', 'constructor', 'prototype'];
+  const hasPollution = (obj: any): boolean => {
+    if (!obj || typeof obj !== 'object') return false;
+    for (const key of Object.keys(obj)) {
+      if (pollutionKeys.includes(key)) return true;
+      if (typeof obj[key] === 'object' && hasPollution(obj[key])) return true;
+    }
+    return false;
+  };
+
+  if (hasPollution(parsed)) {
+    throw new Error('Malformed WorkTransferPackage: prototype pollution detected');
+  }
+
+  // Mandatory top-level string fields
+  const requiredStringFields = ['id', 'task', 'objective', 'sourceAgentId', 'title'];
+  for (const field of requiredStringFields) {
+    if (!(field in parsed)) {
+      throw new Error(`Malformed WorkTransferPackage: missing required field "${field}"`);
+    }
+    if (typeof parsed[field] !== 'string') {
+      throw new Error(`Malformed WorkTransferPackage: field "${field}" must be a string`);
+    }
+  }
+
+  // Provenance validation
+  if (!parsed.provenance || typeof parsed.provenance !== 'object') {
+    throw new Error('Malformed WorkTransferPackage: missing required field "provenance"');
+  }
+
+  if (typeof parsed.provenance.timestamp !== 'string') {
+    throw new Error('Malformed WorkTransferPackage: field "provenance.timestamp" must be a string');
+  }
+  if (typeof parsed.provenance.bridgeVersion !== 'string') {
+    throw new Error('Malformed WorkTransferPackage: field "provenance.bridgeVersion" must be a string');
+  }
+  if (typeof parsed.provenance.sourceAgentId !== 'string') {
+    throw new Error('Malformed WorkTransferPackage: field "provenance.sourceAgentId" must be a string');
+  }
+
+  // Array validation
+  const validateArray = (val: any, field: string) => {
+    if (val !== undefined && !Array.isArray(val)) {
+      throw new Error(`Malformed WorkTransferPackage: field "${field}" must be an array`);
+    }
+  };
+
+  validateArray(parsed.changedFiles, 'changedFiles');
+  if (parsed.changedFiles) {
+    for (const file of parsed.changedFiles) {
+      if (!file || typeof file !== 'object') {
+        throw new Error('Malformed WorkTransferPackage: changedFiles elements must be objects');
+      }
+      if (typeof file.path !== 'string') {
+        throw new Error('Malformed WorkTransferPackage: changedFiles[].path must be a string');
+      }
+      if (file.status !== 'added' && file.status !== 'modified' && file.status !== 'deleted') {
+        throw new Error('Malformed WorkTransferPackage: changedFiles[].status must be added, modified, or deleted');
+      }
+    }
+  }
+
+  validateArray(parsed.relevantFiles, 'relevantFiles');
+  if (parsed.relevantFiles) {
+    for (const f of parsed.relevantFiles) {
+      if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: relevantFiles elements must be objects');
+      if (typeof f.path !== 'string') throw new Error('Malformed WorkTransferPackage: relevantFiles[].path must be a string');
+    }
+  }
+
+  validateArray(parsed.artifacts, 'artifacts');
+  if (parsed.artifacts) {
+    for (const f of parsed.artifacts) {
+      if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: artifacts elements must be objects');
+      if (typeof f.id !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].id must be a string');
+      if (typeof f.name !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].name must be a string');
+      if (typeof f.type !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].type must be a string');
+    }
+  }
+
+  validateArray(parsed.commands, 'commands');
+  if (parsed.commands) {
+    for (const f of parsed.commands) {
+      if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: commands elements must be objects');
+      if (typeof f.command !== 'string') throw new Error('Malformed WorkTransferPackage: commands[].command must be a string');
+      if (typeof f.exitCode !== 'number') throw new Error('Malformed WorkTransferPackage: commands[].exitCode must be a number');
+    }
+  }
+
+  validateArray(parsed.tests, 'tests');
+  if (parsed.tests) {
+    for (const f of parsed.tests) {
+      if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: tests elements must be objects');
+      if (typeof f.command !== 'string') throw new Error('Malformed WorkTransferPackage: tests[].command must be a string');
+      if (typeof f.passed !== 'boolean') throw new Error('Malformed WorkTransferPackage: tests[].passed must be a boolean');
+    }
+  }
+
+  validateArray(parsed.decisions, 'decisions');
+  if (parsed.decisions) {
+    for (const f of parsed.decisions) {
+      if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: decisions elements must be objects');
+      if (typeof f.decision !== 'string') throw new Error('Malformed WorkTransferPackage: decisions[].decision must be a string');
+      if (typeof f.rationale !== 'string') throw new Error('Malformed WorkTransferPackage: decisions[].rationale must be a string');
+    }
+  }
+
+  validateArray(parsed.unresolvedQuestions, 'unresolvedQuestions');
+  if (parsed.unresolvedQuestions) {
+    for (const q of parsed.unresolvedQuestions) {
+      if (typeof q !== 'string') throw new Error('Malformed WorkTransferPackage: unresolvedQuestions elements must be strings');
+    }
+  }
+
+  validateArray(parsed.outcomes, 'outcomes');
+  if (parsed.outcomes) {
+    for (const q of parsed.outcomes) {
+      if (typeof q !== 'string') throw new Error('Malformed WorkTransferPackage: outcomes elements must be strings');
+    }
+  }
+
+  validateArray(parsed.failures, 'failures');
+  if (parsed.failures) {
+    for (const q of parsed.failures) {
+      if (typeof q !== 'string') throw new Error('Malformed WorkTransferPackage: failures elements must be strings');
+    }
+  }
+
+  return parsed as WorkTransferPackage;
 }
 
 // ---------------------------------------------------------------------------
