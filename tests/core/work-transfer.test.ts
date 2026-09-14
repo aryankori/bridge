@@ -111,7 +111,37 @@ describe('WorkTransfer Primitive', () => {
 
  it('throws when deserializing invalid JSON or missing fields', () => {
  expect(() => deserializeWorkTransfer('{ invalid json')).toThrow();
- expect(() => deserializeWorkTransfer('{"id": "123"}')).toThrow(/missing required fields/);
+ expect(() => deserializeWorkTransfer('{"id": "123"}')).toThrow(/missing required field/);
+
+ // Invalid type
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: 123, task: 't', objective: 'o', sourceAgentId: 's', title: 't',
+ provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/field "id" must be a string/);
+ });
+
+ it('throws when prototype pollution is attempted', () => {
+ const payload = JSON.parse('{"id": "1", "task": "2", "objective": "3", "sourceAgentId": "4", "title": "5", "provenance": {"timestamp": "t", "bridgeVersion": "v", "sourceAgentId": "s"}, "__proto__": {"polluted": "yes"}}');
+ expect(() => deserializeWorkTransfer(JSON.stringify(payload))).toThrow(/prototype pollution detected/);
+ });
+
+ it('throws when changedFiles contains an invalid status', () => {
+ const validPkg = createWorkTransferPackage({
+ title: 'Test', task: 'T', objective: 'O', sourceAgent: 'A'
+ });
+ const payload = JSON.parse(serializeWorkTransfer(validPkg));
+ payload.changedFiles = [{ path: 'test.ts', status: 'invalid_status' }];
+ expect(() => deserializeWorkTransfer(JSON.stringify(payload))).toThrow(/changedFiles\[\].status must be added, modified, or deleted/);
+ });
+
+ it('throws when array field is of invalid type', () => {
+ const validPkg = createWorkTransferPackage({
+ title: 'Test', task: 'T', objective: 'O', sourceAgent: 'A'
+ });
+ const payload = JSON.parse(serializeWorkTransfer(validPkg));
+ payload.changedFiles = "not-an-array";
+ expect(() => deserializeWorkTransfer(JSON.stringify(payload))).toThrow(/field "changedFiles" must be an array/);
  });
  });
 
