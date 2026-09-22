@@ -5,9 +5,12 @@
  * (the echo-process.mjs fixture) and verifying NDJSON communication.
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { resolve } from 'node:path';
 import { StdioJsonTransport } from '../../src/transport/stdio-json.js';
+
+// We'll mock the internal fs instead by just writing a dummy file to bypass existsSync
+import * as fs from 'node:fs';
 
 const ECHO_SCRIPT = resolve(import.meta.dirname, '../fixtures/echo-process.mjs');
 
@@ -18,6 +21,31 @@ describe('StdioJsonTransport', () => {
  if (transport && transport.state === 'connected') {
  await transport.close();
  }
+ vi.restoreAllMocks();
+ });
+
+ it('rejects relative command paths', async () => {
+  transport = new StdioJsonTransport({
+    command: 'node', // not absolute
+    args: [ECHO_SCRIPT],
+  });
+  await expect(transport.connect()).rejects.toThrow(/Command must be an absolute path/);
+ });
+
+ it('rejects commands with shell metacharacters', async () => {
+  // Create a real file with a metacharacter in the name, so existsSync returns true
+  const trickyPath = resolve(import.meta.dirname, '../fixtures/test; rm -rf .sh');
+  fs.writeFileSync(trickyPath, 'echo hi');
+
+  transport = new StdioJsonTransport({
+    command: trickyPath,
+    args: [],
+  });
+
+  await expect(transport.connect()).rejects.toThrow(/Command contains shell metacharacters/);
+
+  // Cleanup
+  fs.unlinkSync(trickyPath);
  });
 
  it('should start in idle state', () => {
@@ -208,5 +236,43 @@ describe('StdioJsonTransport', () => {
  // Should have: init, echo(a), echo(b)
  expect(messages.length).toBeGreaterThanOrEqual(3);
  expect(messages[0]).toMatchObject({ type: 'init' });
+ });
+
+ it('enforces maximum queue size limit', async () => {
+  transport = new StdioJsonTransport({
+    command: process.execPath,
+    args: [ECHO_SCRIPT],
+    maxQueueSize: 2
+  });
+
+  const errors: Error[] = [];
+  transport.onError(e => errors.push(e));
+
+  await transport.connect();
+
+  // Send 3 messages without reading them.
+  // init message arrives first (total 1).
+  // Then we send 3 messages which will be echoed back (total 4).
+  // Since maxQueueSize is 2, 2 should be dropped, and 2 errors emitted.
+  await transport.send({ msg: 1 });
+  await transport.send({ msg: 2 });
+  await transport.send({ msg: 3 });
+
+  // Give messages time to be processed and enqueued
+  await new Promise(r => setTimeout(r, 100));
+
+  expect(errors.length).toBeGreaterThan(0);
+  expect(errors[0].message).toContain('queue limit exceeded');
+
+  // Read remaining messages, there should be exactly 2.
+  const iterator = transport[Symbol.asyncIterator]();
+  const m1 = await iterator.next();
+  const m2 = await iterator.next();
+
+  // The last two inserted should be left
+  expect(m1.done).toBe(false);
+  expect(m2.done).toBe(false);
+
+  await transport.close();
  });
 });

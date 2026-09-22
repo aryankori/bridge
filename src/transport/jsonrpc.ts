@@ -19,6 +19,7 @@
  */
 
 import type { Transport } from './types.js';
+import type { Logger } from '../core/types.js';
 import {
  isJsonRpcResponse,
  isJsonRpcErrorResponse,
@@ -57,11 +58,16 @@ export class JsonRpcClient {
  private notificationHandlers = new Map<string, Set<NotificationHandler>>();
  private messageLoopRunning = false;
  private messageLoopPromise: Promise<void> | null = null;
+ private maxPendingRequests: number;
 
  constructor(
  private readonly transport: Transport,
  private readonly defaultTimeoutMs = DEFAULT_TIMEOUT_MS,
- ) {}
+ maxPendingRequests = 1000,
+ private readonly logger?: Logger
+ ) {
+   this.maxPendingRequests = maxPendingRequests;
+ }
 
  /**
  * Start consuming messages from the transport.
@@ -95,7 +101,15 @@ export class JsonRpcClient {
  params?: unknown,
  timeoutMs?: number,
  ): Promise<T> {
+ if (this.pending.size >= this.maxPendingRequests) {
+   throw new Error(`Cannot send request: exceeded max pending requests limit of ${this.maxPendingRequests}`);
+ }
+
  const id = this.nextId++;
+ if (this.nextId > Number.MAX_SAFE_INTEGER) {
+   this.nextId = 1;
+ }
+
  const msg: JsonRpcRequest = {
  jsonrpc: '2.0',
  id,
@@ -229,8 +243,10 @@ export class JsonRpcClient {
  for (const handler of handlers) {
  try {
  handler(params);
- } catch {
- // Swallow listener errors - don't crash the message loop
+ } catch (err) {
+ if (this.logger) {
+   this.logger.error(`Error in JSON-RPC notification handler for method '${method}'`, err);
+ }
  }
  }
  }

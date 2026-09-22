@@ -2,6 +2,7 @@ image: node:20
 
 stages:
   - test
+  - security
   - build
 
 default:
@@ -36,6 +37,11 @@ experiment-validate:
   stage: test
   script:
     - pnpm experiment:validate
+
+security-audit:
+  stage: security
+  script:
+    - pnpm audit --audit-level=high
 
 build:
   stage: build

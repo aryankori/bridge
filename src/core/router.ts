@@ -67,6 +67,14 @@ export class AgentRouter {
  }
  }
 
+ const SCORE_WEIGHTS = {
+   BASE: 0.5,
+   STREAM_OUTPUT: 0.2,
+   EXPORT_IMPORT_SESSION: 0.15,
+   ACP: 0.1,
+   PREFERRED_TRANSPORT: 0.05,
+ };
+
  // 2. Score and rank all registered agents
  let bestAgent: AgentDescriptor | null = null;
  let highestScore = -1;
@@ -76,23 +84,29 @@ export class AgentRouter {
  const satisfies = this.checkCapabilities(agent, requirement.requiredCapabilities);
  if (!satisfies) continue;
 
- let score = 0.5; // Base score for satisfying required capabilities
+ let score = SCORE_WEIGHTS.BASE; // Base score for satisfying required capabilities
 
  // Bonus for supporting streaming
- if (agent.capabilities.streamOutput) score += 0.2;
+ if (agent.capabilities.streamOutput) score += SCORE_WEIGHTS.STREAM_OUTPUT;
  // Bonus for export/import capability
- if (agent.capabilities.exportSession && agent.capabilities.importSession) score += 0.15;
+ if (agent.capabilities.exportSession && agent.capabilities.importSession) score += SCORE_WEIGHTS.EXPORT_IMPORT_SESSION;
  // Bonus for ACP support
- if (agent.capabilities.acp) score += 0.1;
+ if (agent.capabilities.acp) score += SCORE_WEIGHTS.ACP;
  // Bonus for matching preferred transport
  if (requirement.preferredTransport && agent.transports.includes(requirement.preferredTransport as TransportKind)) {
- score += 0.05;
+ score += SCORE_WEIGHTS.PREFERRED_TRANSPORT;
  }
 
  if (score > highestScore) {
  highestScore = score;
  bestAgent = agent;
  bestRationale = `Selected optimal agent "${agent.name}" with highest capability score (${Math.round(score * 100)}%).`;
+ } else if (score === highestScore && bestAgent) {
+   // Tiebreaker: alphabetical by ID
+   if (agent.id.localeCompare(bestAgent.id) < 0) {
+     bestAgent = agent;
+     bestRationale = `Selected optimal agent "${agent.name}" with tied highest capability score (${Math.round(score * 100)}%), tie broken by ID.`;
+   }
  }
  }
 
