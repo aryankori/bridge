@@ -64,5 +64,7 @@ jobs:
       - name: Dependency Audit
         run: pnpm audit --audit-level=high
 
-      - name: Static Analysis
-        run: npx njsscan .
+      - name: njsscan
+        uses: ajinabraham/njsscan-action@7237412fdd36af517e2745077cedbf9d6900d711 # v7.2.1
+        with:
+          args: '.'
