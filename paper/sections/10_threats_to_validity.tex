@@ -1,10 +1,37 @@
 \section{Threats to Validity}
+\label{sec:threats}
 
-\subsection{Internal Validity}
-The primary threat to internal validity in our experimental design is the stochastic nature of LLM generation. To mitigate this, we pinned the execution agent (OpenCode) to a specific deterministic model configuration (\pendingdata{Model Identifier}) and utilized a structured JSON output format. However, inherent variance in how the model interprets the structured vs. unstructured context payloads may still influence the rework and correctness metrics.
+We follow the usual classification~\cite{wohlin2012experimentation,runeson2009case} and add the threats specific to LLM-based studies~\cite{sallou2024breaking}.
 
-\subsection{External Validity}
-Our findings are currently limited to the specific tasks defined in the experimental harness (\pendingdata{Task description}). While the refactoring tasks are representative of typical software engineering workflows, the scalability of structured transfer payloads for highly complex, multi-repository architectural overhauls remains untested. Furthermore, our evaluation utilized specific agents (Claude Code and OpenCode); different LLM architectures may exhibit varying sensitivities to structured metadata versus raw transcripts.
+\subsection{Construct validity}
+\paragraph{Gold labels are not independent.} The project team wrote the scenarios, the gold labels, and the resolver. The EXP-004 labels and the resolver entered the repository in the same commit. The EXP-005 labels entered 18 minutes after the resolver, and the label file calls itself ``aligned''. Two EXP-005 labels contradict their own scenario tier (Table~\ref{tab:exp005-resolver}), and in scenarios 001, 005, and 007 the gold directive and the scenario's expected outcome describe different correct actions. RQ1 therefore measures agreement with the authors' intent, which is an upper bound on accuracy against independent adjudicators.
 
-\subsection{Construct Validity}
-We measure \textit{efficiency} primarily through task duration, token consumption, and automated test pass rates. These metrics proxy true engineering efficiency but may not capture the cognitive load required by a human supervisor to verify the agent's final implementation.
+\paragraph{Status is a weak construct.} A status names a class of outcome, not an action. Equal statuses can permit different actions (scenario 003), so status agreement overstates directive agreement.
+
+\paragraph{The pre-registered scorer does not measure behavior.} Defects D1 to D4 (Section~\ref{sec:results-scorer}) make every scorer metric in Table~\ref{tab:exp005-scorer} invalid as a behavior measure. We report the table because it was pre-registered and because the falsification verdict depends on it.
+
+\paragraph{The audit favors condition B.} The audit rules restate the gold directive text, and condition B received that text verbatim. A B agent that copies its directive satisfies the rule by definition. The 12 of 12 result for B is therefore partly a test of instruction following, not of arbitration quality.
+
+\paragraph{Failure classes lack data.} The taxonomy (Section~\ref{sec:analysis-taxonomy}) gives detection rules, but no experiment here applies them to a multi-hop handoff.
+
+\subsection{Internal validity}
+\paragraph{Selection by timeout.} 35 of 60 planned trials have no record, for two causes. The 11 trials that never started are missing only because of their position in a random order. The 23 started trials without a record are missing not at random: most hit the 180-second timeout, and finishing in time depends on the condition and the scenario. Condition A has no recorded trial in the unambiguous tier.
+
+\paragraph{Non-equivalent treatments.} The B and C blocks share headers but not content: B names permitted and prohibited actions, and C does not. Any difference between B and C mixes the origin of the directive with its information content.
+
+\paragraph{Post-hoc analysis.} We designed the audit after we saw the traces. We fixed one rule per scenario and applied it to all conditions by script, but we could have chosen other rules. We wrote the rules without a second rater, so we report no agreement statistic.
+
+\paragraph{Non-determinism.} Each recorded cell has one or two trials, repeated runs of one model on one prompt give different code~\cite{ouyang2025nondeterminism}, and comparisons need many repetitions~\cite{arcuri2011stats}. We compute no test statistics.
+
+\subsection{External validity}
+EXP-005 uses one agent (OpenCode), one model (\modelname), one operating system, and ten small fixture repositories with one task each. The sources are short, synthetic, and in English. The resolver extracts directives with keyword rules for six categories and does not generalize to other phrasing or other categories (Section~\ref{sec:analysis}). The thesis names issue trackers and identity providers as systems of record. The current implementation reads only CODEOWNERS and commit signatures. It does not read branch protection rules, issue assignments, or IAM roles, and it cannot resolve team membership without an identity map. We verified \texttt{bridge resolve} on synthetic repositories only. We did not evaluate it on real multi-agent histories or with developers.
+
+\subsection{Reliability and conclusion validity}
+\label{sec:threats-reliability}
+\paragraph{Deterministic parts.} The resolver, both benchmarks, the pre-verification, the trace audit, and the CLI tests are deterministic. Scripts in the replication package reproduce every number in Tables~\ref{tab:exp004} to~\ref{tab:scorer-audit} from the frozen code and the recorded manifest. The failure modes of Section~\ref{sec:analysis-observed} rest on our reading of the recorded traces, which the manifest contains in full.
+
+\paragraph{Live runs.} The pilot used a hosted model that we cannot pin to a checkpoint or seed, so a rerun will not reproduce the traces. The recorded manifest is the only copy of this evidence.
+
+\paragraph{Withdrawn EXP-001 values.} An early version of the EXP-001 harness wrote the agent patches itself and added fixed constants to the measured durations. Its output was therefore never a measurement of agent behavior. The project deleted that output and replaced the harness, and the replacement has not been run against live agents. Internal documents still show the early values; we report none of them.
+
+\paragraph{Record keeping.} The committed manifest is a mid-run checkpoint, and an earlier internal review found none on disk. We rebuilt the seeded plan to confirm every trial position, and verified that the stored aggregates match a recomputation from the per-trial scores.

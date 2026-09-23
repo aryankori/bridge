@@ -2,60 +2,295 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{mcp2025}
-\citation{honcho2026,mem02026}
-\citation{a2a2025}
+\citation{jimenez2024swebench,yang2024sweagent,zhang2024autocoderover,xia2024agentless}
+\citation{wang2025openhands}
+\citation{qian2024chatdev,hong2023metagpt,wu2023autogen}
+\citation{he2025llmmas,hou2024llm4se}
+\citation{packer2023memgpt,chhikara2025mem0,rasmussen2025zep,honcho2026}
+\citation{liu2024lost}
+\citation{hsieh2024ruler}
+\citation{shi2023distracted}
+\citation{githubbranchprotection}
+\citation{githubcodeowners}
+\citation{rfc6749,spiffe2026}
 \citation{singh1999commit}
 \@writefile{toc}{\contentsline {section}{Abstract}{1}{section*.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}Problem Definition}{1}{section.2}\protected@file@percent }
-\citation{nist2023airmf,spiffe2026}
-\citation{a2a2025}
-\citation{honcho2026,mem02026}
-\citation{cognee2026}
-\citation{mcp2025}
-\citation{singh1999commit}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Background}{2}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}The Evolution of Agent Interoperability}{2}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Knowledge Graphs and Code Intelligence}{2}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Commitment Protocols}{2}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Research Questions}{2}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Methodology}{2}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Environment and Control Mechanics}{2}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}EXP-001: Cross-Agent Work Transfer}{2}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}EXP-002: Persistent Project Intelligence}{2}{subsection.5.3}\protected@file@percent }
-\citation{mem02026}
-\citation{honcho2026}
-\citation{cognee2026}
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{From Project Truth to effective standing.}{1}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{1}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this paper does not claim.}{1}{section*.7}\protected@file@percent }
+\citation{mens2002merging,apel2011semistructured}
+\citation{brun2011proactive,sarma2012palantir,guimaraes2012early}
+\citation{kasi2013cassandra}
+\citation{lewis2020rag,packer2023memgpt,chhikara2025mem0}
+\citation{liu2024lost,hsieh2024ruler}
+\citation{ji2023hallucination}
 \citation{mcp2025}
 \citation{a2a2025}
-\citation{singh1999commit}
+\citation{packer2023memgpt,chhikara2025mem0,rasmussen2025zep,honcho2026}
+\citation{cognee2026}
+\citation{githubcodeowners}
+\citation{bird2011ownership}
+\citation{mockus2002expertise}
+\citation{githubbranchprotection}
+\citation{gitlog}
+\citation{newman2022sigstore}
+\citation{rfc6749}
 \citation{spiffe2026}
 \citation{nist2023airmf}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Metrics and Primary Outcomes}{3}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Results}{3}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}EXP-001: Work-State Transfer Metrics}{3}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}EXP-002: Project Intelligence Continuity}{3}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Analysis}{3}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Causal Mechanisms}{3}{subsection.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conceptual Framework: Project Truth and Reconciliation}{3}{section.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}The Deterministic Boundary}{3}{subsection.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}The State Lifecycle}{3}{subsection.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Reconciliation and Precedence}{3}{subsection.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9}Related Work}{3}{section.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Agent Memory and Context Storage}{3}{subsection.9.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Codebase Knowledge Graphs}{3}{subsection.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Multi-Agent Coordination and Governance}{3}{subsection.9.3}\protected@file@percent }
+\citation{bird2009git}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Problem Definition}{2}{section.2}\protected@file@percent }
+\newlabel{sec:problem}{{2}{2}{Problem Definition}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Setting}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Why memory does not resolve conflicts}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Requirements for an arbitration layer}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Background}{2}{section.3}\protected@file@percent }
+\newlabel{sec:background}{{3}{2}{Background}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}From interoperability to arbitration}{2}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Systems of record for authority}{2}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Research Questions}{2}{section.4}\protected@file@percent }
+\newlabel{sec:rqs}{{4}{2}{Research Questions}{section.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Method}{3}{section.5}\protected@file@percent }
+\newlabel{sec:method}{{5}{3}{Method}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}The directive resolver}{3}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:method-resolver}{{5.1}{3}{The directive resolver}{subsection.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}EXP-004: blind resolution benchmark}{3}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}EXP-005: live agent pilot}{3}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:method-exp005}{{5.3}{3}{EXP-005: live agent pilot}{subsection.5.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Scenarios.}{3}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Conditions.}{3}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Execution.}{3}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pre-registered scorer and falsification criteria.}{3}{section*.11}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces EXP-004 blind benchmark. Counts in parentheses. ``False allow'' is a permissive status for a gold-restricted scenario.}}{4}{table.caption.13}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:exp004}{{1}{4}{EXP-004 blind benchmark. Counts in parentheses. ``False allow'' is a permissive status for a gold-restricted scenario}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Post-hoc trace audit}{4}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:method-audit}{{5.4}{4}{Post-hoc trace audit}{subsection.5.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Verification of \texttt  {bridge resolve}}{4}{subsection.5.5}\protected@file@percent }
+\newlabel{sec:method-cli}{{5.5}{4}{Verification of \texttt {bridge resolve}}{subsection.5.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{EXP-001.}{4}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Results}{4}{section.6}\protected@file@percent }
+\newlabel{sec:results}{{6}{4}{Results}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}RQ1: resolution agreement on EXP-004}{4}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces EXP-004 status confusion matrix, all 40 scenarios (held-out counts in parentheses). Rows: gold status. Columns: resolver status. P = \textsf  {PERMITTED}{}, PWO = \textsf  {PERMITTED\_\allowbreak  WITH\_\allowbreak  OVERRIDE}{}, AMB = \textsf  {AMBIGUOUS}{}, RA = \textsf  {REQUIRES\_\allowbreak  AUTHORIZATION}{}, BC = \textsf  {BLOCKED\_\allowbreak  CONFLICT}{}.}}{4}{table.caption.14}\protected@file@percent }
+\newlabel{tab:exp004-confusion}{{2}{4}{EXP-004 status confusion matrix, all 40 scenarios (held-out counts in parentheses). Rows: gold status. Columns: resolver status. P = \sP {}, PWO = \sPWO {}, AMB = \sAMB {}, RA = \sRA {}, BC = \sBC {}}{table.caption.14}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces EXP-005 resolver pre-verification against project-authored gold labels. Status: gold status, which equals the resolver status in all ten scenarios. ``Conf.'' = the resolver reported at least one conflict. $\dagger $ = gold status disagrees with the scenario tier.}}{4}{table.caption.15}\protected@file@percent }
+\newlabel{tab:exp005-resolver}{{3}{4}{EXP-005 resolver pre-verification against project-authored gold labels. Status: gold status, which equals the resolver status in all ten scenarios. ``Conf.'' = the resolver reported at least one conflict. $\dagger $ = gold status disagrees with the scenario tier}{table.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}RQ1: resolution agreement on EXP-005}{4}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}RQ2: the EXP-005 live pilot}{4}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Execution.}{4}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pre-registered scorer.}{4}{section*.18}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces EXP-005 recorded trials per tier and condition (20 planned per condition).}}{5}{table.caption.17}\protected@file@percent }
+\newlabel{tab:exp005-cells}{{4}{5}{EXP-005 recorded trials per tier and condition (20 planned per condition)}{table.caption.17}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces EXP-005 pre-registered scorer output on the 25 recorded trials. Rates as counts. Tokens and time are means.}}{5}{table.caption.19}\protected@file@percent }
+\newlabel{tab:exp005-scorer}{{5}{5}{EXP-005 pre-registered scorer output on the 25 recorded trials. Rates as counts. Tokens and time are means}{table.caption.19}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}RQ3: validity of the pre-registered scorer}{5}{subsection.6.4}\protected@file@percent }
+\newlabel{sec:results-scorer}{{6.4}{5}{RQ3: validity of the pre-registered scorer}{subsection.6.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Trace audit.}{5}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Analysis}{5}{section.7}\protected@file@percent }
+\newlabel{sec:analysis}{{7}{5}{Analysis}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}RQ1: what status agreement does and does not show}{5}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}RQ2: why the pilot is inconclusive}{5}{subsection.7.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Post-hoc trace audit (exploratory). Each cell: trials that satisfy the rule / recorded trials. ``--'' = no recorded trial. The rule applies to assistant text and tool-call inputs only.}}{6}{table.caption.21}\protected@file@percent }
+\newlabel{tab:audit-rules}{{6}{6}{Post-hoc trace audit (exploratory). Each cell: trials that satisfy the rule / recorded trials. ``--'' = no recorded trial. The rule applies to assistant text and tool-call inputs only}{table.caption.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Pre-registered scorer versus post-hoc trace audit, per trial ($n$=25). $^{*}$For the scorer, a prohibited action is a false allow.}}{6}{table.caption.22}\protected@file@percent }
+\newlabel{tab:scorer-audit}{{7}{6}{Pre-registered scorer versus post-hoc trace audit, per trial ($n$=25). $^{*}$For the scorer, a prohibited action is a false allow}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}RQ3: the falsification trigger is a scorer artifact}{6}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Failure modes observed in the traces}{6}{subsection.7.4}\protected@file@percent }
+\newlabel{sec:analysis-observed}{{7.4}{6}{Failure modes observed in the traces}{subsection.7.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Lifecycle failure taxonomy}{6}{subsection.7.5}\protected@file@percent }
+\newlabel{sec:analysis-taxonomy}{{7.5}{6}{Lifecycle failure taxonomy}{subsection.7.5}{}}
+\citation{cemri2025fail}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Lifecycle failure classes. ``Testable in'' names the experiment whose design can observe the class.}}{7}{table.caption.23}\protected@file@percent }
+\newlabel{tab:taxonomy}{{8}{7}{Lifecycle failure classes. ``Testable in'' names the experiment whose design can observe the class}{table.caption.23}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conceptual Framework: Effective Standing}{7}{section.8}\protected@file@percent }
+\newlabel{sec:framework}{{8}{7}{Conceptual Framework: Effective Standing}{section.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Directives, tiers, and the authority order}{7}{subsection.8.1}\protected@file@percent }
+\newlabel{def:order}{{8.1}{7}{Authority order}{theorem.8.1}{}}
+\newlabel{def:res}{{8.3}{7}{Resolution operator}{theorem.8.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Claim lifecycle $\mathcal  {S}$. Only \textsf  {Decided}, \textsf  {Implemented}, and \textsf  {Verified} claims carry directive force. \textsf  {Proposed} and \textsf  {Obsolete} claims are context only.}}{7}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:lifecycle}{{1}{7}{Claim lifecycle $\Sset $. Only \st {Decided}, \st {Implemented}, and \st {Verified} claims carry directive force. \st {Proposed} and \st {Obsolete} claims are context only}{figure.caption.24}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}The claim lifecycle}{7}{subsection.8.2}\protected@file@percent }
+\newlabel{sec:framework-lifecycle}{{8.2}{7}{The claim lifecycle}{subsection.8.2}{}}
+\citation{singh1999commit}
+\citation{yolum2002flexible}
+\citation{lampson1992authentication,abadi1993calculus}
+\citation{qian2024chatdev}
+\citation{hong2023metagpt}
+\citation{wu2023autogen}
+\citation{dong2024selfcollab}
+\citation{wang2024survey}
+\citation{he2025llmmas,hou2024llm4se,fan2023llm4se}
+\citation{cemri2025fail}
+\citation{jimenez2024swebench}
+\citation{yang2024sweagent}
+\citation{wang2025openhands}
+\citation{zhang2024autocoderover}
+\citation{xia2024agentless}
+\citation{yao2023react}
+\citation{shinn2023reflexion}
+\citation{lewis2020rag}
+\citation{packer2023memgpt}
+\citation{chhikara2025mem0,rasmussen2025zep}
+\citation{honcho2026,cognee2026}
+\citation{liu2024lost,hsieh2024ruler,bai2024longbench,shi2023distracted}
+\citation{wallace2024hierarchy}
+\citation{greshake2023indirect}
+\citation{zhan2024injecagent,debenedetti2024agentdojo}
+\citation{sharma2024sycophancy}
+\citation{ji2023hallucination}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Decision table of \texttt  {bridge resolve} for a path $f$ that both sides change. The first matching row applies.}}{8}{table.caption.27}\protected@file@percent }
+\newlabel{tab:git-decision}{{9}{8}{Decision table of \texttt {bridge resolve} for a path $f$ that both sides change. The first matching row applies}{table.caption.27}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Relation to commitment theory}{8}{subsection.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Instantiation for divergent worktrees}{8}{subsection.8.4}\protected@file@percent }
+\newlabel{sec:framework-git}{{8.4}{8}{Instantiation for divergent worktrees}{subsection.8.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Standing.}{8}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Decision.}{8}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Related Work}{8}{section.9}\protected@file@percent }
+\newlabel{sec:related}{{9}{8}{Related Work}{section.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Multi-agent LLM systems for software engineering.}{8}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Coding agents and their benchmarks.}{8}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Context, memory, and retrieval.}{8}{section*.30}\protected@file@percent }
+\citation{singh1999commit,singh1998acl,yolum2002flexible}
+\citation{cohen1990intention}
+\citation{jennings1993commitments}
+\citation{lampson1992authentication,abadi1993calculus}
+\citation{blaze1996trust}
+\citation{sandhu1996rbac}
+\citation{saltzer1975protection}
+\citation{moffett1994policy,lupu1999conflicts}
+\citation{rfc6749,spiffe2026,newman2022sigstore}
+\citation{nist2023airmf}
+\citation{lamport1978time}
+\citation{shapiro2011crdt}
+\citation{mens2002merging}
+\citation{apel2011semistructured}
+\citation{brun2011proactive,sarma2012palantir,guimaraes2012early}
+\citation{kasi2013cassandra}
+\citation{ghiotto2020merge}
+\citation{bird2011ownership}
+\citation{mockus2002expertise}
+\citation{cataldo2006coordination}
+\citation{gousios2015integrator}
+\citation{wohlin2012experimentation}
+\citation{runeson2009case}
+\citation{ralph2020standards}
+\citation{sallou2024breaking}
+\citation{wohlin2012experimentation,runeson2009case}
+\citation{sallou2024breaking}
+\citation{ouyang2025nondeterminism}
+\citation{arcuri2011stats}
+\@writefile{toc}{\contentsline {paragraph}{Instruction precedence and injection.}{9}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Commitments, norms, and access control.}{9}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Distributed state.}{9}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Merge conflicts, ownership, and coordination.}{9}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Empirical method for LLM studies.}{9}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Threats to Validity}{9}{section.10}\protected@file@percent }
+\newlabel{sec:threats}{{10}{9}{Threats to Validity}{section.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}Construct validity}{9}{subsection.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Gold labels are not independent.}{9}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Status is a weak construct.}{9}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The pre-registered scorer does not measure behavior.}{9}{section*.38}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The audit favors condition B.}{9}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Failure classes lack data.}{9}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}Internal validity}{9}{subsection.10.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Selection by timeout.}{9}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Non-equivalent treatments.}{9}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Post-hoc analysis.}{9}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Non-determinism.}{9}{section*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.3}External validity}{9}{subsection.10.3}\protected@file@percent }
+\citation{arcuri2011stats}
 \bibstyle{ACM-Reference-Format}
 \bibdata{references}
 \bibcite{a2a2025}{{1}{2025}{{A2A Project}}{{}}}
-\bibcite{mcp2025}{{2}{2025}{{Anthropic}}{{}}}
-\bibcite{spiffe2026}{{3}{2026}{{Cloud Native Computing Foundation}}{{}}}
-\bibcite{cognee2026}{{4}{2026}{{Cognee}}{{}}}
-\bibcite{honcho2026}{{5}{2026}{{Honcho AI}}{{}}}
-\bibcite{mem02026}{{6}{2026}{{Mem0}}{{}}}
-\bibcite{nist2023airmf}{{7}{2023}{{National Institute of Standards and Technology}}{{}}}
-\bibcite{singh1999commit}{{8}{1999}{{Singh}}{{}}}
+\bibcite{abadi1993calculus}{{2}{1993}{{Abadi et~al\mbox  {.}}}{{}}}
+\bibcite{apel2011semistructured}{{3}{2011}{{Apel et~al\mbox  {.}}}{{}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.4}Reliability and conclusion validity}{10}{subsection.10.4}\protected@file@percent }
+\newlabel{sec:threats-reliability}{{10.4}{10}{Reliability and conclusion validity}{subsection.10.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Deterministic parts.}{10}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Live runs.}{10}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Withdrawn EXP-001 values.}{10}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Record keeping.}{10}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {11}Discussion}{10}{section.11}\protected@file@percent }
+\newlabel{sec:discussion}{{11}{10}{Discussion}{section.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.1}What an effective directive must contain}{10}{subsection.11.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.2}Deterministic arbitration and where it applies}{10}{subsection.11.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.3}Why Bridge does not own the ledger}{10}{subsection.11.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.4}Requirements for a valid rerun of EXP-005}{10}{subsection.11.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {12}Conclusion}{10}{section.12}\protected@file@percent }
+\newlabel{sec:conclusion}{{12}{10}{Conclusion}{section.12}{}}
+\@writefile{toc}{\contentsline {section}{References}{10}{section*.50}\protected@file@percent }
+\bibcite{arcuri2011stats}{{4}{2011}{{Arcuri and Briand}}{{}}}
+\bibcite{bai2024longbench}{{5}{2024}{{Bai et~al\mbox  {.}}}{{}}}
+\bibcite{bird2011ownership}{{6}{2011}{{Bird et~al\mbox  {.}}}{{}}}
+\bibcite{bird2009git}{{7}{2009}{{Bird et~al\mbox  {.}}}{{}}}
+\bibcite{blaze1996trust}{{8}{1996}{{Blaze et~al\mbox  {.}}}{{}}}
+\bibcite{brun2011proactive}{{9}{2011}{{Brun et~al\mbox  {.}}}{{}}}
+\bibcite{cataldo2006coordination}{{10}{2006}{{Cataldo et~al\mbox  {.}}}{{}}}
+\bibcite{cemri2025fail}{{11}{2025}{{Cemri et~al\mbox  {.}}}{{}}}
+\bibcite{chhikara2025mem0}{{12}{2025}{{Chhikara et~al\mbox  {.}}}{{}}}
+\bibcite{cohen1990intention}{{13}{1990}{{Cohen and Levesque}}{{}}}
+\bibcite{debenedetti2024agentdojo}{{14}{2024}{{Debenedetti et~al\mbox  {.}}}{{}}}
+\bibcite{dong2024selfcollab}{{15}{2024}{{Dong et~al\mbox  {.}}}{{}}}
+\bibcite{fan2023llm4se}{{16}{2023}{{Fan et~al\mbox  {.}}}{{}}}
+\bibcite{ghiotto2020merge}{{17}{2020}{{Ghiotto et~al\mbox  {.}}}{{}}}
+\bibcite{gitlog}{{18}{2026}{{Git Project}}{{}}}
+\bibcite{githubcodeowners}{{19}{2026a}{{GitHub}}{{}}}
+\bibcite{githubbranchprotection}{{20}{2026b}{{GitHub}}{{}}}
+\bibcite{gousios2015integrator}{{21}{2015}{{Gousios et~al\mbox  {.}}}{{}}}
+\bibcite{greshake2023indirect}{{22}{2023}{{Greshake et~al\mbox  {.}}}{{}}}
+\bibcite{guimaraes2012early}{{23}{2012}{{Guimar{\~a}es and Silva}}{{}}}
+\bibcite{rfc6749}{{24}{2012}{{Hardt}}{{}}}
+\bibcite{he2025llmmas}{{25}{2025}{{He et~al\mbox  {.}}}{{}}}
+\bibcite{hong2023metagpt}{{26}{2023}{{Hong et~al\mbox  {.}}}{{}}}
+\bibcite{hou2024llm4se}{{27}{2024}{{Hou et~al\mbox  {.}}}{{}}}
+\bibcite{hsieh2024ruler}{{28}{2024}{{Hsieh et~al\mbox  {.}}}{{}}}
+\bibcite{jennings1993commitments}{{29}{1993}{{Jennings}}{{}}}
+\bibcite{ji2023hallucination}{{30}{2023}{{Ji et~al\mbox  {.}}}{{}}}
+\bibcite{jimenez2024swebench}{{31}{2024}{{Jimenez et~al\mbox  {.}}}{{}}}
+\bibcite{kasi2013cassandra}{{32}{2013}{{Kasi and Sarma}}{{}}}
+\bibcite{lamport1978time}{{33}{1978}{{Lamport}}{{}}}
+\bibcite{lampson1992authentication}{{34}{1992}{{Lampson et~al\mbox  {.}}}{{}}}
+\bibcite{lewis2020rag}{{35}{2020}{{Lewis et~al\mbox  {.}}}{{}}}
+\bibcite{liu2024lost}{{36}{2024}{{Liu et~al\mbox  {.}}}{{}}}
+\bibcite{lupu1999conflicts}{{37}{1999}{{Lupu and Sloman}}{{}}}
+\bibcite{mens2002merging}{{38}{2002}{{Mens}}{{}}}
+\bibcite{mockus2002expertise}{{39}{2002}{{Mockus and Herbsleb}}{{}}}
+\bibcite{mcp2025}{{40}{2025}{{Model Context Protocol Project}}{{}}}
+\bibcite{moffett1994policy}{{41}{1994}{{Moffett and Sloman}}{{}}}
+\bibcite{newman2022sigstore}{{42}{2022}{{Newman et~al\mbox  {.}}}{{}}}
+\bibcite{ouyang2025nondeterminism}{{43}{2025}{{Ouyang et~al\mbox  {.}}}{{}}}
+\bibcite{packer2023memgpt}{{44}{2023}{{Packer et~al\mbox  {.}}}{{}}}
+\bibcite{honcho2026}{{45}{2026}{{Plastic Labs}}{{}}}
+\bibcite{qian2024chatdev}{{46}{2024}{{Qian et~al\mbox  {.}}}{{}}}
+\bibcite{ralph2020standards}{{47}{2020}{{Ralph et~al\mbox  {.}}}{{}}}
+\bibcite{rasmussen2025zep}{{48}{2025}{{Rasmussen et~al\mbox  {.}}}{{}}}
+\bibcite{runeson2009case}{{49}{2008}{{Runeson and H{\"o}st}}{{}}}
+\bibcite{sallou2024breaking}{{50}{2024}{{Sallou et~al\mbox  {.}}}{{}}}
+\bibcite{saltzer1975protection}{{51}{1975}{{Saltzer and Schroeder}}{{}}}
+\bibcite{sandhu1996rbac}{{52}{1996}{{Sandhu et~al\mbox  {.}}}{{}}}
+\bibcite{sarma2012palantir}{{53}{2012}{{Sarma et~al\mbox  {.}}}{{}}}
+\bibcite{shapiro2011crdt}{{54}{2011}{{Shapiro et~al\mbox  {.}}}{{}}}
+\bibcite{sharma2024sycophancy}{{55}{2024}{{Sharma et~al\mbox  {.}}}{{}}}
+\bibcite{shi2023distracted}{{56}{2023}{{Shi et~al\mbox  {.}}}{{}}}
+\bibcite{shinn2023reflexion}{{57}{2023}{{Shinn et~al\mbox  {.}}}{{}}}
+\bibcite{singh1998acl}{{58}{1998}{{Singh}}{{}}}
+\bibcite{singh1999commit}{{59}{1999}{{Singh}}{{}}}
+\bibcite{spiffe2026}{{60}{2026}{{SPIFFE Project}}{{}}}
+\bibcite{nist2023airmf}{{61}{2023}{{Tabassi}}{{}}}
+\bibcite{cognee2026}{{62}{2026}{{Topoteretes}}{{}}}
+\bibcite{wallace2024hierarchy}{{63}{2024}{{Wallace et~al\mbox  {.}}}{{}}}
+\bibcite{wang2024survey}{{64}{2024}{{Wang et~al\mbox  {.}}}{{}}}
+\bibcite{wang2025openhands}{{65}{2025}{{Wang et~al\mbox  {.}}}{{}}}
+\bibcite{wohlin2012experimentation}{{66}{2012}{{Wohlin et~al\mbox  {.}}}{{}}}
+\bibcite{wu2023autogen}{{67}{2023}{{Wu et~al\mbox  {.}}}{{}}}
+\bibcite{xia2024agentless}{{68}{2024}{{Xia et~al\mbox  {.}}}{{}}}
+\bibcite{yang2024sweagent}{{69}{2024}{{Yang et~al\mbox  {.}}}{{}}}
+\bibcite{yao2023react}{{70}{2023}{{Yao et~al\mbox  {.}}}{{}}}
+\bibcite{yolum2002flexible}{{71}{2002}{{Yolum and Singh}}{{}}}
+\bibcite{zhan2024injecagent}{{72}{2024}{{Zhan et~al\mbox  {.}}}{{}}}
+\bibcite{zhang2024autocoderover}{{73}{2024}{{Zhang et~al\mbox  {.}}}{{}}}
 \newlabel{tocindent-1}{0pt}
 \newlabel{tocindent0}{0pt}
 \newlabel{tocindent1}{8.37pt}
@@ -63,12 +298,5 @@
 \newlabel{tocindent3}{0pt}
 \newlabel{tocindent4}{0pt}
 \newlabel{tocindent5}{0pt}
-\@writefile{toc}{\contentsline {section}{\numberline {10}Threats to Validity}{4}{section.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}Internal Validity}{4}{subsection.10.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}External Validity}{4}{subsection.10.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.3}Construct Validity}{4}{subsection.10.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {11}Discussion}{4}{section.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {12}Conclusion}{4}{section.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{References}{4}{section*.6}\protected@file@percent }
-\newlabel{TotPages}{{4}{4}{}{page.4}{}}
-\gdef \@abspage@last{4}
+\newlabel{TotPages}{{12}{12}{}{page.12}{}}
+\gdef \@abspage@last{12}

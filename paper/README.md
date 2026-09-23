@@ -1,34 +1,52 @@
 # Bridge Research Paper
 
-This directory contains the LaTeX source and supporting documentation for the Bridge empirical research paper: **"From Ephemeral Context to Project Truth: Reconciling State Across Interoperable Software Engineering Agents."**
+LaTeX source for **"Effective Standing: Arbitrating Conflicting Directives Among Heterogeneous Coding Agents (A Resolver, a Benchmark, and a Negative-Result Pilot)."**
+
+Format: ACM `acmart` (`sigconf`, review, anonymous). Body: 10 pages. References: 2 pages.
 
 ## Structure
 
-- `main.tex`: The primary LaTeX document.
-- `references.bib`: The BibTeX bibliography.
-- `sections/`: Contains the individual `.tex` files for each section of the paper.
- - *Note: Sections 06, 07, 11, and 12 are explicitly blocked with placeholders pending the successful execution of EXP-001.*
-- `figures/`: Will contain empirical graphs (PDF/PNG) and architectural TikZ diagrams.
-- `tables/`: Will contain `.tex` fragments for data tables.
-- `data/`: Will house the raw NDJSON/CSV telemetry from the experimental harness.
-- `scripts/`: Will contain Python/R scripts for parsing telemetry and generating graphs.
+- `main.tex`: preamble, title, abstract, and section includes.
+- `sections/`: one file per section (01 Introduction to 12 Conclusion).
+- `references.bib`: 73 entries. Every entry is cited in the text. Metadata comes from the arXiv API and Crossref (DOI). Venues for conference papers without a DOI come from Semantic Scholar. Online specifications carry an access date.
 
 ## Compilation
 
-To compile the paper, ensure you have a full TeX distribution (e.g., TeX Live, MiKTeX) installed.
-
 ```bash
-latexmk -pdf -interaction=nonstopmode main.tex
+pdflatex main.tex
+bibtex main
+pdflatex main.tex
+pdflatex main.tex
 ```
 
-## Audits and Guidelines
+The build has zero errors, zero undefined references, and zero overfull boxes. Two class warnings remain and are expected for an anonymous review copy: the ACM reference block is off, and `acmart` balances the last page itself.
 
-The root of this directory contains several markdown documents critical to the integrity of the publication:
-- `venue-research.md`: Analysis of target conferences and journals.
-- `novelty-audit.md`: Formal defense of the paper's novelty against existing literature.
-- `reproducibility.md`: Strict environmental controls required for executing the experiments.
-- `submission-checklist.md`: Final checks before submitting to double-blind venues.
+## Where each number comes from
 
-## Strict Empirical Rule
+Run these commands from the repository root. Each one is deterministic.
 
-**NO FABRICATED DATA.** The results, analysis, discussion, and conclusion sections must remain blocked until verified telemetry from `research/experiments/exp-001` is available.
+| Paper content | Command |
+| :--- | :--- |
+| Table 1 (EXP-004 metrics) | `pnpm tsx research/experiments/exp-004/run-benchmark.ts` |
+| Table 2 (EXP-004 confusion matrix) | `pnpm tsx research/experiments/exp-004/confusion-matrix.ts` |
+| Tables 3 to 5 (EXP-005 pre-verification, recorded cells, scorer output) | `pnpm tsx research/experiments/exp-005/paper-tables.ts` |
+| Section 6.3 execution accounting (49 of 60 started, checkpoint timing) | `pnpm tsx research/experiments/exp-005/trial-accounting.ts` |
+| Tables 6 and 7 (trace audit, scorer versus audit) | `pnpm tsx research/experiments/exp-005/trace-audit.ts` (writes `trace-audit.json`) |
+| Section 5.5 (`bridge resolve` verification) | `pnpm test:coverage` |
+
+The EXP-005 tables read the committed manifest `research/experiments/exp-005/exp005-manifest.json`. The live agent runs cannot be reproduced exactly, because the hosted model cannot be pinned to a checkpoint or seed.
+
+## Strict empirical rule
+
+**No fabricated data.** Every number in the paper traces to a script or to the recorded manifest.
+
+- EXP-001 (work transfer) was not executed against live agents. An early harness produced values from simulated latencies and harness-written patches. Those values are withdrawn and do not appear in the paper.
+- EXP-002 has no data and does not appear in the paper.
+- The EXP-005 trace audit is post hoc and exploratory. The paper reports it next to the pre-registered scorer output, not in place of it.
+
+## Audits and guidelines
+
+- `venue-research.md`: analysis of target venues.
+- `novelty-audit.md`: novelty argument against existing work.
+- `reproducibility.md`: environment controls for the experiments.
+- `submission-checklist.md`: checks before submission to double-blind venues.

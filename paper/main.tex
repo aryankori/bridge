@@ -2,25 +2,43 @@
 
 \usepackage{booktabs} % For formal tables
 \usepackage{graphicx}
-\usepackage{hyperref}
 \usepackage{tikz}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
-\usepackage{listings}
-\usepackage{tcolorbox}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
 \usepackage{tabularx}
-\usepackage{balance}
+\usepackage{multirow}
+\usepackage{amsmath}
 
-% Custom commands for empirical state tracking (Rule: No fabricated results)
+% Rule: no fabricated results. Every number in this paper traces to a script
+% or a recorded manifest in the replication package (see paper/README.md).
 \newcommand{\pendingdata}[1]{\textbf{[EMPIRICAL RESULTS PENDING: #1]}}
 
+% Notation
+\newcommand{\Sset}{\mathcal{S}}
+\newcommand{\Tier}{\mathcal{T}}
+\newcommand{\succA}{\succ_{\mathcal{A}}}
+\newcommand{\Res}{\mathcal{R}}
+\newcommand{\st}[1]{\textsf{#1}}
+% Status names with permitted line breaks after underscores
+\newcommand{\sP}{\textsf{PERMITTED}}
+\newcommand{\sPWO}{\textsf{PERMITTED\_\allowbreak WITH\_\allowbreak OVERRIDE}}
+\newcommand{\sAMB}{\textsf{AMBIGUOUS}}
+\newcommand{\sRA}{\textsf{REQUIRES\_\allowbreak AUTHORIZATION}}
+\newcommand{\sBC}{\textsf{BLOCKED\_\allowbreak CONFLICT}}
+
+% Let TeX stretch interword space before it reports an overfull line
+% (long identifiers such as model names and status names).
+\setlength{\emergencystretch}{2em}
+\newcommand{\modelname}{\texttt{nemotron-}\allowbreak\texttt{3-super-}\allowbreak\texttt{120b-a12b}}
+
 \setcopyright{none}
-\acmJournal{TOSEM}
-\acmYear{2026}
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\acmConference[Submission]{Under double-blind review}{2026}{Anonymous}
 
 \begin{document}
 
-\title{From Ephemeral Context to Project Truth: Reconciling State Across Interoperable Software Engineering Agents}
+\title{Effective Standing: Arbitrating Conflicting Directives Among Heterogeneous Coding Agents}
+\subtitle{A Resolver, a Benchmark, and a Negative-Result Pilot}
 
 \author{Anonymous Authors}
 \affiliation{%
@@ -30,7 +48,7 @@
 }
 
 \begin{abstract}
-As artificial intelligence software engineering agents become increasingly interoperable, a critical failure mode emerges at the boundary of cross-agent handoffs and multi-session persistence. Current systems treat agent-generated output as generic "memory" or "context," failing to distinguish between exploratory proposals, verified code implementations, and superseded decisions. This paper empirically investigates the required state, evidence, and governance primitives necessary to preserve continuity and accountability across heterogeneous agents (e.g., Claude Code, OpenCode). We propose the transition from passive agent memory to formal \textit{Project Truth}---an authoritative, reconciled state model grounded in version control and test outcomes. Through a series of controlled experiments (\pendingdata{EXP-001 reference} and \pendingdata{EXP-002 reference}), we evaluate whether structured work-state transfer and persistent project intelligence significantly reduce rework, hallucination, and contradiction rates compared to raw transcript replay. Our conceptual framework defines the lifecycle of agentic claims from proposal to verification, demonstrating that effective multi-agent engineering requires reconciliation and commitment control rather than mere context retrieval. \pendingdata{Final conclusion summary pending empirical data.}
+Coding agents such as Claude Code and OpenCode now share repositories and read instructions from prompts, issues, rule files, documentation, and configuration. These sources often disagree, and memory layers do not record which source has the authority to decide. We rejected a first design in which a central ``Project Truth'' ledger owns project state, because it duplicates existing systems of record and becomes a synchronization bottleneck. The replacement, \emph{effective standing}, computes at run time which directive or branch has standing in a conflict, from records such as CODEOWNERS and commit signatures. We contribute a formal model (a five-state claim lifecycle, an authority order $\succA$, and a deterministic resolution operator $\Res$), two implementations of $\Res$ (a directive resolver and \texttt{bridge resolve}, which arbitrates divergent agent worktrees), and an evaluation that reports its negative results. On a 40-scenario benchmark, the resolver agrees with 35 gold statuses (23 of 25 held-out); all five disagreements are between \sP{} and \sPWO{}, and no restricted action receives a permissive status. A 60-trial live-agent pilot recorded only 25 trials, and its pre-registered scorer has four measurement defects: a post-hoc trace audit disagrees with 15 of its 25 correctness verdicts. The pilot does not show that Bridge directives help agents. It does show how they fail: in one trial, an agent cited a \sP{} status without an action scope to justify a hardcoded secret. We define three lifecycle failure classes and state which ones the data can and cannot show.
 \end{abstract}
 
 \begin{CCSXML}
@@ -51,7 +69,7 @@ As artificial intelligence software engineering agents become increasingly inter
 \ccsdesc[500]{Software and its engineering~Software development techniques}
 \ccsdesc[500]{Computing methodologies~Multi-agent systems}
 
-\keywords{AI Agents, Software Engineering, Multi-Agent Systems, Context Transfer, Agent Interoperability, Project State}
+\keywords{AI coding agents, multi-agent systems, instruction conflicts, authority, code ownership, commitments, negative results}
 
 \maketitle
 

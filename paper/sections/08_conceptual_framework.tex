@@ -1,26 +1,129 @@
-\section{Conceptual Framework: Project Truth and Reconciliation}
+\section{Conceptual Framework: Effective Standing}
+\label{sec:framework}
 
-Based on the theoretical limitations of unpruned context windows and passive memory systems, we propose a governance framework for multi-agent software engineering. We hypothesize that long-term agent interoperability requires the management of state through a rigid reconciliation lifecycle.
+This section defines the model that the resolver and \texttt{bridge resolve} implement. Definitions~\ref{def:order} and~\ref{def:res} describe the resolver exactly. The lifecycle in Section~\ref{sec:framework-lifecycle} is a design model: Bridge does not implement it yet.
 
-\subsection{The Deterministic Boundary}
-A fundamental principle of the Bridge architecture is the separation of deterministic facts from probabilistic inferences. 
-\begin{itemize}
-    \item \textbf{Deterministic Ground Truth:} Elements such as Git commit histories, Abstract Syntax Trees (ASTs), static typecheck results, and test suite exit codes represent absolute reality. 
-    \item \textbf{Probabilistic Claims:} Agent proposals, intent summaries, and architectural rationale represent unverified claims.
-\end{itemize}
-Project Truth is formed only when a probabilistic claim is reconciled against deterministic ground truth.
+\subsection{Directives, tiers, and the authority order}
+Let $\Tier$ be a finite set of source tiers with a weight $w : \Tier \to \mathbb{N}$. The resolver uses six tiers with weights $100 > 80 > 60 > 40 > 30 > 10$ (Section~\ref{sec:method-resolver}). A directive $d$ has a tier $\tau(d)$, a category $c(d)$, a polarity $p(d) \in \{\st{REQUIRE}, \st{ALLOW}, \st{PREFER}, \st{DENY}\}$, a subject $s(d)$, and an optional timestamp $t(d) \in \mathbb{N} \cup \{\bot\}$.
 
-\subsection{The State Lifecycle}
-We model agentic claims as transitioning through five formal states:
-\begin{enumerate}
-    \item \textbf{Proposed:} A structural change or architectural decision suggested by an agent in a conversational turn.
-    \item \textbf{Decided:} A proposal explicitly authorized or selected by a human developer or lead agent.
-    \item \textbf{Implemented:} A decision that is mathematically verifiable via a Git diff in the codebase.
-    \item \textbf{Verified:} An implementation that successfully passes the automated test suite and type boundaries.
-    \item \textbf{Superseded / Obsolete:} A previously verified state that has been logically replaced by a newer verified implementation.
-\end{enumerate}
+\begin{definition}[Authority order]
+\label{def:order}
+For directives $d, d'$, let $d \succA d'$ if and only if
+\begin{align*}
+& w(\tau(d)) > w(\tau(d')), \text{ or}\\
+& w(\tau(d)) = w(\tau(d')) \land t(d), t(d') \neq \bot \land t(d) > t(d').
+\end{align*}
+Two directives are \emph{incomparable}, $d \parallel d'$, if neither $d \succA d'$ nor $d' \succA d$.
+\end{definition}
 
-\subsection{Reconciliation and Precedence}
-When an agent is initialized for a new task, the Context Materializer must filter the project history. If an agent previously suggested an implementation that was subsequently superseded, that proposal must be actively pruned from the injection payload. We establish the following precedence rule for conflict resolution:
-\[ \text{Verified Implementation} > \text{Explicit Human Decision} > \text{Agent Proposal} \]
-This ensures that receiver agents never act upon hallucinated constraints or discarded hypotheses.
+\begin{proposition}
+$\succA$ is a strict partial order.
+\end{proposition}
+\begin{proof}[Proof sketch]
+Irreflexivity: for $d = d'$ neither disjunct holds. Transitivity: $\succA$ compares the key $(w(\tau(d)), t(d))$ lexicographically, where the second component takes part only when both timestamps exist. If $d_1 \succA d_2$ and $d_2 \succA d_3$, then $w(\tau(d_1)) \ge w(\tau(d_3))$. If one of the two steps uses the first disjunct, the inequality is strict. If both use the second, all three weights are equal, all three timestamps exist, and $t(d_1) > t(d_3)$.
+\end{proof}
+
+$\succA$ is not a strict weak order: incomparability is not transitive. A directive without a timestamp is incomparable with two directives of the same weight that $\succA$ orders by time. This is the formal source of \sAMB{}: the order refuses to decide between directives that project governance does not rank (R4).
+
+Two directives \emph{conflict}, $d \bowtie d'$, if $c(d) = c(d')$ and either their subjects differ (and neither subject is general), or $\{p(d), p(d')\} = \{\st{REQUIRE}, \st{DENY}\}$.
+
+\begin{definition}[Resolution operator]
+\label{def:res}
+Let $a$ be an intended action, $D$ a set of directives, $D_a \subseteq D$ the directives relevant to $a$ (same category, or general), and $d^{*}$ a directive of maximal weight in $D_a$. Then
+\[
+\Res(a, D) =
+\begin{cases}
+\st{RA} & \text{if } \mathit{prot}(a) \land \lnot \mathit{auth}(D),\\
+\st{AMB} & \text{else if } \exists\, d \bowtie d' \text{ in } D,\ d \parallel d',\\
+\st{P} & \text{else if } D_a = \emptyset,\\
+\st{BC} & \text{else if } p(d^{*}) = \st{DENY},\\
+\st{PWO} & \text{else if } \mathit{Ov}(d^{*}, D_a) \neq \emptyset,\\
+\st{P} & \text{otherwise,}
+\end{cases}
+\]
+with the status abbreviations of Table~\ref{tab:exp004-confusion}.
+Here $\mathit{prot}(a)$ holds for destructive actions and actions on protected branches, $\mathit{auth}(D)$ holds if $D$ contains an \st{EXPLICIT\_HUMAN} directive with polarity \st{ALLOW} or \st{REQUIRE}, and $\mathit{Ov}(d^{*}, D_a)$ is the set of directives in $D_a$ that $d^{*}$ overrides (they conflict with $d^{*}$, deny, or have a lower tier than an \st{EXPLICIT\_HUMAN} $d^{*}$).
+\end{definition}
+
+$\Res$ is a function of its inputs (R1), and each branch yields the evidence that selected it (R2). The ambiguity test ranges over all of $D$, so an ambiguity in an unrelated category also yields \sAMB{}. The frozen implementation also reports $d^{*}$ as ``governing'' when the result is \sAMB{}; this causes mode O2, and a corrected implementation should not do it.
+
+\subsection{The claim lifecycle}
+\label{sec:framework-lifecycle}
+A \emph{claim} is a proposal, decision, or report that a principal makes about the project. Each claim has a state in
+\[
+\Sset = \{\st{Proposed}, \st{Decided}, \st{Implemented}, \st{Verified}, \st{Obsolete}\}.
+\]
+Figure~\ref{fig:lifecycle} shows the transitions. A principal proposes a claim. A principal with standing for the affected resource \emph{decides} it. A commit \emph{implements} it, and the implementing commit is its evidence. Checks that pass on that commit \emph{verify} it. A claim becomes \st{Obsolete} when a principal rejects it, or when a claim with higher standing, or equal standing and a later time, supersedes it.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    node distance=4mm and 8mm,
+    state/.style={draw, rounded corners, inner sep=2pt, minimum height=5mm, font=\scriptsize\sffamily},
+    arr/.style={-{Stealth[length=1.6mm]}, thin},
+    lab/.style={font=\tiny\sffamily}
+]
+\node[state] (p) {Proposed};
+\node[state, right=of p] (d) {Decided};
+\node[state, right=of d] (i) {Implemented};
+\node[state, right=of i] (v) {Verified};
+\node[state, below=7mm of $(d)!0.5!(i)$] (o) {Obsolete};
+\draw[arr] (p) -- node[lab, above] {decide} (d);
+\draw[arr] (d) -- node[lab, above] {commit} (i);
+\draw[arr] (i) -- node[lab, above] {check} (v);
+\draw[arr] (p.south) |- node[lab, below, pos=0.75] {reject} (o.west);
+\draw[arr] (v.south) |- node[lab, below, pos=0.75] {supersede} (o.east);
+\draw[arr] (d.south) -- (o.north west);
+\draw[arr] (i.south) -- (o.north east);
+\end{tikzpicture}
+\Description{A state diagram with five states. Proposed leads to Decided by the decide transition, Decided leads to Implemented by a commit, and Implemented leads to Verified by a check. Proposed, Decided, Implemented, and Verified each lead to Obsolete, by rejection or supersession.}
+\caption{Claim lifecycle $\Sset$. Only \st{Decided}, \st{Implemented}, and \st{Verified} claims carry directive force. \st{Proposed} and \st{Obsolete} claims are context only.}
+\label{fig:lifecycle}
+\end{figure}
+
+The lifecycle has three invariants. Each failure class of Section~\ref{sec:analysis-taxonomy} violates one of them.
+\begin{description}
+    \item[I1 (Evidence).] If a claim is \st{Implemented} or \st{Verified}, its evidence exists at the commit where a consumer starts. A Ghost Dependency violates I1.
+    \item[I2 (No force after supersession).] An \st{Obsolete} claim is not in the directive set $D$ given to $\Res$. A Zombie Constraint violates I2.
+    \item[I3 (No silent return).] A proposal equal to an \st{Obsolete} proposal enters \st{Proposed} again only with new evidence. Dead-End Hypothesis Resurrection violates I3.
+\end{description}
+The decide and supersede transitions are exactly the points where standing matters: $\succA$ decides whether a new claim supersedes an old one, and $\Res$ decides whether a principal may act on a claim.
+
+\subsection{Relation to commitment theory}
+Singh treats a commitment as a social relation in which a debtor is committed to a creditor within a context, with operations to create, discharge, cancel, release, delegate, and assign it~\cite{singh1999commit}. \emph{Decide} creates a commitment from the implementing principal (debtor) to the principal with standing (creditor), with the repository as context. \emph{Implement} and \emph{verify} discharge it with evidence. \emph{Supersede} cancels or releases it. An agent that works for an owner acts under delegation. Commitment protocols specify which operations each role may perform~\cite{yolum2002flexible}; effective standing answers, for each conflict, \emph{which principal may create, cancel, or release this commitment now}, from existing records instead of a protocol state that Bridge owns. For delegation, an agent's key ``speaks for'' an owner on a path only if a verifiable chain links them~\cite{lampson1992authentication,abadi1993calculus}. In the Git instantiation, the chain is a CODEOWNERS entry plus a verified signature.
+
+\subsection{Instantiation for divergent worktrees}
+\label{sec:framework-git}
+\texttt{bridge resolve} applies the model to divergence conflicts. Let $L$ and $R$ be the two branch tips and $b$ their merge base. Let $\Delta_L$ and $\Delta_R$ be the paths that differ from $b$, and let $A$ be the three CODEOWNERS locations. The overlap is $F = (\Delta_L \cap \Delta_R) \setminus A$.
+
+\paragraph{Standing.} $\mathit{own}(f)$ is the owner list for path $f$ in the CODEOWNERS file \emph{at $b$} (last match wins). For side $x$, let $c_x(f)$ be the newest commit on $x$ since $b$ that changed $f$. The standing level $\lambda_x(f)$ is \emph{invalid} if $c_x(f)$ has a bad or revoked signature. Otherwise it is one of three ordered levels, $\st{VO} \succ \st{UO} \succ \st{NO}$: \emph{verified owner} (the author is an owner and the signature is \texttt{G} or \texttt{U}), \emph{unverified owner} (an owner without a good signature), or \emph{non-owner}. An author matches an email owner directly, and a handle or team through an operator-supplied identity map or a GitHub no-reply address. Side $x$ has standing, $\sigma_x(f)$, if $\lambda_x(f) = \st{VO}$, or if $\lambda_x(f) = \st{UO}$ under the \texttt{--allow-unsigned} policy.
+
+\paragraph{Decision.} Table~\ref{tab:git-decision} gives the status of each $f \in F$, tested from top to bottom. Each changed path in $A$ yields a \st{BC} finding. The plan status is the maximum over all findings in the order $\st{P} < \st{PWO} < \st{AMB} < \st{BC}$, and \st{P} when there is no finding.
+
+\begin{table}[t]
+\caption{Decision table of \texttt{bridge resolve} for a path $f$ that both sides change. The first matching row applies.}
+\label{tab:git-decision}
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}Xl@{}}
+\toprule
+Condition & Status \\
+\midrule
+Both sides produce the same blob (or both delete $f$) & \sP{} \\
+$c_L(f)$ or $c_R(f)$ has a bad or revoked signature & \sBC{} \\
+$\mathit{own}(f) = \emptyset$ & \sAMB{} \\
+$\sigma_L(f) \land \sigma_R(f)$ & \sAMB{} \\
+Exactly one side has standing; that side governs & \sPWO{} \\
+Neither side has standing & \sBC{} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The following properties hold by construction.
+\begin{description}
+    \item[P1 Determinism (R1).] The plan depends only on $b$, $L$, $R$, the CODEOWNERS file at $b$, the identity map, and the policy. Findings are sorted by path.
+    \item[P2 Symmetry.] Swapping $L$ and $R$ leaves every status unchanged and swaps the governing side, because every row of Table~\ref{tab:git-decision} is symmetric in the two sides.
+    \item[P3 Authority-source integrity (R5).] No branch can change the owners used to judge it. Owners come from $b$, and a change to any path in $A$ on either side blocks the plan.
+    \item[P4 No forced guess (R4).] \sPWO{} requires that exactly one side has standing. In every other case the plan names no winner.
+\end{description}
+
+Three design choices limit these guarantees. Signature validity comes from the local Git configuration (keyring or allowed-signers file), so Bridge inherits its trust decisions. Standing comes from the newest commit on each side, so an owner's signed commit endorses earlier changes to the same path on that side. Merge commits list no changed paths, so a side that changed $f$ only through a merge has no commit for $f$ and no standing.

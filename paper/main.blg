@@ -14,44 +14,99 @@ Reallocating 'glb_str_end' (item size: 4) to 20 items.
 Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
 Reallocating 'global_strs' (item size: 1) to 4000000 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
-You've used 8 entries,
+Warning--empty address in apel2011semistructured
+Warning--empty address in arcuri2011stats
+Warning--empty publisher in bai2024longbench
+Warning--empty address in bai2024longbench
+Warning--page numbers missing in both pages and numpages fields in bai2024longbench
+Warning--empty address in bird2011ownership
+Warning--empty address in bird2009git
+Warning--empty address in blaze1996trust
+Warning--empty address in brun2011proactive
+Warning--empty address in cataldo2006coordination
+Warning--empty publisher in debenedetti2024agentdojo
+Warning--empty address in debenedetti2024agentdojo
+Warning--page numbers missing in both pages and numpages fields in debenedetti2024agentdojo
+Warning--empty address in fan2023llm4se
+Warning--empty address in gousios2015integrator
+Warning--empty address in greshake2023indirect
+Warning--empty address in guimaraes2012early
+Warning--empty publisher in jimenez2024swebench
+Warning--empty address in jimenez2024swebench
+Warning--page numbers missing in both pages and numpages fields in jimenez2024swebench
+Warning--empty address in kasi2013cassandra
+Warning--empty publisher in lewis2020rag
+Warning--empty address in lewis2020rag
+Warning--page numbers missing in both pages and numpages fields in lewis2020rag
+Warning--empty address in mockus2002expertise
+Warning--empty address in newman2022sigstore
+Warning--empty address in qian2024chatdev
+Warning--empty address in sallou2024breaking
+Warning--empty address in shapiro2011crdt
+Warning--empty publisher in sharma2024sycophancy
+Warning--empty address in sharma2024sycophancy
+Warning--page numbers missing in both pages and numpages fields in sharma2024sycophancy
+Warning--empty publisher in shi2023distracted
+Warning--empty address in shi2023distracted
+Warning--page numbers missing in both pages and numpages fields in shi2023distracted
+Warning--empty publisher in shinn2023reflexion
+Warning--empty address in shinn2023reflexion
+Warning--page numbers missing in both pages and numpages fields in shinn2023reflexion
+Warning--page numbers missing in both pages and numpages fields in wang2024survey
+Warning--empty publisher in wang2025openhands
+Warning--empty address in wang2025openhands
+Warning--page numbers missing in both pages and numpages fields in wang2025openhands
+Warning--empty address in wohlin2012experimentation
+Warning--empty publisher in yang2024sweagent
+Warning--empty address in yang2024sweagent
+Warning--page numbers missing in both pages and numpages fields in yang2024sweagent
+Warning--empty publisher in yao2023react
+Warning--empty address in yao2023react
+Warning--page numbers missing in both pages and numpages fields in yao2023react
+Warning--empty address in yolum2002flexible
+Warning--empty publisher in zhan2024injecagent
+Warning--empty address in zhan2024injecagent
+Warning--page numbers missing in both pages and numpages fields in zhan2024injecagent
+Warning--empty address in zhang2024autocoderover
+You've used 73 entries,
             6273 wiz_defined-function locations,
-            1557 strings with 19206 characters,
-and the built_in function-call counts, 6179 in all, are:
-= -- 736
-> -- 136
+            1943 strings with 33953 characters,
+and the built_in function-call counts, 82774 in all, are:
+= -- 9963
+> -- 3211
 < -- 1
-+ -- 34
-- -- 56
-* -- 355
-:= -- 634
-add.period$ -- 35
-call.type$ -- 8
-change.case$ -- 40
-chr.to.int$ -- 8
-cite$ -- 8
-duplicate$ -- 566
-empty$ -- 401
-format.name$ -- 56
-if$ -- 1374
-int.to.chr$ -- 2
++ -- 1086
+- -- 1111
+* -- 6384
+:= -- 8333
+add.period$ -- 349
+call.type$ -- 73
+change.case$ -- 625
+chr.to.int$ -- 72
+cite$ -- 127
+duplicate$ -- 7110
+empty$ -- 5007
+format.name$ -- 1343
+if$ -- 19617
+int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 4
-newline$ -- 129
-num.names$ -- 56
-pop$ -- 183
+missing$ -- 236
+newline$ -- 683
+num.names$ -- 510
+pop$ -- 2882
 preamble$ -- 1
-purify$ -- 104
+purify$ -- 1186
 quote$ -- 0
-skip$ -- 263
+skip$ -- 2665
 stack$ -- 0
-substring$ -- 445
-swap$ -- 53
+substring$ -- 5738
+swap$ -- 642
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 226
-warning$ -- 0
-while$ -- 59
+type$ -- 1861
+warning$ -- 54
+while$ -- 434
 width$ -- 0
-write$ -- 204
+write$ -- 1465
+(There were 54 warnings)
