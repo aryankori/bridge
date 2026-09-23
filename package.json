@@ -5,12 +5,16 @@
  "type": "module",
  "main": "dist/index.js",
  "types": "dist/index.d.ts",
+ "bin": {
+ "bridge": "dist/bin/bridge.js"
+ },
  "scripts": {
  "dev": "tsx watch src/index.ts",
  "build": "tsup",
  "typecheck": "tsc --noEmit",
  "test": "vitest run",
  "test:watch": "vitest",
+ "test:coverage": "vitest run --coverage",
  "lint": "eslint src/ tests/",
  "lint:fix": "eslint src/ tests/ --fix",
  "format": "prettier --write .",
@@ -34,6 +38,7 @@
  "@types/node": "^26.3.0",
  "@typescript-eslint/eslint-plugin": "^8.68.0",
  "@typescript-eslint/parser": "^8.68.0",
+ "@vitest/coverage-v8": "4.1.11",
  "eslint": "^10.9.1",
  "eslint-config-prettier": "^10.1.8",
  "prettier": "^3.9.6",
