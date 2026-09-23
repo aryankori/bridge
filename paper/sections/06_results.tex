@@ -2,10 +2,10 @@
 \label{sec:results}
 
 \subsection{RQ1: resolution agreement on EXP-004}
-Table~\ref{tab:exp004} gives the aggregate results. The resolver produces the gold status in 35 of 40 scenarios (23 of 25 held-out). Conflict detection has no false positives and ten false negatives. All four gold-ambiguous scenarios receive \sAMB{}, and none of the twelve gold-restricted scenarios receives a permissive status. Mean latency is below one millisecond, because the resolver calls no model.
+Table~\ref{tab:exp004} gives the aggregate results. The resolver produces the gold status in 35 of 40 scenarios. Conflict detection has no false positives and ten false negatives. All four gold-ambiguous scenarios receive \sAMB{}, and none of the twelve gold-restricted scenarios receives a permissive status. Mean latency is below one millisecond, because the resolver calls no model.
 
 \begin{table}[t]
-\caption{EXP-004 blind benchmark. Counts in parentheses. ``False allow'' is a permissive status for a gold-restricted scenario.}
+\caption{EXP-004 blind benchmark. Counts in parentheses. The split is not out-of-sample (Section~\ref{sec:threats}). ``False allow'' is a permissive status for a gold-restricted scenario.}
 \label{tab:exp004}
 \footnotesize
 \setlength{\tabcolsep}{3.5pt}
@@ -46,7 +46,7 @@ BC ($n$=0) & 0 & 0 & 0 & 0 & 0 \\
 \end{table}
 
 \subsection{RQ1: resolution agreement on EXP-005}
-Table~\ref{tab:exp005-resolver} gives the pre-verification on the ten EXP-005 scenarios. The resolver agrees with all ten gold statuses. This is agreement with labels that the project team wrote, not accuracy. Two labels contradict their own tier: scenario 001 is ``unambiguous'' but has the gold status \sAMB{}, and scenario 009 is ``unsolvable'' and its gold text says ``reject the task'', but its gold status is \sP{}. We cannot exclude that labels were adjusted to the resolver (Section~\ref{sec:threats}). In three scenarios (003, 004, and 009), the resolver reports no conflict, although each contains one by construction.
+Table~\ref{tab:exp005-resolver} gives the pre-verification on the ten EXP-005 scenarios. The resolver agrees with all ten gold statuses. This is agreement with labels that the project team wrote, not accuracy. Two labels contradict their own tier: scenario 001 is ``unambiguous'' but has the gold status \sAMB{}, and scenario 009 is ``unsolvable'' and its gold text says ``reject the task'', but its gold status is \sP{}. Three labels were changed to match the resolver (Section~\ref{sec:threats}). In three scenarios (003, 004, and 009), the resolver reports no conflict, although each contains one by construction.
 
 \begin{table}[t]
 \caption{EXP-005 resolver pre-verification against project-authored gold labels. Status: gold status, which equals the resolver status in all ten scenarios. ``Conf.'' = the resolver reported at least one conflict. $\dagger$ = gold status disagrees with the scenario tier.}
@@ -125,7 +125,7 @@ When we read the recorded traces, we found four defects in the scorer and its in
     \item[D4 Redaction before scoring.] The harness redacts secrets before it stores the stream. The token \texttt{DEV\_\allowbreak TOKEN\_\allowbreak SECRET\_\allowbreak 9999} became \texttt{[REDACTED\_SECRET]}, so the scorer's check for the literal token cannot fire. The one trial that hardcoded the secret (scenario 003, condition C) receives no violation.
 \end{description}
 
-\paragraph{Trace audit.} Table~\ref{tab:audit-rules} gives the audit rules and the results per scenario and condition. Under the audit, condition A follows the rule in 1 of 4 recorded trials, B in 12 of 12, and C in 5 of 9. One recorded trial performs a prohibited action: the BRIDGE trial of scenario 003 writes \texttt{export const AUTH\_TOKEN = '[REDACTED\_SECRET]'} and reports that the hardcoded token ``is permitted per the BRIDGE EFFECTIVE DIRECTIVE despite the general security policy''. No recorded trial pushes to \texttt{main}, runs Jest, or writes cryptographic code.
+\paragraph{Trace audit.} Table~\ref{tab:audit-rules} gives the audit rules and the results per scenario and condition. Under the audit, condition A follows the rule in 1 of 4 recorded trials, B in 12 of 12, and C in 5 of 9. One recorded trial performs a prohibited action: the C trial of scenario 003 writes \texttt{export const AUTH\_TOKEN = '[REDACTED\_SECRET]'} and reports that the hardcoded token ``is permitted per the BRIDGE EFFECTIVE DIRECTIVE despite the general security policy''. No recorded trial pushes to \texttt{main}, runs Jest, or writes cryptographic code.
 
 \begin{table*}[t]
 \caption{Post-hoc trace audit (exploratory). Each cell: trials that satisfy the rule / recorded trials. ``--'' = no recorded trial. The rule applies to assistant text and tool-call inputs only.}

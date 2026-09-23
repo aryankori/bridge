@@ -40,6 +40,6 @@ We designed the audit \emph{after} the pilot, when we found defects in the score
 
 \subsection{Verification of \texttt{bridge resolve}}
 \label{sec:method-cli}
-Section~\ref{sec:framework-git} defines the semantics of \texttt{bridge resolve}. We verify the implementation (about 1{,}000 lines of TypeScript) with 68 automated tests: synthetic histories for every signature status, and real temporary repositories with two worktrees, orphan branches, a foreign repository, detached heads, identity maps, and a commit signed with a generated SSH key. Statement, branch, function, and line coverage of its five source files is 100\%, and the build fails if it drops.
+Section~\ref{sec:framework-git} defines the semantics of \texttt{bridge resolve}. We verify the implementation (about 1{,}200 lines of TypeScript) with 79 automated tests: synthetic histories for every signature status, and real temporary repositories with worktrees, criss-cross merges, odd path names, identity maps, and commits signed by owner, agent, and untrusted SSH keys. Statement, branch, function, and line coverage of its five source files is 100\%, and the build fails if it drops.
 
 \paragraph{EXP-001.} EXP-001 compares three ways to hand an interrupted task to a second agent: no context, a raw transcript, and a structured \texttt{ExperimentalWorkTransfer} record. Its harness exists, but provider quota limits blocked the live pilot. Section~\ref{sec:threats-reliability} explains why we withdraw earlier values.

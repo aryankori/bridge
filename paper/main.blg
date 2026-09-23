@@ -16,14 +16,14 @@ Reallocating 'global_strs' (item size: 1) to 4000000 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Warning--empty address in apel2011semistructured
 Warning--empty address in arcuri2011stats
-Warning--empty publisher in bai2024longbench
 Warning--empty address in bai2024longbench
-Warning--page numbers missing in both pages and numpages fields in bai2024longbench
 Warning--empty address in bird2011ownership
 Warning--empty address in bird2009git
 Warning--empty address in blaze1996trust
 Warning--empty address in brun2011proactive
 Warning--empty address in cataldo2006coordination
+Warning--empty address in chhikara2025mem0
+Warning--page numbers missing in both pages and numpages fields in chhikara2025mem0
 Warning--empty publisher in debenedetti2024agentdojo
 Warning--empty address in debenedetti2024agentdojo
 Warning--page numbers missing in both pages and numpages fields in debenedetti2024agentdojo
@@ -48,18 +48,17 @@ Warning--empty address in sharma2024sycophancy
 Warning--page numbers missing in both pages and numpages fields in sharma2024sycophancy
 Warning--empty publisher in shi2023distracted
 Warning--empty address in shi2023distracted
-Warning--page numbers missing in both pages and numpages fields in shi2023distracted
 Warning--empty publisher in shinn2023reflexion
 Warning--empty address in shinn2023reflexion
-Warning--page numbers missing in both pages and numpages fields in shinn2023reflexion
+Warning--articleno or eid field, but no numpages field, in wang2024survey
 Warning--page numbers missing in both pages and numpages fields in wang2024survey
+Warning--articleno or eid, but no pages or numpages field in wang2024survey
 Warning--empty publisher in wang2025openhands
 Warning--empty address in wang2025openhands
 Warning--page numbers missing in both pages and numpages fields in wang2025openhands
 Warning--empty address in wohlin2012experimentation
 Warning--empty publisher in yang2024sweagent
 Warning--empty address in yang2024sweagent
-Warning--page numbers missing in both pages and numpages fields in yang2024sweagent
 Warning--empty publisher in yao2023react
 Warning--empty address in yao2023react
 Warning--page numbers missing in both pages and numpages fields in yao2023react
@@ -70,43 +69,43 @@ Warning--page numbers missing in both pages and numpages fields in zhan2024injec
 Warning--empty address in zhang2024autocoderover
 You've used 73 entries,
             6273 wiz_defined-function locations,
-            1943 strings with 33953 characters,
-and the built_in function-call counts, 82774 in all, are:
-= -- 9963
-> -- 3211
+            1943 strings with 33968 characters,
+and the built_in function-call counts, 84573 in all, are:
+= -- 10303
+> -- 3203
 < -- 1
-+ -- 1086
-- -- 1111
-* -- 6384
-:= -- 8333
-add.period$ -- 349
++ -- 1083
+- -- 1108
+* -- 6475
+:= -- 8429
+add.period$ -- 345
 call.type$ -- 73
-change.case$ -- 625
+change.case$ -- 619
 chr.to.int$ -- 72
-cite$ -- 127
-duplicate$ -- 7110
-empty$ -- 5007
-format.name$ -- 1343
-if$ -- 19617
+cite$ -- 126
+duplicate$ -- 7276
+empty$ -- 5115
+format.name$ -- 1340
+if$ -- 20143
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 236
-newline$ -- 683
+missing$ -- 244
+newline$ -- 674
 num.names$ -- 510
-pop$ -- 2882
+pop$ -- 2905
 preamble$ -- 1
-purify$ -- 1186
+purify$ -- 1185
 quote$ -- 0
-skip$ -- 2665
+skip$ -- 2750
 stack$ -- 0
-substring$ -- 5738
-swap$ -- 642
+substring$ -- 6082
+swap$ -- 699
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1861
-warning$ -- 54
-while$ -- 434
+type$ -- 1847
+warning$ -- 53
+while$ -- 451
 width$ -- 0
-write$ -- 1465
-(There were 54 warnings)
+write$ -- 1456
+(There were 53 warnings)

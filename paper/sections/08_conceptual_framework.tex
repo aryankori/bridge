@@ -1,7 +1,7 @@
 \section{Conceptual Framework: Effective Standing}
 \label{sec:framework}
 
-This section defines the model that the resolver and \texttt{bridge resolve} implement. Definitions~\ref{def:order} and~\ref{def:res} describe the resolver exactly. The lifecycle in Section~\ref{sec:framework-lifecycle} is a design model: Bridge does not implement it yet.
+This section defines the model that the resolver and \texttt{bridge resolve} implement. Definitions~\ref{def:order} and~\ref{def:res} describe the resolver. The lifecycle in Section~\ref{sec:framework-lifecycle} is a design model: Bridge does not implement it yet.
 
 \subsection{Directives, tiers, and the authority order}
 Let $\Tier$ be a finite set of source tiers with a weight $w : \Tier \to \mathbb{N}$. The resolver uses six tiers with weights $100 > 80 > 60 > 40 > 30 > 10$ (Section~\ref{sec:method-resolver}). A directive $d$ has a tier $\tau(d)$, a category $c(d)$, a polarity $p(d) \in \{\st{REQUIRE}, \st{ALLOW}, \st{PREFER}, \st{DENY}\}$, a subject $s(d)$, and an optional timestamp $t(d) \in \mathbb{N} \cup \{\bot\}$.
@@ -29,7 +29,7 @@ Two directives \emph{conflict}, $d \bowtie d'$, if $c(d) = c(d')$ and either the
 
 \begin{definition}[Resolution operator]
 \label{def:res}
-Let $a$ be an intended action, $D$ a set of directives, $D_a \subseteq D$ the directives relevant to $a$ (same category, or general), and $d^{*}$ a directive of maximal weight in $D_a$. Then
+Let $a$ be an intended action, $D$ a set of directives, $D_a \subseteq D$ the directives relevant to $a$ (same category, or general), and $d^{*}$ the first maximal-weight directive of $D_a$ in extraction order. Then
 \[
 \Res(a, D) =
 \begin{cases}
@@ -45,7 +45,7 @@ with the status abbreviations of Table~\ref{tab:exp004-confusion}.
 Here $\mathit{prot}(a)$ holds for destructive actions and actions on protected branches, $\mathit{auth}(D)$ holds if $D$ contains an \st{EXPLICIT\_HUMAN} directive with polarity \st{ALLOW} or \st{REQUIRE}, and $\mathit{Ov}(d^{*}, D_a)$ is the set of directives in $D_a$ that $d^{*}$ overrides (they conflict with $d^{*}$, deny, or have a lower tier than an \st{EXPLICIT\_HUMAN} $d^{*}$).
 \end{definition}
 
-$\Res$ is a function of its inputs (R1), and each branch yields the evidence that selected it (R2). The ambiguity test ranges over all of $D$, so an ambiguity in an unrelated category also yields \sAMB{}. The frozen implementation also reports $d^{*}$ as ``governing'' when the result is \sAMB{}; this causes mode O2, and a corrected implementation should not do it.
+$\Res$ is a function of its ordered inputs (R1), and each branch yields the evidence that selected it (R2). Because $d^{*}$ ignores timestamps, reordering equal-weight sources can change the result. The ambiguity test ranges over all of $D$, so an ambiguity in an unrelated category also yields \sAMB{}. The frozen implementation also reports $d^{*}$ as ``governing'' when the result is \sAMB{}; this causes mode O2, and a corrected implementation should not do it.
 
 \subsection{The claim lifecycle}
 \label{sec:framework-lifecycle}
@@ -84,21 +84,21 @@ Figure~\ref{fig:lifecycle} shows the transitions. A principal proposes a claim. 
 The lifecycle has three invariants. Each failure class of Section~\ref{sec:analysis-taxonomy} violates one of them.
 \begin{description}
     \item[I1 (Evidence).] If a claim is \st{Implemented} or \st{Verified}, its evidence exists at the commit where a consumer starts. A Ghost Dependency violates I1.
-    \item[I2 (No force after supersession).] An \st{Obsolete} claim is not in the directive set $D$ given to $\Res$. A Zombie Constraint violates I2.
+    \item[I2 (Force only after decision).] Only \st{Decided}, \st{Implemented}, or \st{Verified} claims are in the directive set $D$ given to $\Res$. A Zombie Constraint violates I2.
     \item[I3 (No silent return).] A proposal equal to an \st{Obsolete} proposal enters \st{Proposed} again only with new evidence. Dead-End Hypothesis Resurrection violates I3.
 \end{description}
 The decide and supersede transitions are exactly the points where standing matters: $\succA$ decides whether a new claim supersedes an old one, and $\Res$ decides whether a principal may act on a claim.
 
 \subsection{Relation to commitment theory}
-Singh treats a commitment as a social relation in which a debtor is committed to a creditor within a context, with operations to create, discharge, cancel, release, delegate, and assign it~\cite{singh1999commit}. \emph{Decide} creates a commitment from the implementing principal (debtor) to the principal with standing (creditor), with the repository as context. \emph{Implement} and \emph{verify} discharge it with evidence. \emph{Supersede} cancels or releases it. An agent that works for an owner acts under delegation. Commitment protocols specify which operations each role may perform~\cite{yolum2002flexible}; effective standing answers, for each conflict, \emph{which principal may create, cancel, or release this commitment now}, from existing records instead of a protocol state that Bridge owns. For delegation, an agent's key ``speaks for'' an owner on a path only if a verifiable chain links them~\cite{lampson1992authentication,abadi1993calculus}. In the Git instantiation, the chain is a CODEOWNERS entry plus a verified signature.
+Singh treats a commitment as a social relation in which a debtor is committed to a creditor within a context, with operations to create, discharge, cancel, release, delegate, and assign it~\cite{singh1999commit}. \emph{Decide} creates a commitment from the implementing principal (debtor) to the principal with standing (creditor), with the repository as context. \emph{Implement} discharges it, and \emph{verify} confirms the evidence. \emph{Supersede} cancels, releases, or retires it. An agent that works for an owner acts under delegation. Commitment protocols specify which operations each role may perform~\cite{yolum2002flexible}. Effective standing answers, for each conflict, \emph{which principal may create, cancel, or release this commitment now}. It uses existing records, not a protocol state that Bridge owns. For delegation, an agent's key ``speaks for'' an owner on a path only if a verifiable chain links them~\cite{lampson1992authentication,abadi1993calculus}. In the Git instantiation, the chain is a CODEOWNERS entry plus a verified signature.
 
 \subsection{Instantiation for divergent worktrees}
 \label{sec:framework-git}
 \texttt{bridge resolve} applies the model to divergence conflicts. Let $L$ and $R$ be the two branch tips and $b$ their merge base. Let $\Delta_L$ and $\Delta_R$ be the paths that differ from $b$, and let $A$ be the three CODEOWNERS locations. The overlap is $F = (\Delta_L \cap \Delta_R) \setminus A$.
 
-\paragraph{Standing.} $\mathit{own}(f)$ is the owner list for path $f$ in the CODEOWNERS file \emph{at $b$} (last match wins). For side $x$, let $c_x(f)$ be the newest commit on $x$ since $b$ that changed $f$. The standing level $\lambda_x(f)$ is \emph{invalid} if $c_x(f)$ has a bad or revoked signature. Otherwise it is one of three ordered levels, $\st{VO} \succ \st{UO} \succ \st{NO}$: \emph{verified owner} (the author is an owner and the signature is \texttt{G} or \texttt{U}), \emph{unverified owner} (an owner without a good signature), or \emph{non-owner}. An author matches an email owner directly, and a handle or team through an operator-supplied identity map or a GitHub no-reply address. Side $x$ has standing, $\sigma_x(f)$, if $\lambda_x(f) = \st{VO}$, or if $\lambda_x(f) = \st{UO}$ under the \texttt{--allow-unsigned} policy.
+\paragraph{Standing.} $\mathit{own}(f)$ is the owner list for path $f$ in the CODEOWNERS file at $b$, or at a trusted ref $T$ if the operator names one (last match wins). For side $x$, let $c_x(f)$ be the newest commit on $x$ since $b$, in topological order, whose post-image of $f$ equals the tip version of $f$ on $x$. The standing level $\lambda_x(f)$ is \emph{invalid} if $c_x(f)$ has status \texttt{B} or \texttt{R}. Otherwise it is one of three ordered levels, $\st{VO} \succ \st{UO} \succ \st{NO}$: \emph{verified owner} (status \texttt{G} and the signer is an owner), \emph{unverified owner} (the author email is an owner, but no owner key signed), or \emph{non-owner}. An identity matches an email owner directly, and a handle or team through an identity map or a GitHub no-reply address. Side $x$ has standing, $\sigma_x(f)$, if $\lambda_x(f) = \st{VO}$, or if $\lambda_x(f) = \st{UO}$ under the \texttt{--allow-unsigned} policy.
 
-\paragraph{Decision.} Table~\ref{tab:git-decision} gives the status of each $f \in F$, tested from top to bottom. Each changed path in $A$ yields a \st{BC} finding. The plan status is the maximum over all findings in the order $\st{P} < \st{PWO} < \st{AMB} < \st{BC}$, and \st{P} when there is no finding.
+\paragraph{Decision.} Table~\ref{tab:git-decision} gives the status of each $f \in F$, tested from top to bottom. Each changed path in $A$ yields a \st{BC} finding, and so does a merge base that is not an ancestor of $T$. The plan status is the maximum over all findings in the order $\st{P} < \st{PWO} < \st{AMB} < \st{BC}$, and \st{P} when there is no finding.
 
 \begin{table}[t]
 \caption{Decision table of \texttt{bridge resolve} for a path $f$ that both sides change. The first matching row applies.}
@@ -109,7 +109,7 @@ Singh treats a commitment as a social relation in which a debtor is committed to
 Condition & Status \\
 \midrule
 Both sides produce the same blob (or both delete $f$) & \sP{} \\
-$c_L(f)$ or $c_R(f)$ has a bad or revoked signature & \sBC{} \\
+$c_L(f)$ or $c_R(f)$ has status \texttt{B} or \texttt{R} & \sBC{} \\
 $\mathit{own}(f) = \emptyset$ & \sAMB{} \\
 $\sigma_L(f) \land \sigma_R(f)$ & \sAMB{} \\
 Exactly one side has standing; that side governs & \sPWO{} \\
@@ -120,10 +120,10 @@ Neither side has standing & \sBC{} \\
 
 The following properties hold by construction.
 \begin{description}
-    \item[P1 Determinism (R1).] The plan depends only on $b$, $L$, $R$, the CODEOWNERS file at $b$, the identity map, and the policy. Findings are sorted by path.
-    \item[P2 Symmetry.] Swapping $L$ and $R$ leaves every status unchanged and swaps the governing side, because every row of Table~\ref{tab:git-decision} is symmetric in the two sides.
-    \item[P3 Authority-source integrity (R5).] No branch can change the owners used to judge it. Owners come from $b$, and a change to any path in $A$ on either side blocks the plan.
+    \item[P1 Determinism (R1).] The plan depends only on $b$, $L$, $R$, $T$, the CODEOWNERS file, the identity map, and the policy. Findings have a fixed order.
+    \item[P2 Symmetry.] Swapping $L$ and $R$ leaves every status unchanged and swaps the governing side, because every row of Table~\ref{tab:git-decision} is symmetric in the two sides. This needs a unique $b$, so the tool refuses criss-cross histories.
+    \item[P3 Authority-source integrity (R5).] No branch can change the owners used to judge it. Owners come from $b$ (which must be trusted) or from $T$, and a change to any path in $A$ on either side blocks the plan.
     \item[P4 No forced guess (R4).] \sPWO{} requires that exactly one side has standing. In every other case the plan names no winner.
 \end{description}
 
-Three design choices limit these guarantees. Signature validity comes from the local Git configuration (keyring or allowed-signers file), so Bridge inherits its trust decisions. Standing comes from the newest commit on each side, so an owner's signed commit endorses earlier changes to the same path on that side. Merge commits list no changed paths, so a side that changed $f$ only through a merge has no commit for $f$ and no standing.
+Three design choices limit these guarantees. Signature validity and the key-to-principal binding come from the local Git configuration (keyring or allowed-signers file), so Bridge inherits its trust decisions. Without $T$, shared commits are trusted: an agent commit that both sides contain can set the owners. Content that only a merge commit produced (a conflict resolution) matches no commit, so that side has no standing.

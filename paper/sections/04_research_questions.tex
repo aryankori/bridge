@@ -1,12 +1,12 @@
 \section{Research Questions}
 \label{sec:rqs}
 
-The overall question is: \emph{when heterogeneous coding agents share a repository, can a layer that derives standing from existing systems of record arbitrate their conflicts, and does that arbitration change what the agents do?} We divide it into three questions. Each question names the experiment that answers it.
+The overall question is: \emph{when heterogeneous coding agents share a repository, can a layer that derives standing from existing systems of record arbitrate their conflicts, and does that arbitration change what the agents do?} We divide it into three questions. Each question names the experiment that addresses it.
 
 \begin{description}
-    \item[RQ1 (Resolution agreement).] How often does the deterministic resolver produce the gold status for a directive conflict, and when it disagrees, does the disagreement cross a safety boundary? We answer RQ1 with a 40-scenario blind benchmark (EXP-004) and with a pre-verification on the ten EXP-005 scenarios.
-    \item[RQ2 (Behavioral effect).] When a live coding agent receives the resolved directive, does it take the authorized action more often than an agent that receives only the raw sources, and how close does it come to an agent that receives a human-adjudicated directive? We answer RQ2 with the EXP-005 pilot.
-    \item[RQ3 (Measurement validity).] Does the pre-registered automated scorer of EXP-005 measure agent behavior correctly? We answer RQ3 with a post-hoc audit of the recorded agent traces.
+    \item[RQ1 (Resolution agreement).] How often does the deterministic resolver produce the gold status for a directive conflict, and when it disagrees, does the disagreement cross a safety boundary? We address RQ1 with a 40-scenario blind benchmark (EXP-004) and with a pre-verification on the ten EXP-005 scenarios.
+    \item[RQ2 (Behavioral effect).] When a live coding agent receives the resolved directive, does it take the authorized action more often than an agent that receives only the raw sources, and how close does it come to an agent that receives a human-adjudicated directive? We address RQ2 with the EXP-005 pilot.
+    \item[RQ3 (Measurement validity).] Does the pre-registered automated scorer of EXP-005 measure agent behavior correctly? We address RQ3 with a post-hoc audit of the recorded agent traces.
 \end{description}
 
 An earlier version of this study also asked whether structured work transfer (EXP-001) reduces rework compared with transcript replay, and whether persistent project intelligence (EXP-002) reduces contradictions across sessions. Neither has live data, and no answer in this paper uses them. We verify \texttt{bridge resolve} with automated tests (Section~\ref{sec:method-cli}), not with users, so no research question depends on it.

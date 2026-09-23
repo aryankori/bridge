@@ -14,7 +14,7 @@ This paper makes four contributions:
     \item A formal model of effective standing (Section~\ref{sec:framework}): a five-state claim lifecycle $\Sset$ (\st{Proposed}, \st{Decided}, \st{Implemented}, \st{Verified}, and \st{Obsolete}), an authority order $\succA$ over directives, and a deterministic resolution operator $\Res$. We relate the model to commitment theory in multi-agent systems~\cite{singh1999commit}.
     \item Two implementations of $\Res$. The first is a directive resolver that ranks instruction sources by tier and recency. The second is \texttt{bridge resolve}, a command that compares two agent worktrees and derives standing from CODEOWNERS at the merge base and from commit signatures.
     \item An evaluation on two benchmarks and one live-agent pilot (Sections~\ref{sec:method} and~\ref{sec:results}). The resolver agrees with 35 of 40 gold statuses on a blind benchmark and never gives a permissive status to a restricted action. The live pilot is incomplete and its pre-registered scorer is defective. We report these defects in full, with a post-hoc trace audit, instead of the scorer's numbers alone.
-    \item A failure taxonomy (Section~\ref{sec:analysis}). We define three lifecycle failures (\emph{Ghost Dependency}, \emph{Zombie Constraint}, and \emph{Dead-End Hypothesis Resurrection}) with detection rules, and we separate them from the failures that the pilot data actually shows.
+    \item A failure taxonomy (Section~\ref{sec:analysis}). We define three lifecycle failures (\emph{Ghost Dependency}, \emph{Zombie Constraint}, and \emph{Dead-End Hypothesis Resurrection}) with detection rules, and we separate them from the failures that the pilot data show.
 \end{enumerate}
 
 \paragraph{What this paper does not claim.}

@@ -4,7 +4,7 @@
 We follow the usual classification~\cite{wohlin2012experimentation,runeson2009case} and add the threats specific to LLM-based studies~\cite{sallou2024breaking}.
 
 \subsection{Construct validity}
-\paragraph{Gold labels are not independent.} The project team wrote the scenarios, the gold labels, and the resolver. The EXP-004 labels and the resolver entered the repository in the same commit. The EXP-005 labels entered 18 minutes after the resolver, and the label file calls itself ``aligned''. Two EXP-005 labels contradict their own scenario tier (Table~\ref{tab:exp005-resolver}), and in scenarios 001, 005, and 007 the gold directive and the scenario's expected outcome describe different correct actions. RQ1 therefore measures agreement with the authors' intent, which is an upper bound on accuracy against independent adjudicators.
+\paragraph{Gold labels are not independent.} The project team wrote the scenarios, the gold labels, and the resolver. The EXP-004 labels and the resolver entered the repository in the same commit, and a design note in that commit reports 77.5\% agreement (76.0\% held-out) where the committed code gives 87.5\%, so the held-out split is not out-of-sample. A commit 39 minutes after the resolver changed three EXP-005 gold statuses (001, 002, and 009) and the scenario action categories, and marked the label file ``aligned''; agreement rose from 3/10 to 10/10. Two EXP-005 labels contradict their own scenario tier (Table~\ref{tab:exp005-resolver}), and in scenarios 001, 005, and 007 the gold directive and the scenario's expected outcome describe different correct actions. RQ1 therefore measures agreement with the authors' intent, which likely overstates accuracy against independent adjudicators.
 
 \paragraph{Status is a weak construct.} A status names a class of outcome, not an action. Equal statuses can permit different actions (scenario 003), so status agreement overstates directive agreement.
 
@@ -15,7 +15,7 @@ We follow the usual classification~\cite{wohlin2012experimentation,runeson2009ca
 \paragraph{Failure classes lack data.} The taxonomy (Section~\ref{sec:analysis-taxonomy}) gives detection rules, but no experiment here applies them to a multi-hop handoff.
 
 \subsection{Internal validity}
-\paragraph{Selection by timeout.} 35 of 60 planned trials have no record, for two causes. The 11 trials that never started are missing only because of their position in a random order. The 23 started trials without a record are missing not at random: most hit the 180-second timeout, and finishing in time depends on the condition and the scenario. Condition A has no recorded trial in the unambiguous tier.
+\paragraph{Selection by timeout.} Of 60 planned trials, 35 have no record, for two causes. The last 12 positions (49 to 60) are missing only because of their place in a random order. The 23 earlier trials without a record are missing not at random: most hit the 180-second timeout, and finishing in time depends on the condition and the scenario. Condition A has no recorded trial in the unambiguous tier.
 
 \paragraph{Non-equivalent treatments.} The B and C blocks share headers but not content: B names permitted and prohibited actions, and C does not. Any difference between B and C mixes the origin of the directive with its information content.
 
@@ -28,7 +28,7 @@ EXP-005 uses one agent (OpenCode), one model (\modelname), one operating system,
 
 \subsection{Reliability and conclusion validity}
 \label{sec:threats-reliability}
-\paragraph{Deterministic parts.} The resolver, both benchmarks, the pre-verification, the trace audit, and the CLI tests are deterministic. Scripts in the replication package reproduce every number in Tables~\ref{tab:exp004} to~\ref{tab:scorer-audit} from the frozen code and the recorded manifest. The failure modes of Section~\ref{sec:analysis-observed} rest on our reading of the recorded traces, which the manifest contains in full.
+\paragraph{Deterministic parts.} The resolver, both benchmarks, the trace audit, and the CLI tests are deterministic. Scripts in the replication package reproduce every number in Tables~\ref{tab:exp004} to~\ref{tab:scorer-audit} from the frozen code and the recorded manifest. The failure modes of Section~\ref{sec:analysis-observed} rest on our reading of the recorded traces, which the manifest contains in full.
 
 \paragraph{Live runs.} The pilot used a hosted model that we cannot pin to a checkpoint or seed, so a rerun will not reproduce the traces. The recorded manifest is the only copy of this evidence.
 

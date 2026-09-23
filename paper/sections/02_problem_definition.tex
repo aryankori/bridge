@@ -2,7 +2,7 @@
 \label{sec:problem}
 
 \subsection{Setting}
-A repository has a set of principals $P$: human developers, maintainers, and agents. Each agent works in its own worktree on its own branch. Before it acts, an agent reads a set of instruction sources $\Sigma$. Each source $\sigma \in \Sigma$ has a kind (for example, a developer prompt, an issue, a rule file, a document, or a configuration file), a location, and optionally a modification time. A source contains zero or more \emph{directives}. A directive requires, allows, prefers, or denies an action in a category such as package management, test execution, naming style, or branch policy.
+A repository has a set of principals: human developers, maintainers, and agents. Each agent works in its own worktree on its own branch. Before it acts, an agent reads a set of instruction sources. Each source has a kind (for example, a developer prompt, an issue, a rule file, a document, or a configuration file), a location, and optionally a modification time. A source contains zero or more \emph{directives}. A directive requires, allows, prefers, or denies an action in a category such as package management, test execution, naming style, or branch policy.
 
 Two kinds of conflict occur in this setting.
 
@@ -11,13 +11,13 @@ Two kinds of conflict occur in this setting.
     \item[Divergence conflict.] Two agents change the same file on two branches that share a merge base. Example: one agent changes the token lifetime in \texttt{src/auth/token.ts}, and a second agent changes the same line to a different value. The question is: \emph{which change governs the file?}
 \end{description}
 
-Git detects a divergence conflict at the text level when a merge fails, and structured merge tools detect more of them~\cite{mens2002merging,apel2011semistructured}. Neither decides which side has the authority to win. Workspace-awareness tools warn developers about conflicts early~\cite{brun2011proactive,sarma2012palantir,guimaraes2012early}, and schedulers reduce them~\cite{kasi2013cassandra}. These tools also leave the decision to a human. When the two sides are agents, the human is often absent at the moment of the conflict.
+Git detects a divergence conflict at the text level when a merge fails, and structured merge tools resolve more of them~\cite{mens2002merging,apel2011semistructured}. Neither decides which side has the authority to win. Early-detection tools warn developers about conflicts~\cite{brun2011proactive,sarma2012palantir,guimaraes2012early}, and schedulers reduce them~\cite{kasi2013cassandra}. These tools also leave the decision to a human. When the two sides are agents, the human is often absent at the moment of the conflict.
 
 \subsection{Why memory does not resolve conflicts}
-A memory layer returns stored items that match the current task~\cite{lewis2020rag,packer2023memgpt,chhikara2025mem0}. It does not attach standing to those items. Three kinds of degradation follow. \emph{Dilution:} transcripts grow faster than the decisions they contain, and constraints in the middle of long inputs are used less reliably~\cite{liu2024lost,hsieh2024ruler}. \emph{Repeated exploration:} an agent that does not know which hypotheses a previous agent rejected can explore them again. \emph{Contamination:} a store that indexes all agent output also indexes hallucinated and superseded claims~\cite{ji2023hallucination}, and a later agent cannot tell a rejected proposal from an approved decision.
+A memory layer returns stored items that match the current task~\cite{lewis2020rag,packer2023memgpt,chhikara2025mem0}. It does not attach standing to those items. Three kinds of degradation follow. \emph{Dilution:} transcripts grow faster than the decisions they contain, and information in the middle of long inputs is used less reliably~\cite{liu2024lost}. \emph{Repeated exploration:} an agent that does not know which hypotheses a previous agent rejected can explore them again. \emph{Contamination:} a store that indexes all agent output also indexes hallucinated and superseded claims~\cite{ji2023hallucination}, and a later agent cannot tell a rejected proposal from an approved decision.
 
 \subsection{Requirements for an arbitration layer}
-We state six requirements. Section~\ref{sec:framework} defines the model that meets them, and Section~\ref{sec:threats} lists where our implementation does not yet meet them.
+We state six requirements. Section~\ref{sec:framework} defines the model that meets them, and Sections~\ref{sec:framework} and~\ref{sec:threats} state where our code falls short.
 \begin{description}
     \item[R1 Determinism.] The same inputs produce the same decision.
     \item[R2 Evidence.] Every decision cites the sources, rules, and commits that produced it.
