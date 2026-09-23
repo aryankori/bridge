@@ -96,11 +96,26 @@ Foundational research documents:
 
 ### Phase 1: Empirical Conflict Resolution Benchmark (Active)
 - **Benchmark `EXP-005`**: 10-scenario cross-agent behavior benchmark testing conflict detection across Unambiguous, Ambiguous, and Unsolvable conditions.
-- **Pre-Verification Result**: The deterministic conflict resolver achieved **10/10 (100%) accuracy** against gold standards:
- - 5/5 Unambiguous Scenarios correctly resolved with directive overrides (`PERMITTED_WITH_OVERRIDE` / `PERMITTED`).
- - 3/3 Ambiguous Scenarios correctly flagged as `AMBIGUOUS`.
- - 2/2 Unsolvable Scenarios correctly gated (`BLOCKED_CONFLICT` / `REQUIRES_AUTHORIZATION`).
-- **Upcoming Wedge**: Autonomous Developer CLI resolver (`bridge resolve` npm package) to resolve branch divergences and agent collisions at the git worktree layer.
+- **Pre-Verification Result**: The frozen resolver (`fc322c6`) agrees with the project-authored gold labels on **10/10** scenarios. The project team wrote these labels, so this result is agreement, not independent accuracy. Two labels do not agree with their own scenario tier: `exp005-scn-001` (tier Unambiguous, gold `AMBIGUOUS`) and `exp005-scn-009` (tier Unsolvable, gold `PERMITTED`).
+- **Live Agent Pilot**: 25 of 60 planned trials have a scored record. The automated scorer has known defects. The pilot result is inconclusive. Refer to `paper/sections/06_results.tex`.
+- **Developer Wedge**: `bridge resolve` arbitrates a divergence between two agent worktrees against CODEOWNERS and commit signatures (see below).
+
+### `bridge resolve`
+
+```bash
+pnpm build
+node dist/bin/bridge.js resolve ../worktree-agent-a ../worktree-agent-b
+node dist/bin/bridge.js resolve agent-a agent-b --json --identities identities.json
+```
+
+For each file that both sides change, Bridge reads CODEOWNERS at the merge base and the newest commit that changed the file on each side. A side has owner standing when the commit author is an owner and the signature is good (`%G?` = `G` or `U`). `--allow-unsigned` also accepts unsigned owner commits. Bridge compares committed work only; uncommitted changes in a worktree are not part of the plan.
+
+| Status | Condition | Exit code |
+| :--- | :--- | :--- |
+| `PERMITTED` | No file changes on both sides, or both sides produce the same content | 0 |
+| `PERMITTED_WITH_OVERRIDE` | Only one side has owner standing; that side governs | 0 |
+| `AMBIGUOUS` | Both sides have owner standing, or no rule assigns an owner | 2 |
+| `BLOCKED_CONFLICT` | Neither side has owner standing, a signature is bad or revoked, or a branch changes CODEOWNERS | 3 |
 
 ---
 
@@ -133,6 +148,7 @@ pnpm install
 | :--- | :--- |
 | `pnpm typecheck` | Validates TypeScript compiler strictness |
 | `pnpm test` | Executes unit test suite via Vitest |
+| `pnpm test:coverage` | Runs the suite with V8 coverage; enforces 100% on the `bridge resolve` modules |
 | `pnpm build` | Bundles TypeScript source via tsup |
 | `pnpm lint` | Runs ESLint analysis |
 | `pnpm format` | Formats codebase with Prettier |
