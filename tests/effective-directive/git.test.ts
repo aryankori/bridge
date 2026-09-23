@@ -1,42 +1,47 @@
 import path from 'node:path';
 import { afterAll, beforeAll, describe, it, expect } from 'vitest';
 import {
+  DELETED_BLOB,
   GitCommandError,
   blobIdAt,
   createGitRunner,
-  findMergeBase,
+  findMergeBases,
+  isAncestor,
   listChangedFiles,
   listCommits,
-  parseCommitLog,
+  parseRawLog,
   readFileAt,
   resolveEndpoint,
+  resolveRepoRoot,
   type GitRunner,
 } from '../../src/effective-directive/git.js';
 import { createTempRepo, FIXTURE_AUTHOR, type TempRepo } from './git-fixture.js';
 
 const ALICE = { name: 'Alice', email: 'alice@example.com' };
+const A = 'a'.repeat(40);
+const B = 'b'.repeat(40);
+const Z = '0'.repeat(40);
 
-describe('parseCommitLog', () => {
-  it('parses commit headers and touched files', () => {
+describe('parseRawLog', () => {
+  it('parses headers, post-image blobs, deletions, and exact path names', () => {
     const output = [
-      '\x1eabc123\x1fAlice\x1falice@example.com\x1fG\x1fAlice <alice@example.com>',
-      '',
-      'src/a.ts',
-      'src/b.ts',
-      '\x1edef456\x1fBot\x1fbot@example.com\x1fN\x1f',
-      '',
-      'README.md',
-      '',
-    ].join('\n');
+      `\x1eabc123\x1fAlice\x1falice@example.com\x1fG\x1fAlice <alice@example.com>\0\n`,
+      `:100644 100644 ${Z} ${A} M\0src/a.ts\0`,
+      `:100644 000000 ${B} ${Z} D\0 lead space.md\0`,
+      `:000000 100644 ${Z} ${B} A\0q"uo\tte.md \0`,
+      `\x1edef456\x1fBot\x1fbot@example.com\x1fN\x1f\0\n`,
+      `:100644 100644 ${A} ${B} M\0README.md\0`,
+    ].join('');
 
-    expect(parseCommitLog(output)).toEqual([
+    expect(parseRawLog(output)).toEqual([
       {
         sha: 'abc123',
         authorName: 'Alice',
         authorEmail: 'alice@example.com',
         signatureStatus: 'G',
         signer: 'Alice <alice@example.com>',
-        files: ['src/a.ts', 'src/b.ts'],
+        files: ['src/a.ts', ' lead space.md', 'q"uo\tte.md '],
+        blobs: { 'src/a.ts': A, ' lead space.md': Z, 'q"uo\tte.md ': B },
       },
       {
         sha: 'def456',
@@ -45,12 +50,18 @@ describe('parseCommitLog', () => {
         signatureStatus: 'N',
         signer: '',
         files: ['README.md'],
+        blobs: { 'README.md': B },
       },
     ]);
+    expect(DELETED_BLOB.test(Z)).toBe(true);
+    expect(DELETED_BLOB.test(A)).toBe(false);
   });
 
-  it('maps unknown signature letters to E and fills missing fields', () => {
-    const [unknown, short] = parseCommitLog('\x1eaaa\x1fA\x1fa@x\x1fZ\x1f\r\n\x1ebbb\x1f\n');
+  it('handles commits without changes, unknown letters, short headers, and junk', () => {
+    const [merge, unknown, short] = parseRawLog(
+      '\x1emerge\x1fM\x1fm@x\x1fN\x1f\0\n\x1eaaa\x1fA\x1fa@x\x1fZ\x1f\0\x1ebbb\x1f',
+    );
+    expect(merge).toMatchObject({ sha: 'merge', files: [], blobs: {} });
     expect(unknown?.signatureStatus).toBe('E');
     expect(short).toEqual({
       sha: 'bbb',
@@ -59,12 +70,12 @@ describe('parseCommitLog', () => {
       signatureStatus: 'N',
       signer: '',
       files: [],
+      blobs: {},
     });
-  });
-
-  it('skips chunks without a header', () => {
-    expect(parseCommitLog('garbage\n')).toEqual([]);
-    expect(parseCommitLog('')).toEqual([]);
+    expect(parseRawLog('garbage\n')).toEqual([]);
+    expect(parseRawLog('')).toEqual([]);
+    const [junk] = parseRawLog(`\x1ex\x1fA\x1fa@x\x1fN\x1f\0not-a-record\0path\0:bad\0p\0:x\0\0`);
+    expect(junk).toMatchObject({ files: ['p'], blobs: { p: '' } });
   });
 });
 
@@ -83,14 +94,14 @@ describe('git adapter error handling', () => {
     expect((error as GitCommandError).message).toContain('exit unknown');
   });
 
-  it('rethrows merge-base failures other than "no common ancestor"', async () => {
-    const fatal = new GitCommandError(['merge-base'], 128, 'fatal: bad object');
-    await expect(findMergeBase(failing(fatal), '.', 'a', 'b')).rejects.toBe(fatal);
-  });
+  it('rethrows failures other than the documented "not found" exit status', async () => {
+    const fatal = new GitCommandError(['x'], 128, 'fatal: bad object');
+    await expect(findMergeBases(failing(fatal), '.', 'a', 'b')).rejects.toBe(fatal);
+    await expect(isAncestor(failing(fatal), '.', 'a', 'b')).rejects.toBe(fatal);
+    await expect(blobIdAt(failing(fatal), '.', 'HEAD', 'x')).rejects.toBe(fatal);
+    await expect(readFileAt(failing(fatal), '.', 'HEAD', 'x')).rejects.toBe(fatal);
 
-  it('rethrows non-Git errors from file reads', async () => {
     const boom = new Error('runner crashed');
-    await expect(readFileAt(failing(boom), '.', 'HEAD', 'x')).rejects.toBe(boom);
     await expect(blobIdAt(failing(boom), '.', 'HEAD', 'x')).rejects.toBe(boom);
   });
 });
@@ -100,6 +111,7 @@ describe('git adapter against a real repository', () => {
   let git: GitRunner;
   let baseSha: string;
   let featureSha: string;
+  let oddSha: string;
 
   beforeAll(() => {
     repo = createTempRepo();
@@ -114,6 +126,15 @@ describe('git adapter against a real repository', () => {
     featureSha = repo.commit('feature change', ALICE);
     repo.git(['checkout', '-q', 'main']);
 
+    // Paths with a quote, a tab, and leading or trailing spaces. Built with plumbing,
+    // so the test also runs on file systems that reject these names.
+    const blob = repo.git(['hash-object', '-w', '--stdin'], repo.dir, 'odd\n').trim();
+    const tree = repo
+      .git(['mktree', '-z'], repo.dir, `100644 blob ${blob}\t q"uo\tte.md \0`)
+      .trim();
+    oddSha = repo.git(['commit-tree', tree, '-p', baseSha, '-m', 'odd names']).trim();
+    repo.git(['update-ref', 'refs/heads/odd', oddSha]);
+
     repo.git(['checkout', '-q', '--orphan', 'unrelated']);
     repo.git(['rm', '-rf', '-q', '.']);
     repo.write('other.txt', 'other\n');
@@ -126,7 +147,7 @@ describe('git adapter against a real repository', () => {
 
   afterAll(() => repo.cleanup());
 
-  it('resolves revisions and worktree directories', async () => {
+  it('resolves revisions, worktree directories, and the repository root', async () => {
     await expect(resolveEndpoint(git, repo.dir, 'feature')).resolves.toEqual({
       label: 'feature',
       sha: featureSha,
@@ -138,6 +159,9 @@ describe('git adapter against a real repository', () => {
 
     const detached = await resolveEndpoint(git, repo.dir, 'wt-detached', repo.root);
     expect(detached).toMatchObject({ label: 'wt-detached', sha: baseSha });
+
+    const root = await resolveRepoRoot(git, path.join(repo.dir, 'src'));
+    expect(root.toLowerCase()).toBe(path.resolve(repo.dir).toLowerCase());
   });
 
   it('rejects unknown revisions with GitCommandError', async () => {
@@ -146,12 +170,14 @@ describe('git adapter against a real repository', () => {
     );
   });
 
-  it('finds the merge base, or undefined for unrelated histories', async () => {
-    await expect(findMergeBase(git, repo.dir, 'main', 'feature')).resolves.toBe(baseSha);
-    await expect(findMergeBase(git, repo.dir, 'main', 'unrelated')).resolves.toBeUndefined();
+  it('finds merge bases and ancestry, or nothing for unrelated histories', async () => {
+    await expect(findMergeBases(git, repo.dir, 'main', 'feature')).resolves.toEqual([baseSha]);
+    await expect(findMergeBases(git, repo.dir, 'main', 'unrelated')).resolves.toEqual([]);
+    await expect(isAncestor(git, repo.dir, baseSha, 'feature')).resolves.toBe(true);
+    await expect(isAncestor(git, repo.dir, 'feature', 'main')).resolves.toBe(false);
   });
 
-  it('lists changed files and commits, including paths with spaces', async () => {
+  it('lists changed files and commits with exact paths and post-image blobs', async () => {
     await expect(listChangedFiles(git, repo.dir, baseSha, featureSha)).resolves.toEqual([
       'src/a.ts',
       'src/new file.ts',
@@ -166,6 +192,28 @@ describe('git adapter against a real repository', () => {
       signatureStatus: 'N',
       files: ['src/a.ts', 'src/new file.ts'],
     });
+    expect(commits[0]?.blobs['src/a.ts']).toBe(
+      await blobIdAt(git, repo.dir, featureSha, 'src/a.ts'),
+    );
+
+    const odd = ' q"uo\tte.md ';
+    await expect(listChangedFiles(git, repo.dir, baseSha, oddSha)).resolves.toContain(odd);
+    const oddCommits = await listCommits(git, repo.dir, baseSha, oddSha);
+    expect(oddCommits[0]?.blobs[odd]).toBe(await blobIdAt(git, repo.dir, oddSha, odd));
+    expect(oddCommits[0]?.blobs['README.md']).toMatch(DELETED_BLOB);
+  });
+
+  it('ignores a diff.relative setting when run from a subdirectory', async () => {
+    repo.git(['config', 'diff.relative', 'true']);
+    try {
+      const sub = path.join(repo.dir, 'src');
+      await expect(listChangedFiles(git, sub, baseSha, featureSha)).resolves.toEqual([
+        'src/a.ts',
+        'src/new file.ts',
+      ]);
+    } finally {
+      repo.git(['config', '--unset', 'diff.relative']);
+    }
   });
 
   it('reads files and blob ids at a revision', async () => {

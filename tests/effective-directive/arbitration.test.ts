@@ -3,6 +3,7 @@ import {
   arbitrateDivergence,
   computeStanding,
   isOwner,
+  signerIdentity,
   type ArbitrationInput,
   type SideHistory,
 } from '../../src/effective-directive/arbitration.js';
@@ -10,20 +11,24 @@ import { parseCodeowners } from '../../src/effective-directive/codeowners.js';
 import type { CommitRecord, SignatureStatus } from '../../src/effective-directive/git.js';
 
 const BASE = 'b'.repeat(40);
+const ZERO = '0'.repeat(40);
 
+/** A commit that sets each path to the given post-image blob id. */
 function commit(
   sha: string,
   authorEmail: string,
-  files: string[],
+  blobs: Record<string, string>,
   signatureStatus: SignatureStatus = 'N',
+  signer = '',
 ): CommitRecord {
   return {
     sha: sha.padEnd(40, '0'),
     authorName: authorEmail,
     authorEmail,
     signatureStatus,
-    signer: '',
-    files,
+    signer,
+    files: Object.keys(blobs),
+    blobs,
   };
 }
 
@@ -53,16 +58,20 @@ function input(
     left,
     right,
     codeowners: CODEOWNERS,
+    authorityRef: 'merge base',
     identities: {},
     policy: { requireSignedCommits: true },
     ...overrides,
   };
 }
 
-describe('isOwner', () => {
+const TOKEN = 'src/auth/token.ts';
+const ALICE = 'alice@example.com';
+
+describe('isOwner and signerIdentity', () => {
   it('matches email owners case-insensitively', () => {
-    expect(isOwner('Alice@Example.com', ['alice@example.com'], {})).toBe(true);
-    expect(isOwner('eve@example.com', ['alice@example.com'], {})).toBe(false);
+    expect(isOwner('Alice@Example.com', [ALICE], {})).toBe(true);
+    expect(isOwner('eve@example.com', [ALICE], {})).toBe(false);
   });
 
   it('matches handles through GitHub noreply addresses', () => {
@@ -78,86 +87,127 @@ describe('isOwner', () => {
     expect(isOwner('dave@example.com', ['@org/core'], identities)).toBe(false);
     expect(isOwner('dave@example.com', ['@unmapped'], identities)).toBe(false);
   });
+
+  it('extracts the identity from GPG and SSH signer strings', () => {
+    expect(signerIdentity('Alice Example <alice@example.com>')).toBe(ALICE);
+    expect(signerIdentity(' alice@example.com ')).toBe(ALICE);
+  });
 });
 
 describe('computeStanding', () => {
-  const owners = ['alice@example.com'];
+  const owners = [ALICE];
   const strict = { requireSignedCommits: true };
   const lenient = { requireSignedCommits: false };
-
-  it('uses the newest commit that touched the file', () => {
-    const commits = [
-      commit('c2', 'agent@bots.example', ['src/auth/token.ts']),
-      commit('c1', 'alice@example.com', ['src/auth/token.ts'], 'G'),
-    ];
-    expect(computeStanding(commits, 'src/auth/token.ts', owners, {}, strict).level).toBe(
-      'NON_OWNER',
+  const grade = (status: SignatureStatus, signer: string, author = ALICE, policy = strict) =>
+    computeStanding(
+      [commit('c1', author, { f: 'x' }, status, signer)],
+      'f',
+      'x',
+      owners,
+      {},
+      policy,
     );
+
+  it('gives verified standing only to a good signature whose signer is an owner', () => {
+    expect(grade('G', ALICE)).toMatchObject({ level: 'VERIFIED_OWNER', hasStanding: true });
+    expect(grade('G', 'Alice <alice@example.com>', 'agent@bots.example')).toMatchObject({
+      level: 'VERIFIED_OWNER',
+      hasStanding: true,
+    });
   });
 
-  it('grades owner commits by signature status', () => {
-    const grade = (status: SignatureStatus, policy = strict) =>
-      computeStanding([commit('c1', 'alice@example.com', ['f'], status)], 'f', owners, {}, policy);
+  it('does not trust an owner author email that another key signed', () => {
+    expect(grade('G', 'agent@bots.example')).toMatchObject({
+      level: 'UNVERIFIED_OWNER',
+      hasStanding: false,
+    });
+    expect(grade('G', '')).toMatchObject({ level: 'UNVERIFIED_OWNER', hasStanding: false });
+  });
 
-    expect(grade('G')).toMatchObject({ level: 'VERIFIED_OWNER', hasStanding: true });
-    expect(grade('U')).toMatchObject({ level: 'VERIFIED_OWNER', hasStanding: true });
-    for (const status of ['N', 'E', 'X', 'Y'] as const) {
-      expect(grade(status)).toMatchObject({ level: 'UNVERIFIED_OWNER', hasStanding: false });
-      expect(grade(status, lenient)).toMatchObject({
+  it('treats U (untrusted key) and the other non-good statuses as unverified', () => {
+    for (const status of ['U', 'N', 'E', 'X', 'Y'] as const) {
+      expect(grade(status, ALICE)).toMatchObject({ level: 'UNVERIFIED_OWNER', hasStanding: false });
+      expect(grade(status, ALICE, ALICE, lenient)).toMatchObject({
         level: 'UNVERIFIED_OWNER',
         hasStanding: true,
       });
     }
-    expect(grade('B')).toMatchObject({ level: 'INVALID_SIGNATURE', hasStanding: false });
-    expect(grade('R', lenient)).toMatchObject({ level: 'INVALID_SIGNATURE', hasStanding: false });
   });
 
-  it('reports no standing when no commit on the side touched the file', () => {
-    const standing = computeStanding(
-      [commit('m1', 'alice@example.com', [])],
-      'f',
-      owners,
-      {},
-      strict,
+  it('marks bad signatures and revoked keys as invalid, and non-owners as non-owners', () => {
+    expect(grade('B', ALICE)).toMatchObject({ level: 'INVALID_SIGNATURE', hasStanding: false });
+    expect(grade('R', ALICE, ALICE, lenient)).toMatchObject({ level: 'INVALID_SIGNATURE' });
+    expect(grade('G', 'bot@bots.example', 'bot@bots.example')).toMatchObject({
+      level: 'NON_OWNER',
+      hasStanding: false,
+    });
+  });
+
+  it('uses the newest commit that produced the tip version, not the newest that touched the file', () => {
+    const commits = [
+      // A merged-in owner commit whose change the side discarded (for example, git merge -s ours).
+      commit('owner', ALICE, { f: 'owner-blob' }, 'G', ALICE),
+      commit('agent', 'agent@bots.example', { f: 'agent-blob' }),
+    ];
+    const standing = computeStanding(commits, 'f', 'agent-blob', owners, {}, strict);
+    expect(standing).toMatchObject({
+      level: 'NON_OWNER',
+      commit: { sha: 'agent'.padEnd(40, '0') },
+    });
+  });
+
+  it('matches a deletion at the tip to the commit that deleted the file', () => {
+    const commits = [
+      commit('del', ALICE, { f: ZERO }, 'G', ALICE),
+      commit('c0', 'x@y.z', { f: 'x' }),
+    ];
+    expect(computeStanding(commits, 'f', undefined, owners, {}, strict).level).toBe(
+      'VERIFIED_OWNER',
     );
+  });
+
+  it('reports no standing when no commit produced the tip version', () => {
+    const standing = computeStanding([commit('m1', ALICE, {})], 'f', 'x', owners, {}, strict);
     expect(standing).toEqual({ level: 'NON_OWNER', hasStanding: false });
   });
 });
 
 describe('arbitrateDivergence', () => {
+  const signedAlice = (sha: string, blob: string) =>
+    commit(sha, ALICE, { [TOKEN]: blob }, 'G', ALICE);
+  const agent = (sha: string, path: string, blob: string, email = 'bot@bots.example') =>
+    commit(sha, email, { [path]: blob });
+
   it('gives PERMITTED_WITH_OVERRIDE to the only side with verified owner standing', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'alice@example.com', ['src/auth/token.ts'], 'G')], {
-          'src/auth/token.ts': 'blob-a',
-        }),
-        side('agent-b', [commit('b1', 'bot@bots.example', ['src/auth/token.ts'], 'G')], {
-          'src/auth/token.ts': 'blob-b',
-        }),
+        side('agent-a', [signedAlice('a1', 'blob-a')], { [TOKEN]: 'blob-a' }),
+        side('agent-b', [agent('b1', TOKEN, 'blob-b')], { [TOKEN]: 'blob-b' }),
       ),
     );
 
     expect(plan.status).toBe('PERMITTED_WITH_OVERRIDE');
     expect(plan.isObjectiveTruthClaim).toBe(false);
+    expect(plan.authorityRef).toBe('merge base');
     const [file] = plan.files;
     expect(file).toMatchObject({
-      path: 'src/auth/token.ts',
+      path: TOKEN,
       reason: 'SINGLE_SIDE_STANDING',
       governingSide: 'left',
       overriddenSide: 'right',
-      owners: ['alice@example.com'],
+      owners: [ALICE],
       ownerRule: { pattern: '/src/auth/', line: 1 },
     });
+    expect(file?.left.commit?.signer).toBe(ALICE);
     expect(file?.action).toContain('Keep the agent-a version');
   });
 
   it('lets the right side govern when only the right side has standing', () => {
+    const bobKey = '9+bob@users.noreply.github.com';
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'bot@bots.example', ['src/ui/view.ts'], 'G')], {
-          'src/ui/view.ts': 'x',
-        }),
-        side('agent-b', [commit('b1', '9+bob@users.noreply.github.com', ['src/ui/view.ts'], 'U')], {
+        side('agent-a', [agent('a1', 'src/ui/view.ts', 'x')], { 'src/ui/view.ts': 'x' }),
+        side('agent-b', [commit('b1', bobKey, { 'src/ui/view.ts': 'y' }, 'G', bobKey)], {
           'src/ui/view.ts': 'y',
         }),
       ),
@@ -166,15 +216,26 @@ describe('arbitrateDivergence', () => {
     expect(plan.files[0]?.action).toContain('Keep the agent-b version');
   });
 
+  it('blocks an owner author email that a non-owner key signed', () => {
+    const spoof = commit('a1', ALICE, { [TOKEN]: 'x' }, 'G', 'agent@bots.example');
+    const plan = arbitrateDivergence(
+      input(
+        side('agent-a', [spoof], { [TOKEN]: 'x' }),
+        side('agent-b', [agent('b1', TOKEN, 'y')], { [TOKEN]: 'y' }),
+      ),
+    );
+    expect(plan.status).toBe('BLOCKED_CONFLICT');
+    expect(plan.files[0]).toMatchObject({
+      reason: 'NO_STANDING',
+      left: { level: 'UNVERIFIED_OWNER' },
+    });
+  });
+
   it('returns AMBIGUOUS when both sides have equal owner standing', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'alice@example.com', ['src/auth/token.ts'], 'G')], {
-          'src/auth/token.ts': 'x',
-        }),
-        side('agent-b', [commit('b1', 'alice@example.com', ['src/auth/token.ts'], 'G')], {
-          'src/auth/token.ts': 'y',
-        }),
+        side('agent-a', [signedAlice('a1', 'x')], { [TOKEN]: 'x' }),
+        side('agent-b', [signedAlice('b1', 'y')], { [TOKEN]: 'y' }),
       ),
     );
     expect(plan.status).toBe('AMBIGUOUS');
@@ -184,61 +245,53 @@ describe('arbitrateDivergence', () => {
   it('returns BLOCKED_CONFLICT when neither side has owner standing', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'alice@example.com', ['src/auth/token.ts'], 'N')], {
-          'src/auth/token.ts': 'x',
-        }),
-        side('agent-b', [commit('b1', 'bot@bots.example', ['src/auth/token.ts'], 'G')], {
-          'src/auth/token.ts': 'y',
-        }),
+        side('agent-a', [commit('a1', ALICE, { [TOKEN]: 'x' })], { [TOKEN]: 'x' }),
+        side('agent-b', [agent('b1', TOKEN, 'y')], { [TOKEN]: 'y' }),
       ),
     );
     expect(plan.status).toBe('BLOCKED_CONFLICT');
     expect(plan.files[0]).toMatchObject({ reason: 'NO_STANDING' });
-    expect(plan.files[0]?.action).toContain('alice@example.com');
+    expect(plan.files[0]?.action).toContain(ALICE);
   });
 
-  it('accepts unsigned owner commits when the policy allows them', () => {
+  it('accepts unsigned owner-authored commits when the policy allows them', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'alice@example.com', ['src/auth/token.ts'], 'N')], {
-          'src/auth/token.ts': 'x',
-        }),
-        side('agent-b', [commit('b1', 'bot@bots.example', ['src/auth/token.ts'], 'N')], {
-          'src/auth/token.ts': 'y',
-        }),
+        side('agent-a', [commit('a1', ALICE, { [TOKEN]: 'x' })], { [TOKEN]: 'x' }),
+        side('agent-b', [agent('b1', TOKEN, 'y')], { [TOKEN]: 'y' }),
         { policy: { requireSignedCommits: false } },
       ),
     );
     expect(plan.status).toBe('PERMITTED_WITH_OVERRIDE');
   });
 
-  it('blocks arbitration when a commit has a bad or revoked signature', () => {
+  it('blocks arbitration when a deciding commit has a bad signature or a revoked key', () => {
     for (const [leftStatus, rightStatus] of [
       ['B', 'N'],
       ['G', 'R'],
     ] as const) {
       const plan = arbitrateDivergence(
         input(
-          side('agent-a', [commit('a1', 'alice@example.com', ['src/auth/token.ts'], leftStatus)], {
-            'src/auth/token.ts': 'x',
+          side('agent-a', [commit('a1', ALICE, { [TOKEN]: 'x' }, leftStatus, ALICE)], {
+            [TOKEN]: 'x',
           }),
-          side('agent-b', [commit('b1', 'bot@bots.example', ['src/auth/token.ts'], rightStatus)], {
-            'src/auth/token.ts': 'y',
+          side('agent-b', [commit('b1', 'bot@bots.example', { [TOKEN]: 'y' }, rightStatus)], {
+            [TOKEN]: 'y',
           }),
         ),
       );
       expect(plan.status).toBe('BLOCKED_CONFLICT');
       expect(plan.files[0]?.reason).toBe('INVALID_SIGNATURE');
-      expect(plan.files[0]?.action).toMatch(/Commit [ab]100000 has a bad or revoked signature/);
+      expect(plan.files[0]?.action).toMatch(/Commit [ab]100000 has signature status [BR]/);
     }
   });
 
-  it('ignores a missing commit record when it checks signatures', () => {
+  it('ignores a missing deciding commit when it checks signatures', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [], { 'src/auth/token.ts': 'x' }),
-        side('agent-b', [commit('b1', 'bot@bots.example', ['src/auth/token.ts'], 'B')], {
-          'src/auth/token.ts': 'y',
+        side('agent-a', [], { [TOKEN]: 'x' }),
+        side('agent-b', [commit('b1', 'bot@bots.example', { [TOKEN]: 'y' }, 'B')], {
+          [TOKEN]: 'y',
         }),
       ),
     );
@@ -249,25 +302,21 @@ describe('arbitrateDivergence', () => {
   it('returns AMBIGUOUS when no rule assigns an owner', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'alice@example.com', ['README.md'], 'G')], {
+        side('agent-a', [commit('a1', ALICE, { 'README.md': 'x' }, 'G', ALICE)], {
           'README.md': 'x',
         }),
-        side('agent-b', [commit('b1', 'bot@bots.example', ['README.md'])], { 'README.md': 'y' }),
+        side('agent-b', [agent('b1', 'README.md', 'y')], { 'README.md': 'y' }),
       ),
     );
     expect(plan.status).toBe('AMBIGUOUS');
     expect(plan.files[0]).toMatchObject({ reason: 'NO_OWNER', owners: [], ownerRule: undefined });
   });
 
-  it('treats every overlap as unowned when the merge base has no CODEOWNERS file', () => {
+  it('treats every overlap as unowned when the authority ref has no CODEOWNERS file', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'alice@example.com', ['src/auth/token.ts'], 'G')], {
-          'src/auth/token.ts': 'x',
-        }),
-        side('agent-b', [commit('b1', 'bot@bots.example', ['src/auth/token.ts'])], {
-          'src/auth/token.ts': 'y',
-        }),
+        side('agent-a', [signedAlice('a1', 'x')], { [TOKEN]: 'x' }),
+        side('agent-b', [agent('b1', TOKEN, 'y')], { [TOKEN]: 'y' }),
         { codeowners: undefined },
       ),
     );
@@ -278,14 +327,22 @@ describe('arbitrateDivergence', () => {
   it('returns PERMITTED for identical changes, including deletion on both sides', () => {
     const plan = arbitrateDivergence(
       input(
-        side('agent-a', [commit('a1', 'bot@bots.example', ['src/ui/view.ts', 'old.ts'])], {
-          'src/ui/view.ts': 'same',
-          'old.ts': undefined,
-        }),
-        side('agent-b', [commit('b1', 'bot2@bots.example', ['src/ui/view.ts', 'old.ts'])], {
-          'src/ui/view.ts': 'same',
-          'old.ts': undefined,
-        }),
+        side(
+          'agent-a',
+          [commit('a1', 'bot@bots.example', { 'src/ui/view.ts': 's', 'old.ts': ZERO })],
+          {
+            'src/ui/view.ts': 's',
+            'old.ts': undefined,
+          },
+        ),
+        side(
+          'agent-b',
+          [commit('b1', 'bot2@bots.example', { 'src/ui/view.ts': 's', 'old.ts': ZERO })],
+          {
+            'src/ui/view.ts': 's',
+            'old.ts': undefined,
+          },
+        ),
       ),
     );
     expect(plan.status).toBe('PERMITTED');
@@ -297,14 +354,16 @@ describe('arbitrateDivergence', () => {
       input(
         side(
           'agent-a',
-          [commit('a1', 'bot@bots.example', ['.github/CODEOWNERS', 'a-only.ts'])],
-          {},
+          [commit('a1', 'bot@bots.example', { '.github/CODEOWNERS': 'o', 'a-only.ts': 'a' })],
+          { '.github/CODEOWNERS': 'o' },
           ['.github/CODEOWNERS', 'a-only.ts'],
         ),
-        side('agent-b', [commit('b1', 'bot2@bots.example', ['b-only.ts', 'docs/CODEOWNERS'])], {}, [
-          'b-only.ts',
-          'docs/CODEOWNERS',
-        ]),
+        side(
+          'agent-b',
+          [commit('b1', 'bot2@bots.example', { 'b-only.ts': 'b', 'docs/CODEOWNERS': 'd' })],
+          { 'docs/CODEOWNERS': 'd' },
+          ['b-only.ts', 'docs/CODEOWNERS'],
+        ),
       ),
     );
     expect(plan.status).toBe('BLOCKED_CONFLICT');
@@ -317,25 +376,52 @@ describe('arbitrateDivergence', () => {
     expect(plan.exclusiveChanges).toEqual({ left: 1, right: 1 });
   });
 
+  it('blocks when the merge base is not on the trusted ref', () => {
+    const plan = arbitrateDivergence(
+      input(side('agent-a', [], {}, []), side('agent-b', [], {}, []), {
+        authorityRef: 'main',
+        untrustedBase: true,
+      }),
+    );
+    expect(plan.status).toBe('BLOCKED_CONFLICT');
+    expect(plan.authorityRef).toBe('main');
+    expect(plan.files[0]).toMatchObject({
+      path: '.github/CODEOWNERS',
+      reason: 'UNTRUSTED_MERGE_BASE',
+    });
+    expect(plan.files[0]?.action).toContain('not on main');
+
+    const noOwnersFile = arbitrateDivergence(
+      input(side('a', [], {}, []), side('b', [], {}, []), {
+        authorityRef: 'main',
+        untrustedBase: true,
+        codeowners: undefined,
+      }),
+    );
+    expect(noOwnersFile.files[0]?.path).toBe('(no CODEOWNERS file)');
+  });
+
   it('reports the worst file status as the plan status', () => {
     const plan = arbitrateDivergence(
       input(
         side(
           'agent-a',
           [
-            commit('a2', 'alice@example.com', ['src/auth/token.ts'], 'G'),
-            commit('a1', 'bot@bots.example', ['README.md', 'src/ui/view.ts']),
+            signedAlice('a2', '1'),
+            commit('a1', 'bot@bots.example', { 'README.md': '2', 'src/ui/view.ts': '3' }),
           ],
-          { 'src/auth/token.ts': '1', 'README.md': '2', 'src/ui/view.ts': '3' },
+          { [TOKEN]: '1', 'README.md': '2', 'src/ui/view.ts': '3' },
         ),
         side(
           'agent-b',
-          [commit('b1', 'bot2@bots.example', ['src/auth/token.ts', 'README.md', 'src/ui/view.ts'])],
-          {
-            'src/auth/token.ts': '4',
-            'README.md': '5',
-            'src/ui/view.ts': '6',
-          },
+          [
+            commit('b1', 'bot2@bots.example', {
+              [TOKEN]: '4',
+              'README.md': '5',
+              'src/ui/view.ts': '6',
+            }),
+          ],
+          { [TOKEN]: '4', 'README.md': '5', 'src/ui/view.ts': '6' },
         ),
       ),
     );
@@ -353,7 +439,7 @@ describe('arbitrateDivergence', () => {
     const left = side('main', [], {}, []);
     left.endpoint.sha = BASE;
     const plan = arbitrateDivergence(
-      input(left, side('agent-b', [commit('b1', 'x@y.z', ['f'])], {}, ['f'])),
+      input(left, side('agent-b', [commit('b1', 'x@y.z', { f: 'f' })], {}, ['f'])),
     );
     expect(plan.diverged).toBe(false);
     expect(plan.status).toBe('PERMITTED');

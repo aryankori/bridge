@@ -105,17 +105,19 @@ Foundational research documents:
 ```bash
 pnpm build
 node dist/bin/bridge.js resolve ../worktree-agent-a ../worktree-agent-b
-node dist/bin/bridge.js resolve agent-a agent-b --json --identities identities.json
+node dist/bin/bridge.js resolve agent-a agent-b --json --identities identities.json --trusted main
 ```
 
-For each file that both sides change, Bridge reads CODEOWNERS at the merge base and the newest commit that changed the file on each side. A side has owner standing when the commit author is an owner and the signature is good (`%G?` = `G` or `U`). `--allow-unsigned` also accepts unsigned owner commits. Bridge compares committed work only; uncommitted changes in a worktree are not part of the plan.
+For each file that both sides change, Bridge reads CODEOWNERS (at the merge base, or at the `--trusted` ref) and finds, on each side, the newest commit that produced the tip version of the file. A side has owner standing only when that commit has a good signature (`%G?` = `G`) and the signer (`%GS`) is an owner. An owner author email alone is not enough, because anyone can set it. `--allow-unsigned` also accepts owner-authored commits without an owner signature. Bridge compares committed work only; uncommitted changes in a worktree are not part of the plan.
+
+Use `--trusted main` when agent branches may share commits that are not on your protected branch. Bridge then reads CODEOWNERS from `main` and blocks the plan when the merge base is not on `main`. Criss-cross histories with more than one merge base are refused (exit 1).
 
 | Status | Condition | Exit code |
 | :--- | :--- | :--- |
 | `PERMITTED` | No file changes on both sides, or both sides produce the same content | 0 |
 | `PERMITTED_WITH_OVERRIDE` | Only one side has owner standing; that side governs | 0 |
 | `AMBIGUOUS` | Both sides have owner standing, or no rule assigns an owner | 2 |
-| `BLOCKED_CONFLICT` | Neither side has owner standing, a signature is bad or revoked, or a branch changes CODEOWNERS | 3 |
+| `BLOCKED_CONFLICT` | Neither side has owner standing, a signature is bad (`B`) or made by a revoked key (`R`), a branch changes CODEOWNERS, or the merge base is not on the `--trusted` ref | 3 |
 
 ---
 

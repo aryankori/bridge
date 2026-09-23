@@ -1,14 +1,20 @@
 import type { EffectiveDirectiveStatus } from './types.js';
 import { CODEOWNERS_LOCATIONS, findOwners, type CodeownersRule } from './codeowners.js';
-import type { BranchEndpoint, CommitRecord, SignatureStatus } from './git.js';
+import {
+  DELETED_BLOB,
+  type BranchEndpoint,
+  type CommitRecord,
+  type SignatureStatus,
+} from './git.js';
 
 /**
  * Divergence arbitration between two agent branches.
  *
  * For each file that both branches change, Bridge computes the standing of
  * each side from two existing systems of record: CODEOWNERS (who owns the
- * path) and commit signatures (who wrote the last version of the path on each
- * side). Bridge does not store authority. It derives authority at run time.
+ * path) and commit signatures (whose key signed the commit that produced the
+ * tip version of the path on each side). Bridge does not store authority. It
+ * derives authority at run time.
  *
  * Invariant: the plan is an effective directive, not a claim of objective truth.
  */
@@ -30,7 +36,8 @@ export type ArbitrationReason =
   | 'NO_STANDING'
   | 'NO_OWNER'
   | 'INVALID_SIGNATURE'
-  | 'AUTHORITY_SOURCE_MODIFIED';
+  | 'AUTHORITY_SOURCE_MODIFIED'
+  | 'UNTRUSTED_MERGE_BASE';
 
 export type PlanStatus = Extract<
   EffectiveDirectiveStatus,
@@ -41,14 +48,14 @@ export type PlanStatus = Extract<
 export type IdentityMap = Record<string, string[]>;
 
 export interface ArbitrationPolicy {
-  /** When true, only commits with a good signature (G or U) carry owner standing. */
+  /** When true, only commits with a good signature (G) by an owner's key carry owner standing. */
   requireSignedCommits: boolean;
 }
 
 export interface SideHistory {
   endpoint: BranchEndpoint;
   changedFiles: string[];
-  /** Commits since the merge base, newest first. */
+  /** Commits since the merge base, newest first in topological order. */
   commits: CommitRecord[];
   /** Blob id of each changed file at the side tip. Undefined means the side deleted the file. */
   blobIds: Record<string, string | undefined>;
@@ -63,8 +70,12 @@ export interface ArbitrationInput {
   base: string;
   left: SideHistory;
   right: SideHistory;
-  /** CODEOWNERS as read from the merge base. Undefined when the merge base has no CODEOWNERS file. */
+  /** CODEOWNERS as read from the authority ref. Undefined when that ref has no CODEOWNERS file. */
   codeowners?: CodeownersSource;
+  /** Where CODEOWNERS was read: "merge base", or the name of a trusted ref. */
+  authorityRef: string;
+  /** True when a trusted ref was given and the merge base is not an ancestor of it. */
+  untrustedBase?: boolean;
   identities: IdentityMap;
   policy: ArbitrationPolicy;
 }
@@ -72,8 +83,8 @@ export interface ArbitrationInput {
 export interface SideStanding {
   level: StandingLevel;
   hasStanding: boolean;
-  /** The newest commit on this side that touched the file. */
-  commit?: Pick<CommitRecord, 'sha' | 'authorEmail' | 'signatureStatus'>;
+  /** The newest commit on this side that produced the tip version of the file. */
+  commit?: Pick<CommitRecord, 'sha' | 'authorEmail' | 'signatureStatus' | 'signer'>;
 }
 
 export interface FileArbitration {
@@ -96,6 +107,7 @@ export interface ResolutionPlan {
   right: BranchEndpoint & { commitCount: number; changedFileCount: number };
   diverged: boolean;
   codeownersPath?: string;
+  authorityRef: string;
   policy: ArbitrationPolicy;
   files: FileArbitration[];
   exclusiveChanges: { left: number; right: number };
@@ -109,22 +121,31 @@ const STATUS_SEVERITY: Record<PlanStatus, number> = {
   BLOCKED_CONFLICT: 3,
 };
 
-const GOOD_SIGNATURES: ReadonlySet<SignatureStatus> = new Set<SignatureStatus>(['G', 'U']);
+// Only G: for SSH signatures, U means that the key is not in the allowed-signers file.
+const GOOD_SIGNATURES: ReadonlySet<SignatureStatus> = new Set<SignatureStatus>(['G']);
 const INVALID_SIGNATURES: ReadonlySet<SignatureStatus> = new Set<SignatureStatus>(['B', 'R']);
 
 const NOREPLY_EMAIL = /^(?:\d+\+)?([^@]+)@users\.noreply\.github\.com$/i;
 
 /**
- * Return true when the commit author email belongs to one of the CODEOWNERS entries.
- * Email owners match directly. Handles and teams match through the identity map or,
- * for handles, through a GitHub noreply address.
+ * Return the identity in a `%GS` signer string: the email inside angle brackets
+ * for a GPG user ID ("Name <email>"), or the whole principal for SSH.
+ */
+export function signerIdentity(signer: string): string {
+  return (/<([^>]+)>/.exec(signer)?.[1] ?? signer).trim();
+}
+
+/**
+ * Return true when an identity (a commit email or a signing principal) belongs to
+ * one of the CODEOWNERS entries. Email owners match directly. Handles and teams
+ * match through the identity map or, for handles, through a GitHub noreply address.
  */
 export function isOwner(
-  authorEmail: string,
+  identity: string,
   owners: readonly string[],
   identities: IdentityMap,
 ): boolean {
-  const email = authorEmail.toLowerCase();
+  const email = identity.toLowerCase();
   const noreplyHandle = NOREPLY_EMAIL.exec(email)?.[1];
 
   return owners.some((owner) => {
@@ -138,17 +159,31 @@ export function isOwner(
   });
 }
 
+function producedBlob(postImage: string, tipBlob: string | undefined): boolean {
+  return tipBlob === undefined ? DELETED_BLOB.test(postImage) : postImage === tipBlob;
+}
+
 /**
- * Compute the standing of one side for one file from the newest commit that touched it.
+ * Compute the standing of one side for one file. The deciding commit is the
+ * newest commit on the side whose post-image of the file equals the side's tip
+ * version, so a merge cannot lend standing for content that it discarded.
+ *
+ * A verified owner is a good signature (G) whose signer is an owner. An owner
+ * author without such a signature is only an unverified owner, because anyone
+ * can set the author email.
  */
 export function computeStanding(
   commits: readonly CommitRecord[],
   filePath: string,
+  tipBlob: string | undefined,
   owners: readonly string[],
   identities: IdentityMap,
   policy: ArbitrationPolicy,
 ): SideStanding {
-  const commit = commits.find((c) => c.files.includes(filePath));
+  const commit = commits.find((c) => {
+    const postImage = c.blobs[filePath];
+    return postImage !== undefined && producedBlob(postImage, tipBlob);
+  });
   if (!commit) {
     return { level: 'NON_OWNER', hasStanding: false };
   }
@@ -157,21 +192,30 @@ export function computeStanding(
     sha: commit.sha,
     authorEmail: commit.authorEmail,
     signatureStatus: commit.signatureStatus,
+    signer: commit.signer,
   };
 
   if (INVALID_SIGNATURES.has(commit.signatureStatus)) {
     return { level: 'INVALID_SIGNATURE', hasStanding: false, commit: summary };
   }
 
-  if (!isOwner(commit.authorEmail, owners, identities)) {
-    return { level: 'NON_OWNER', hasStanding: false, commit: summary };
-  }
-
-  if (GOOD_SIGNATURES.has(commit.signatureStatus)) {
+  const signedByOwner =
+    GOOD_SIGNATURES.has(commit.signatureStatus) &&
+    commit.signer.length > 0 &&
+    isOwner(signerIdentity(commit.signer), owners, identities);
+  if (signedByOwner) {
     return { level: 'VERIFIED_OWNER', hasStanding: true, commit: summary };
   }
 
-  return { level: 'UNVERIFIED_OWNER', hasStanding: !policy.requireSignedCommits, commit: summary };
+  if (isOwner(commit.authorEmail, owners, identities)) {
+    return {
+      level: 'UNVERIFIED_OWNER',
+      hasStanding: !policy.requireSignedCommits,
+      commit: summary,
+    };
+  }
+
+  return { level: 'NON_OWNER', hasStanding: false, commit: summary };
 }
 
 function shortSha(sha: string): string {
@@ -185,9 +229,12 @@ function arbitrateFile(input: ArbitrationInput, filePath: string): FileArbitrati
     ? { pattern: lookup.rule.pattern, line: lookup.rule.line }
     : undefined;
 
+  const leftBlob = input.left.blobIds[filePath];
+  const rightBlob = input.right.blobIds[filePath];
   const left = computeStanding(
     input.left.commits,
     filePath,
+    leftBlob,
     owners,
     input.identities,
     input.policy,
@@ -195,14 +242,13 @@ function arbitrateFile(input: ArbitrationInput, filePath: string): FileArbitrati
   const right = computeStanding(
     input.right.commits,
     filePath,
+    rightBlob,
     owners,
     input.identities,
     input.policy,
   );
   const base = { path: filePath, owners, ownerRule, left, right };
 
-  const leftBlob = input.left.blobIds[filePath];
-  const rightBlob = input.right.blobIds[filePath];
   if (leftBlob === rightBlob) {
     return {
       ...base,
@@ -220,7 +266,7 @@ function arbitrateFile(input: ArbitrationInput, filePath: string): FileArbitrati
       ...base,
       status: 'BLOCKED_CONFLICT',
       reason: 'INVALID_SIGNATURE',
-      action: `Do not merge. Commit ${shortSha(invalid.sha)} has a bad or revoked signature. Examine it before you continue.`,
+      action: `Do not merge. Commit ${shortSha(invalid.sha)} has signature status ${invalid.signatureStatus} (bad signature or revoked key). Examine it before you continue.`,
     };
   }
 
@@ -267,8 +313,17 @@ function arbitrateFile(input: ArbitrationInput, filePath: string): FileArbitrati
 }
 
 function authoritySourceFinding(input: ArbitrationInput, filePath: string): FileArbitration {
-  const left = computeStanding(input.left.commits, filePath, [], input.identities, input.policy);
-  const right = computeStanding(input.right.commits, filePath, [], input.identities, input.policy);
+  const standing = (side: SideHistory) =>
+    computeStanding(
+      side.commits,
+      filePath,
+      side.blobIds[filePath],
+      [],
+      input.identities,
+      input.policy,
+    );
+  const left = standing(input.left);
+  const right = standing(input.right);
   return {
     path: filePath,
     status: 'BLOCKED_CONFLICT',
@@ -290,6 +345,19 @@ export function arbitrateDivergence(input: ArbitrationInput): ResolutionPlan {
   const authoritySources = new Set<string>(CODEOWNERS_LOCATIONS);
 
   const files: FileArbitration[] = [];
+
+  if (input.untrustedBase) {
+    const none: SideStanding = { level: 'NON_OWNER', hasStanding: false };
+    files.push({
+      path: input.codeowners?.path ?? '(no CODEOWNERS file)',
+      status: 'BLOCKED_CONFLICT',
+      reason: 'UNTRUSTED_MERGE_BASE',
+      owners: [],
+      left: none,
+      right: none,
+      action: `The merge base is not on ${input.authorityRef}, so shared commits may change authority. Merge ${input.authorityRef} into both sides first.`,
+    });
+  }
 
   const modifiedSources = [...new Set([...leftChanged, ...rightChanged])]
     .filter((file) => authoritySources.has(file))
@@ -326,6 +394,7 @@ export function arbitrateDivergence(input: ArbitrationInput): ResolutionPlan {
     },
     diverged: input.left.endpoint.sha !== input.base && input.right.endpoint.sha !== input.base,
     codeownersPath: input.codeowners?.path,
+    authorityRef: input.authorityRef,
     policy: input.policy,
     files,
     exclusiveChanges: {

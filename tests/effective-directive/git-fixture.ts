@@ -17,7 +17,7 @@ export interface Author {
 export interface TempRepo {
   root: string;
   dir: string;
-  git: (args: string[], cwd?: string) => string;
+  git: (args: string[], cwd?: string, input?: string) => string;
   write: (relativePath: string, content: string, cwd?: string) => void;
   commit: (message: string, author: Author, cwd?: string) => string;
   cleanup: () => void;
@@ -34,8 +34,14 @@ export function createTempRepo(prefix = 'bridge-resolve-'): TempRepo {
   writeFileSync(emptyConfig, '');
   const env = { ...process.env, GIT_CONFIG_GLOBAL: emptyConfig, GIT_CONFIG_NOSYSTEM: '1' };
 
-  const git = (args: string[], cwd: string = dir) =>
-    execFileSync('git', args, { cwd, env, encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] });
+  const git = (args: string[], cwd: string = dir, input?: string) =>
+    execFileSync('git', args, {
+      cwd,
+      env,
+      encoding: 'utf-8',
+      input,
+      stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'],
+    });
 
   git(['init', '-q', '-b', 'main']);
   git(['config', 'user.name', FIXTURE_AUTHOR.name]);

@@ -14,11 +14,13 @@ import { CODEOWNERS_LOCATIONS, parseCodeowners, type CodeownersRule } from './co
 import {
   blobIdAt,
   createGitRunner,
-  findMergeBase,
+  findMergeBases,
+  isAncestor,
   listChangedFiles,
   listCommits,
   readFileAt,
   resolveEndpoint,
+  resolveRepoRoot,
   type BranchEndpoint,
   type GitRunner,
 } from './git.js';
@@ -35,6 +37,8 @@ export interface ResolveCommandOptions {
   /** Directory against which relative worktree paths resolve. */
   cwd: string;
   identitiesPath?: string;
+  /** Trusted ref (for example "main") to read CODEOWNERS from instead of the merge base. */
+  trusted?: string;
   allowUnsigned: boolean;
   json: boolean;
 }
@@ -68,9 +72,11 @@ export const EXIT_CODES: Record<PlanStatus, number> & { ERROR: number } = {
 export const USAGE = `Usage: bridge resolve <left> <right> [options]
 
 Arbitrate a divergence between two agent branches or worktrees.
-Bridge reads CODEOWNERS at the merge base and the signature of the newest
-commit that changed each conflicting file on each side. Only committed work
-is compared: uncommitted changes in a worktree are not part of the plan.
+Bridge reads CODEOWNERS at the merge base (or at --trusted) and, for each
+conflicting file on each side, the signature of the newest commit that
+produced the tip version of the file. Owner standing needs a good signature
+(%G? = G) whose signer is an owner. Only committed work is compared:
+uncommitted changes in a worktree are not part of the plan.
 
 Arguments:
   <left>, <right>      A worktree directory or a Git revision (branch, tag, SHA).
@@ -80,8 +86,12 @@ Arguments:
 
 Options:
   --repo <dir>         Repository to read (default: current directory)
-  --identities <file>  JSON map from CODEOWNERS handles or teams to commit emails
-  --allow-unsigned     Give owner standing to unsigned commits by owners
+  --identities <file>  JSON map from CODEOWNERS handles or teams to emails or
+                       signing principals
+  --trusted <ref>      Read CODEOWNERS from this ref (for example main) and block
+                       when the merge base is not on it
+  --allow-unsigned     Give owner standing to owner-authored commits without an
+                       owner signature (the author email is not verified)
   --json               Print the plan as JSON
   -h, --help           Show this help
 
@@ -113,6 +123,7 @@ export function parseCliArgs(argv: readonly string[], cwd: string): ParsedCli {
       options: {
         repo: { type: 'string' },
         identities: { type: 'string' },
+        trusted: { type: 'string' },
         'allow-unsigned': { type: 'boolean', default: false },
         json: { type: 'boolean', default: false },
         help: { type: 'boolean', short: 'h', default: false },
@@ -139,6 +150,7 @@ export function parseCliArgs(argv: readonly string[], cwd: string): ParsedCli {
       cwd,
       identitiesPath:
         values.identities === undefined ? undefined : path.resolve(cwd, values.identities),
+      trusted: values.trusted,
       allowUnsigned: values['allow-unsigned'],
       json: values.json,
     },
@@ -163,7 +175,7 @@ export function loadIdentityMap(filePath: string): IdentityMap {
     Object.values(data).every((v) => Array.isArray(v) && v.every((e) => typeof e === 'string'));
   if (!isValid) {
     throw new ResolveError(
-      `Identity map ${filePath} must be a JSON object that maps each handle to an array of email strings.`,
+      `Identity map ${filePath} must be a JSON object that maps each handle to an array of strings.`,
     );
   }
   return data as IdentityMap;
@@ -204,33 +216,55 @@ export async function buildResolutionPlan(
   options: ResolveCommandOptions,
   git: GitRunner = createGitRunner(),
 ): Promise<ResolutionPlan> {
-  const repo = options.repo;
+  const repo = await resolveRepoRoot(git, options.repo);
   const leftEndpoint = await resolveEndpoint(git, repo, options.left, options.cwd);
   const rightEndpoint = await resolveEndpoint(git, repo, options.right, options.cwd);
   await ensureCommitInRepo(git, repo, leftEndpoint);
   await ensureCommitInRepo(git, repo, rightEndpoint);
 
-  const base = await findMergeBase(git, repo, leftEndpoint.sha, rightEndpoint.sha);
+  const bases = await findMergeBases(git, repo, leftEndpoint.sha, rightEndpoint.sha);
+  const base = bases[0];
   if (base === undefined) {
     throw new ResolveError(
       `${leftEndpoint.label} and ${rightEndpoint.label} have no common ancestor.`,
     );
   }
+  if (bases.length > 1) {
+    throw new ResolveError(
+      `${leftEndpoint.label} and ${rightEndpoint.label} have ${bases.length} merge bases (criss-cross history). Arbitration needs one merge base: merge or rebase one side first.`,
+    );
+  }
+
+  let authoritySha = base;
+  let authorityRef = 'merge base';
+  let untrustedBase = false;
+  if (options.trusted !== undefined) {
+    const trusted = await resolveEndpoint(git, repo, options.trusted, repo);
+    authoritySha = trusted.sha;
+    authorityRef = options.trusted;
+    untrustedBase = !(await isAncestor(git, repo, base, trusted.sha));
+  }
 
   const identities = options.identitiesPath ? loadIdentityMap(options.identitiesPath) : {};
-  const codeowners = await loadCodeowners(git, repo, base);
+  const codeowners = await loadCodeowners(git, repo, authoritySha);
 
   const leftChanged = await listChangedFiles(git, repo, base, leftEndpoint.sha);
   const rightChanged = await listChangedFiles(git, repo, base, rightEndpoint.sha);
   const rightSet = new Set(rightChanged);
-  const overlap = leftChanged.filter((file) => rightSet.has(file));
+  const sources = new Set<string>(CODEOWNERS_LOCATIONS);
+  const lookups = [
+    ...new Set([
+      ...leftChanged.filter((file) => rightSet.has(file) || sources.has(file)),
+      ...rightChanged.filter((file) => sources.has(file)),
+    ]),
+  ];
 
   const collect = async (
     endpoint: BranchEndpoint,
     changedFiles: string[],
   ): Promise<SideHistory> => {
     const blobIds: Record<string, string | undefined> = {};
-    for (const file of overlap) {
+    for (const file of lookups) {
       blobIds[file] = await blobIdAt(git, repo, endpoint.sha, file);
     }
     return {
@@ -246,6 +280,8 @@ export async function buildResolutionPlan(
     left: await collect(leftEndpoint, leftChanged),
     right: await collect(rightEndpoint, rightChanged),
     codeowners,
+    authorityRef,
+    untrustedBase,
     identities,
     policy: { requireSignedCommits: !options.allowUnsigned },
   });
@@ -261,8 +297,9 @@ function describeEndpoint(side: ResolutionPlan['left']): string {
 
 function describeStanding(standing: SideStanding): string {
   if (!standing.commit) return `${standing.level} (no commit on this side changed the file)`;
-  const { authorEmail, signatureStatus, sha } = standing.commit;
-  return `${standing.level}  ${authorEmail}  sig ${signatureStatus}  commit ${sha.slice(0, 7)}`;
+  const { authorEmail, signatureStatus, signer, sha } = standing.commit;
+  const signedBy = signer ? ` by ${signer}` : '';
+  return `${standing.level}  ${authorEmail}  sig ${signatureStatus}${signedBy}  commit ${sha.slice(0, 7)}`;
 }
 
 function describeFile(file: FileArbitration, plan: ResolutionPlan): string[] {
@@ -289,8 +326,8 @@ export function formatPlanText(plan: ResolutionPlan): string {
     `Left:   ${describeEndpoint(plan.left)}`,
     `Right:  ${describeEndpoint(plan.right)}`,
     `Merge base: ${plan.base.slice(0, 7)}${plan.diverged ? '' : ' (no divergence: one side contains the other)'}`,
-    `Authority source: ${plan.codeownersPath ? `${plan.codeownersPath} at merge base` : 'no CODEOWNERS file at merge base'}`,
-    `Policy: ${plan.policy.requireSignedCommits ? 'signed commits required for owner standing' : 'unsigned owner commits accepted'}`,
+    `Authority source: ${plan.codeownersPath ?? 'no CODEOWNERS file'} at ${plan.authorityRef}`,
+    `Policy: ${plan.policy.requireSignedCommits ? 'owner signature required for owner standing' : 'unsigned owner-authored commits accepted'}`,
     '',
   ];
 
