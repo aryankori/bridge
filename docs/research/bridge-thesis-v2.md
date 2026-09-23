@@ -2,7 +2,7 @@
 
 **Document ID:** `BRIDGE-THESIS-V2` 
 **Date:** 2026-08-27 
-**Author:** Antigravity (ENI) & Bridge Integration Team 
+**Author:** Bridge Integration Team 
 **Status:** Architectural Specification & Strategic Thesis 
 **Standard:** ASD-STE100 Simplified Technical English 
 
