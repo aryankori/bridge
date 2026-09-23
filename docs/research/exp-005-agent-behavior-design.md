@@ -2,7 +2,7 @@
 
 **Document Status:** Complete Experimental Research Specification 
 **Date:** August 2026 
-**Authors:** Bridge Core Research Team 
+**Author:** aryankori
 **Pinned Resolver Commit:** `fc322c6` 
 **Receiving Agent / Pinned Model:** `opencode` with `nvidia/nvidia/nemotron-3-super-120b-a12b` 
 

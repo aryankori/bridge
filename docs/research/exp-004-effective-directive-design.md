@@ -5,7 +5,7 @@
 
 **Document Status:** Complete Experimental Research Report 
 **Date:** August 2026 
-**Authors:** Bridge Core Research Team 
+**Author:** aryankori
 
 ---
 

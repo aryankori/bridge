@@ -1,6 +1,6 @@
 # BRIDGE - DEVELOPER-WEDGE VALIDATION
 
-**Author:** Hermes Agent (Independent Wedge Validation)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Context:** Post-standing-falsification - find a high-frequency developer problem using the same underlying capability
 

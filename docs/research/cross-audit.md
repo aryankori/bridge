@@ -2,7 +2,7 @@
 
 **Document Version:** 1.0.0 
 **Date:** 2026-08-25 
-**Auditor:** Principal Systems Engineer (Antigravity) 
+**Author:** aryankori
 **Subject:** Cross-Audit of Hermes Independent Technical & Market Review against Local Forensics & Codebase 
 **Standard:** ASD-STE100 Simplified Technical English 
 

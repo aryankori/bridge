@@ -2,7 +2,7 @@
 
 **Document ID:** `EXP-001-RED-TEAM-RESOLUTION` 
 **Date:** 2026-08-26 
-**Auditor / Engineer:** Experimental Systems Engineer (Antigravity) 
+**Author:** aryankori
 **Standard:** ASD-STE100 Simplified Technical English 
 
 ---

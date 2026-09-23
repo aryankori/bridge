@@ -1,6 +1,6 @@
 # BRIDGE - FINAL THESIS FALSIFICATION
 
-**Author:** Hermes Agent (Independent Falsification Reviewer)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Status:** Definitive falsification analysis - stop here before building
 

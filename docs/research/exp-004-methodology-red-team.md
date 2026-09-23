@@ -1,6 +1,6 @@
 # BRIDGE - EXP-004 METHODOLOGY RED TEAM
 
-**Author:** Hermes Agent (Independent Red Team Reviewer)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Subject:** Attack the Effective Directive Resolver benchmark methodology before it becomes publishable evidence.
 

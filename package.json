@@ -34,6 +34,7 @@
  },
  "private": true,
  "license": "MIT",
+ "author": "aryankori",
  "devDependencies": {
  "@types/node": "^26.3.0",
  "@typescript-eslint/eslint-plugin": "^8.68.0",

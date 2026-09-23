@@ -1,6 +1,6 @@
 # BRIDGE - RECOVERY & STRATEGY REPORT
 
-**Author:** Hermes Agent (Independent Research, Architecture, Security & Strategy Reviewer)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Context:** Recovery from interrupted session - power failure during previous Hermes cycle
 

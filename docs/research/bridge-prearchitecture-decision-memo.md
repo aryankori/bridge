@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-27 
 **Status:** Pre-Architecture (Awaiting EXP-001 Validation) 
-**Author:** Kori
+**Author:** aryankori
 
 ## Executive Summary
 This memo defines the architectural boundaries and product strategy for the Bridge framework. It establishes what Bridge will govern, what it will delegate, and crucially, what it will refuse to build. This document reflects the updated thesis: Bridge computes **Effective Standing** from existing, fragmented authority sources for federated, runtime authority arbitration across heterogeneous AI agents, explicitly rejecting the prior "Project Truth / Commitment Control" ledger model.

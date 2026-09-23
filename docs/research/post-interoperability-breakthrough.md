@@ -1,6 +1,6 @@
 # BRIDGE - POST-INTEROPERABILITY BREAKTHROUGH RESEARCH
 
-**Author:** Hermes Agent (Independent Breakthrough Research)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Model:** upstage/solar-pro4:free (Nous)
 **Status:** Free-research while EXP-001 blocked - first-principles derivation, not Bridge-aligned

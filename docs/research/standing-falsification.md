@@ -1,6 +1,6 @@
 # BRIDGE - STANDING FALSIFICATION REPORT
 
-**Author:** Hermes Agent (Independent Falsification Reviewer)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Status:** Attempting to destroy the "STANDING" breakthrough hypothesis
 
