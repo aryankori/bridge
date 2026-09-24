@@ -28,6 +28,21 @@ function captureIo(cwd: string): CliIo & { out: string[]; err: string[] } {
   return { cwd, out, err, stdout: (t) => out.push(t), stderr: (t) => err.push(t) };
 }
 
+describe('exit codes', () => {
+  it('match the documented values', () => {
+    expect(EXIT_CODES).toEqual({
+      PERMITTED: 0,
+      PERMITTED_WITH_OVERRIDE: 0,
+      AMBIGUOUS: 2,
+      BLOCKED_CONFLICT: 3,
+      ERROR: 1,
+    });
+    expect(USAGE).toContain(
+      '0  PERMITTED or PERMITTED_WITH_OVERRIDE\n  2  AMBIGUOUS\n  3  BLOCKED_CONFLICT\n  1  Usage error or Git error',
+    );
+  });
+});
+
 describe('parseCliArgs', () => {
   const cwd = path.resolve('/work/repo');
 
@@ -568,21 +583,97 @@ describe('history shapes that must not grant standing', () => {
       expect(code).toBe(EXIT_CODES.BLOCKED_CONFLICT);
       const plan = JSON.parse(trusted.out.join('')) as ResolutionPlan;
       expect(plan.authorityRef).toBe('main');
+      expect(plan.authorityFullRef).toBe('refs/heads/main');
       expect(plan.files.map((f) => [f.path, f.reason])).toEqual([
         ['CODEOWNERS', 'UNTRUSTED_MERGE_BASE'],
         ['src/f.ts', 'NO_STANDING'],
       ]);
       expect(plan.files[1]?.owners).toEqual(['owner@example.com']);
 
-      // When the merge base is on the trusted ref, the plan uses the trusted owners only.
+      // Merge base on the trusted ref: no UNTRUSTED_MERGE_BASE finding. y still
+      // blocks because it changes CODEOWNERS.
       repo.git(['checkout', '-q', '-b', 'z', 'main']);
       repo.write('src/f.ts', 'z\n');
       repo.commit('owner edit', OWNER);
       const onMain = captureIo(repo.dir);
       expect(
-        await runCli(['resolve', 'z', 'y', '--allow-unsigned', '--trusted', 'main'], onMain),
-      ).toBe(EXIT_CODES.BLOCKED_CONFLICT);
-      expect(onMain.out.join('')).toContain('Authority source: CODEOWNERS at main');
+        await runCli(
+          ['resolve', 'z', 'y', '--allow-unsigned', '--trusted', 'main', '--json'],
+          onMain,
+        ),
+      ).toBe(3);
+      expect(
+        (JSON.parse(onMain.out.join('')) as ResolutionPlan).files.map((f) => [f.path, f.reason]),
+      ).toEqual([
+        ['CODEOWNERS', 'AUTHORITY_SOURCE_MODIFIED'],
+        ['src/f.ts', 'SINGLE_SIDE_STANDING'],
+      ]);
+
+      // Both sides on main and CODEOWNERS unchanged: the trusted owners decide, exit 0.
+      repo.git(['checkout', '-q', '-b', 'w', 'main']);
+      repo.write('src/f.ts', 'w\n');
+      repo.commit('agent edit', AGENT_B);
+      const clean = captureIo(repo.dir);
+      expect(
+        await runCli(['resolve', 'z', 'w', '--allow-unsigned', '--trusted', 'main'], clean),
+      ).toBe(0);
+      expect(clean.out.join('')).toMatch(
+        /Authority source: CODEOWNERS at main \(refs\/heads\/main [0-9a-f]{7}\)/,
+      );
+      expect(clean.out.join('')).toContain(
+        'Status: PERMITTED_WITH_OVERRIDE (SINGLE_SIDE_STANDING)',
+      );
+
+      // A directory named like the trusted ref must not redirect the authority source.
+      repo.git(['worktree', 'add', '-q', 'main', 'x']);
+      const redirected = captureIo(repo.dir);
+      expect(
+        await runCli(
+          ['resolve', 'z', 'w', '--allow-unsigned', '--trusted', 'main', '--json'],
+          redirected,
+        ),
+      ).toBe(0);
+      const redirectedPlan = JSON.parse(redirected.out.join('')) as ResolutionPlan;
+      expect(redirectedPlan.files[0]?.owners).toEqual(['owner@example.com']);
+
+      // A raw commit id works as a trusted ref and is shown as a commit.
+      const mainSha = repo.git(['rev-parse', 'refs/heads/main']).trim();
+      const bySha = captureIo(repo.dir);
+      expect(
+        await runCli(['resolve', 'z', 'w', '--allow-unsigned', '--trusted', mainSha], bySha),
+      ).toBe(0);
+      expect(bySha.out.join('')).toContain(`(commit ${mainSha.slice(0, 7)})`);
+    } finally {
+      repo.cleanup();
+    }
+  });
+});
+
+describe('CODEOWNERS locations that are not files', () => {
+  it('stops with a clear error when a CODEOWNERS path holds a gitlink', async () => {
+    const repo = createTempRepo();
+    try {
+      repo.write('app.ts', 'v1\n');
+      repo.commit('base', FIXTURE_AUTHOR);
+      repo.git([
+        'update-index',
+        '--add',
+        '--cacheinfo',
+        `160000,${'1'.repeat(40)},.github/CODEOWNERS`,
+      ]);
+      repo.git(['-c', 'user.name=F', '-c', 'user.email=f@x', 'commit', '-q', '-m', 'gitlink']);
+      repo.git(['checkout', '-q', '-b', 'x']);
+      repo.write('app.ts', 'x\n');
+      repo.commit('x', AGENT_A);
+      repo.git(['checkout', '-q', '-b', 'y', 'main']);
+      repo.write('app.ts', 'y\n');
+      repo.commit('y', AGENT_B);
+
+      const io = captureIo(repo.dir);
+      expect(await runCli(['resolve', 'x', 'y'], io)).toBe(1);
+      expect(io.err.join('')).toContain(
+        '.github/CODEOWNERS at merge base is a commit, not a file.',
+      );
     } finally {
       repo.cleanup();
     }
@@ -641,6 +732,8 @@ describe('formatPlanText', () => {
       right: { label: 'r', sha: 'c'.repeat(40), commitCount: 1, changedFileCount: 1 },
       diverged: true,
       authorityRef: 'main',
+      authorityFullRef: '',
+      authoritySha: 'e'.repeat(40),
       policy: { requireSignedCommits: false },
       files: [
         {
@@ -662,7 +755,7 @@ describe('formatPlanText', () => {
     };
     const text = formatPlanText(plan);
     expect(text).toContain('Policy: unsigned owner-authored commits accepted');
-    expect(text).toContain('Authority source: no CODEOWNERS file at main');
+    expect(text).toContain('Authority source: no CODEOWNERS file at main (commit eeeeeee)');
     expect(text).toContain('Left:   l (bbbbbbb), 0 commits, 1 file changed');
     expect(text).toContain('Right:  r (ccccccc), 1 commit, 1 file changed');
     expect(text).toContain('Owners: @x\n');
@@ -697,7 +790,7 @@ describe('bin entrypoint', () => {
       vi.resetModules();
       process.argv = ['node', 'bridge', 'unknown-command'];
       await import('../../src/bin/bridge.js');
-      expect(process.exitCode).toBe(EXIT_CODES.ERROR);
+      expect(process.exitCode).toBe(1);
       expect(stderr).toHaveBeenCalledWith(
         expect.stringContaining('Unknown command "unknown-command".'),
       );

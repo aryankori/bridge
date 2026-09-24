@@ -14,15 +14,19 @@ import { CODEOWNERS_LOCATIONS, parseCodeowners, type CodeownersRule } from './co
 import {
   blobIdAt,
   createGitRunner,
+  createOpenPgpIdentityLookup,
   findMergeBases,
   isAncestor,
   listChangedFiles,
   listCommits,
-  readFileAt,
+  objectTypeAt,
   resolveEndpoint,
   resolveRepoRoot,
+  resolveRevision,
+  verifiedSignersFor,
   type BranchEndpoint,
   type GitRunner,
+  type OpenPgpIdentityLookup,
 } from './git.js';
 
 /**
@@ -75,8 +79,9 @@ Arbitrate a divergence between two agent branches or worktrees.
 Bridge reads CODEOWNERS at the merge base (or at --trusted) and, for each
 conflicting file on each side, the signature of the newest commit that
 produced the tip version of the file. Owner standing needs a good signature
-(%G? = G) whose signer is an owner. Only committed work is compared:
-uncommitted changes in a worktree are not part of the plan.
+(%G? = G) by a key that your allowed-signers file (SSH) or your keyring
+(OpenPGP, through a valid user ID) ties to an owner. Only committed work is
+compared: uncommitted changes in a worktree are not part of the plan.
 
 Arguments:
   <left>, <right>      A worktree directory or a Git revision (branch, tag, SHA).
@@ -88,8 +93,8 @@ Options:
   --repo <dir>         Repository to read (default: current directory)
   --identities <file>  JSON map from CODEOWNERS handles or teams to emails or
                        signing principals
-  --trusted <ref>      Read CODEOWNERS from this ref (for example main) and block
-                       when the merge base is not on it
+  --trusted <ref>      Read CODEOWNERS from this revision (for example main; never
+                       a directory) and block when the merge base is not on it
   --allow-unsigned     Give owner standing to owner-authored commits without an
                        owner signature (the author email is not verified)
   --json               Print the plan as JSON
@@ -184,13 +189,19 @@ export function loadIdentityMap(filePath: string): IdentityMap {
 async function loadCodeowners(
   git: GitRunner,
   repo: string,
-  base: string,
+  rev: string,
+  authorityRef: string,
 ): Promise<{ path: string; rules: CodeownersRule[] } | undefined> {
   for (const location of CODEOWNERS_LOCATIONS) {
-    const content = await readFileAt(git, repo, base, location);
-    if (content !== undefined) {
-      return { path: location, rules: parseCodeowners(content) };
+    if ((await blobIdAt(git, repo, rev, location)) === undefined) continue;
+    const type = await objectTypeAt(git, repo, rev, location);
+    if (type !== 'blob') {
+      throw new ResolveError(
+        `${location} at ${authorityRef} is a ${type}, not a file. Bridge cannot read CODEOWNERS from it.`,
+      );
     }
+    const content = await git(['cat-file', '-p', `${rev}:${location}`], repo);
+    return { path: location, rules: parseCodeowners(content) };
   }
   return undefined;
 }
@@ -215,8 +226,10 @@ async function ensureCommitInRepo(
 export async function buildResolutionPlan(
   options: ResolveCommandOptions,
   git: GitRunner = createGitRunner(),
+  openPgpLookup?: OpenPgpIdentityLookup,
 ): Promise<ResolutionPlan> {
   const repo = await resolveRepoRoot(git, options.repo);
+  const lookupOpenPgp = openPgpLookup ?? createOpenPgpIdentityLookup(git, repo);
   const leftEndpoint = await resolveEndpoint(git, repo, options.left, options.cwd);
   const rightEndpoint = await resolveEndpoint(git, repo, options.right, options.cwd);
   await ensureCommitInRepo(git, repo, leftEndpoint);
@@ -237,16 +250,19 @@ export async function buildResolutionPlan(
 
   let authoritySha = base;
   let authorityRef = 'merge base';
+  let authorityFullRef: string | undefined;
   let untrustedBase = false;
   if (options.trusted !== undefined) {
-    const trusted = await resolveEndpoint(git, repo, options.trusted, repo);
+    // A revision only: a directory with the same name must never redirect the authority source.
+    const trusted = await resolveRevision(git, repo, options.trusted);
     authoritySha = trusted.sha;
     authorityRef = options.trusted;
+    authorityFullRef = trusted.fullName;
     untrustedBase = !(await isAncestor(git, repo, base, trusted.sha));
   }
 
   const identities = options.identitiesPath ? loadIdentityMap(options.identitiesPath) : {};
-  const codeowners = await loadCodeowners(git, repo, authoritySha);
+  const codeowners = await loadCodeowners(git, repo, authoritySha, authorityRef);
 
   const leftChanged = await listChangedFiles(git, repo, base, leftEndpoint.sha);
   const rightChanged = await listChangedFiles(git, repo, base, rightEndpoint.sha);
@@ -267,12 +283,11 @@ export async function buildResolutionPlan(
     for (const file of lookups) {
       blobIds[file] = await blobIdAt(git, repo, endpoint.sha, file);
     }
-    return {
-      endpoint,
-      changedFiles,
-      commits: await listCommits(git, repo, base, endpoint.sha),
-      blobIds,
-    };
+    const commits = await listCommits(git, repo, base, endpoint.sha);
+    for (const commit of commits) {
+      commit.verifiedSigners = await verifiedSignersFor(commit, lookupOpenPgp);
+    }
+    return { endpoint, changedFiles, commits, blobIds };
   };
 
   return arbitrateDivergence({
@@ -281,6 +296,8 @@ export async function buildResolutionPlan(
     right: await collect(rightEndpoint, rightChanged),
     codeowners,
     authorityRef,
+    authorityFullRef,
+    authoritySha,
     untrustedBase,
     identities,
     policy: { requireSignedCommits: !options.allowUnsigned },
@@ -293,6 +310,13 @@ function count(n: number, noun: string): string {
 
 function describeEndpoint(side: ResolutionPlan['left']): string {
   return `${side.label} (${side.sha.slice(0, 7)}), ${count(side.commitCount, 'commit')}, ${count(side.changedFileCount, 'file')} changed`;
+}
+
+function describeAuthority(plan: ResolutionPlan): string {
+  if (plan.authorityFullRef === undefined || plan.authoritySha === undefined) {
+    return plan.authorityRef;
+  }
+  return `${plan.authorityRef} (${plan.authorityFullRef || 'commit'} ${plan.authoritySha.slice(0, 7)})`;
 }
 
 function describeStanding(standing: SideStanding): string {
@@ -326,7 +350,7 @@ export function formatPlanText(plan: ResolutionPlan): string {
     `Left:   ${describeEndpoint(plan.left)}`,
     `Right:  ${describeEndpoint(plan.right)}`,
     `Merge base: ${plan.base.slice(0, 7)}${plan.diverged ? '' : ' (no divergence: one side contains the other)'}`,
-    `Authority source: ${plan.codeownersPath ?? 'no CODEOWNERS file'} at ${plan.authorityRef}`,
+    `Authority source: ${plan.codeownersPath ?? 'no CODEOWNERS file'} at ${describeAuthority(plan)}`,
     `Policy: ${plan.policy.requireSignedCommits ? 'owner signature required for owner standing' : 'unsigned owner-authored commits accepted'}`,
     '',
   ];

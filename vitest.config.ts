@@ -5,6 +5,8 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     globals: false,
     environment: 'node',
+    // Real-repository tests (worktrees, signing keys) take several seconds each.
+    testTimeout: 30_000,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],

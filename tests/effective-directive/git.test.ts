@@ -4,15 +4,24 @@ import {
   DELETED_BLOB,
   GitCommandError,
   blobIdAt,
+  createCommandRunner,
   createGitRunner,
+  createOpenPgpIdentityLookup,
   findMergeBases,
   isAncestor,
   listChangedFiles,
   listCommits,
+  objectTypeAt,
   parseRawLog,
+  parseValidUserIds,
   readFileAt,
   resolveEndpoint,
   resolveRepoRoot,
+  resolveRevision,
+  userIdEmail,
+  verifiedSignersFor,
+  type CommandRunner,
+  type CommitRecord,
   type GitRunner,
 } from '../../src/effective-directive/git.js';
 import { createTempRepo, FIXTURE_AUTHOR, type TempRepo } from './git-fixture.js';
@@ -25,7 +34,7 @@ const Z = '0'.repeat(40);
 describe('parseRawLog', () => {
   it('parses headers, post-image blobs, deletions, and exact path names', () => {
     const output = [
-      `\x1eabc123\x1fAlice\x1falice@example.com\x1fG\x1fAlice <alice@example.com>\0\n`,
+      `\x1eabc123\x1fAlice\x1falice@example.com\x1fG\x1fAlice <alice@example.com>\x1f${A}\x1f${B}\0\n`,
       `:100644 100644 ${Z} ${A} M\0src/a.ts\0`,
       `:100644 000000 ${B} ${Z} D\0 lead space.md\0`,
       `:000000 100644 ${Z} ${B} A\0q"uo\tte.md \0`,
@@ -40,6 +49,8 @@ describe('parseRawLog', () => {
         authorEmail: 'alice@example.com',
         signatureStatus: 'G',
         signer: 'Alice <alice@example.com>',
+        signingKey: A,
+        primaryKey: B,
         files: ['src/a.ts', ' lead space.md', 'q"uo\tte.md '],
         blobs: { 'src/a.ts': A, ' lead space.md': Z, 'q"uo\tte.md ': B },
       },
@@ -49,6 +60,8 @@ describe('parseRawLog', () => {
         authorEmail: 'bot@example.com',
         signatureStatus: 'N',
         signer: '',
+        signingKey: '',
+        primaryKey: '',
         files: ['README.md'],
         blobs: { 'README.md': B },
       },
@@ -69,6 +82,8 @@ describe('parseRawLog', () => {
       authorEmail: '',
       signatureStatus: 'N',
       signer: '',
+      signingKey: '',
+      primaryKey: '',
       files: [],
       blobs: {},
     });
@@ -76,6 +91,122 @@ describe('parseRawLog', () => {
     expect(parseRawLog('')).toEqual([]);
     const [junk] = parseRawLog(`\x1ex\x1fA\x1fa@x\x1fN\x1f\0not-a-record\0path\0:bad\0p\0:x\0\0`);
     expect(junk).toMatchObject({ files: ['p'], blobs: { p: '' } });
+  });
+});
+
+describe('signer identities', () => {
+  const base: CommitRecord = {
+    sha: 'c',
+    authorName: 'A',
+    authorEmail: 'a@x',
+    signatureStatus: 'G',
+    signer: '',
+    signingKey: '',
+    primaryKey: '',
+    files: [],
+    blobs: {},
+  };
+
+  it('extracts the email of a user ID', () => {
+    expect(userIdEmail('Alice Example <alice@example.com>')).toBe('alice@example.com');
+    expect(userIdEmail(' alice@example.com ')).toBe('alice@example.com');
+  });
+
+  it('keeps only the user IDs that the keyring marks valid', () => {
+    const out = [
+      'pub:f:255:22:38F5:1790:::-:::scSC:::::ed25519:::0:',
+      'fpr:::::::::656F:',
+      'uid:-::::1::H::Impersonated <alice@example.com>::::::::::0:',
+      'uid:f::::1::H::Bob <bob@example.com>::::::::::0:',
+      'uid:u::::1::H::Carol \\x3a Ops <carol@example.com>::::::::::0:',
+      'uid:m::::1::H::dave@example.com::::::::::0:',
+      'uid:r::::1::H::Revoked <eve@example.com>::::::::::0:',
+      'uid:f::::1::H::::::::::::0:',
+      'uid',
+      'uid:f',
+      'sub:f:255:18:ABCD:1::::::e:::::cv25519::',
+    ].join('\n');
+    expect(parseValidUserIds(out)).toEqual([
+      'bob@example.com',
+      'carol@example.com',
+      'dave@example.com',
+    ]);
+  });
+
+  it('takes SSH identities from the allowed-signers principal and OpenPGP ones from the keyring', async () => {
+    const asked: string[] = [];
+    const lookup = async (fingerprint: string) => {
+      asked.push(fingerprint);
+      return ['bob@example.com'];
+    };
+    const ssh = { ...base, signer: 'alice@example.com', signingKey: 'SHA256:abc' };
+    await expect(verifiedSignersFor(ssh, lookup)).resolves.toEqual(['alice@example.com']);
+    await expect(verifiedSignersFor({ ...ssh, signer: '' }, lookup)).resolves.toEqual([]);
+
+    const pgp = {
+      ...base,
+      signer: 'Impersonated <alice@example.com>',
+      signingKey: 'SUB',
+      primaryKey: 'PRIMARY',
+    };
+    await expect(verifiedSignersFor(pgp, lookup)).resolves.toEqual(['bob@example.com']);
+    await expect(verifiedSignersFor({ ...pgp, primaryKey: '' }, lookup)).resolves.toEqual([
+      'bob@example.com',
+    ]);
+    await expect(
+      verifiedSignersFor({ ...pgp, primaryKey: '', signingKey: '' }, lookup),
+    ).resolves.toEqual([]);
+    expect(asked).toEqual(['PRIMARY', 'SUB']);
+
+    for (const status of ['U', 'N', 'B', 'E'] as const) {
+      await expect(
+        verifiedSignersFor({ ...ssh, signatureStatus: status }, lookup),
+      ).resolves.toEqual([]);
+    }
+  });
+
+  it('asks the configured OpenPGP program once per key and fails closed', async () => {
+    const config: Record<string, string> = {};
+    const git: GitRunner = async (args) => {
+      const value = config[args[2] ?? ''];
+      if (args[0] === 'config' && value !== undefined) return `${value}\n`;
+      throw new GitCommandError(args, 1, '');
+    };
+    const calls: string[] = [];
+    const run: CommandRunner = async (program, args) => {
+      calls.push(`${program} ${args.join(' ')}`);
+      if (args.includes('BROKEN')) throw new Error('gpg failed');
+      return 'uid:f::::1::H::Bob <bob@example.com>::::::::::0:\n';
+    };
+
+    const byDefault = createOpenPgpIdentityLookup(git, '.', run);
+    await expect(byDefault('KEY')).resolves.toEqual(['bob@example.com']);
+    await expect(byDefault('KEY')).resolves.toEqual(['bob@example.com']);
+    await expect(byDefault('BROKEN')).resolves.toEqual([]);
+    expect(calls).toEqual([
+      'gpg --batch --with-colons --list-keys -- KEY',
+      'gpg --batch --with-colons --list-keys -- BROKEN',
+    ]);
+
+    config['gpg.program'] = 'gpg2';
+    await createOpenPgpIdentityLookup(git, '.', run)('K2');
+    config['gpg.openpgp.program'] = '/opt/gpg';
+    await createOpenPgpIdentityLookup(git, '.', run)('K3');
+    expect(calls.slice(2)).toEqual([
+      'gpg2 --batch --with-colons --list-keys -- K2',
+      '/opt/gpg --batch --with-colons --list-keys -- K3',
+    ]);
+  });
+
+  it('runs external programs and reports their failures', async () => {
+    const run = createCommandRunner();
+    await expect(run('git', ['--version'], process.cwd())).resolves.toMatch(/^git version/);
+    await expect(run('bridge-no-such-program', [], process.cwd())).rejects.toBeTruthy();
+  });
+
+  it('uses the real keyring lookup by default', async () => {
+    const lookup = createOpenPgpIdentityLookup(createGitRunner(), process.cwd());
+    await expect(lookup('0000000000000000000000000000000000000000')).resolves.toEqual([]);
   });
 });
 
@@ -168,6 +299,28 @@ describe('git adapter against a real repository', () => {
     await expect(resolveEndpoint(git, repo.dir, 'no-such-branch')).rejects.toBeInstanceOf(
       GitCommandError,
     );
+  });
+
+  it('resolves --trusted revisions strictly, with their full ref names', async () => {
+    await expect(resolveRevision(git, repo.dir, 'feature')).resolves.toEqual({
+      sha: featureSha,
+      fullName: 'refs/heads/feature',
+    });
+    await expect(resolveRevision(git, repo.dir, baseSha)).resolves.toEqual({
+      sha: baseSha,
+      fullName: '',
+    });
+    // A directory named like the revision is ignored: wt-feature is a directory, not a ref.
+    await expect(resolveRevision(git, repo.root, 'wt-feature')).rejects.toBeInstanceOf(
+      GitCommandError,
+    );
+    await expect(resolveRevision(git, repo.dir, '--all')).rejects.toBeInstanceOf(GitCommandError);
+  });
+
+  it('reports the object type at a path', async () => {
+    await expect(objectTypeAt(git, repo.dir, baseSha, 'README.md')).resolves.toBe('blob');
+    await expect(objectTypeAt(git, repo.dir, baseSha, 'src')).resolves.toBe('tree');
+    await expect(objectTypeAt(git, repo.dir, baseSha, 'no-such-file')).resolves.toBe('missing');
   });
 
   it('finds merge bases and ancestry, or nothing for unrelated histories', async () => {

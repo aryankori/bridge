@@ -34,7 +34,7 @@ jobs:
         run: pnpm run lint
 
       - name: Run unit tests
-        run: pnpm run test
+        run: pnpm run test:coverage
 
       - name: Validate research experiment harness
         run: pnpm run experiment:validate

@@ -74,6 +74,10 @@ export interface ArbitrationInput {
   codeowners?: CodeownersSource;
   /** Where CODEOWNERS was read: "merge base", or the name of a trusted ref. */
   authorityRef: string;
+  /** Full ref name of the trusted ref ("" for a raw commit id). Undefined without --trusted. */
+  authorityFullRef?: string;
+  /** Commit that CODEOWNERS was read from. */
+  authoritySha?: string;
   /** True when a trusted ref was given and the merge base is not an ancestor of it. */
   untrustedBase?: boolean;
   identities: IdentityMap;
@@ -108,6 +112,8 @@ export interface ResolutionPlan {
   diverged: boolean;
   codeownersPath?: string;
   authorityRef: string;
+  authorityFullRef?: string;
+  authoritySha?: string;
   policy: ArbitrationPolicy;
   files: FileArbitration[];
   exclusiveChanges: { left: number; right: number };
@@ -126,14 +132,6 @@ const GOOD_SIGNATURES: ReadonlySet<SignatureStatus> = new Set<SignatureStatus>([
 const INVALID_SIGNATURES: ReadonlySet<SignatureStatus> = new Set<SignatureStatus>(['B', 'R']);
 
 const NOREPLY_EMAIL = /^(?:\d+\+)?([^@]+)@users\.noreply\.github\.com$/i;
-
-/**
- * Return the identity in a `%GS` signer string: the email inside angle brackets
- * for a GPG user ID ("Name <email>"), or the whole principal for SSH.
- */
-export function signerIdentity(signer: string): string {
-  return (/<([^>]+)>/.exec(signer)?.[1] ?? signer).trim();
-}
 
 /**
  * Return true when an identity (a commit email or a signing principal) belongs to
@@ -168,9 +166,10 @@ function producedBlob(postImage: string, tipBlob: string | undefined): boolean {
  * newest commit on the side whose post-image of the file equals the side's tip
  * version, so a merge cannot lend standing for content that it discarded.
  *
- * A verified owner is a good signature (G) whose signer is an owner. An owner
- * author without such a signature is only an unverified owner, because anyone
- * can set the author email.
+ * A verified owner is a good signature (G) by a key that a verifier-controlled
+ * binding (allowed-signers file or keyring) ties to an owner. An owner author
+ * without such a signature is only an unverified owner, because anyone can set
+ * the author email, and an OpenPGP key holder can add any user ID.
  */
 export function computeStanding(
   commits: readonly CommitRecord[],
@@ -201,8 +200,7 @@ export function computeStanding(
 
   const signedByOwner =
     GOOD_SIGNATURES.has(commit.signatureStatus) &&
-    commit.signer.length > 0 &&
-    isOwner(signerIdentity(commit.signer), owners, identities);
+    (commit.verifiedSigners ?? []).some((id) => isOwner(id, owners, identities));
   if (signedByOwner) {
     return { level: 'VERIFIED_OWNER', hasStanding: true, commit: summary };
   }
@@ -395,6 +393,8 @@ export function arbitrateDivergence(input: ArbitrationInput): ResolutionPlan {
     diverged: input.left.endpoint.sha !== input.base && input.right.endpoint.sha !== input.base,
     codeownersPath: input.codeowners?.path,
     authorityRef: input.authorityRef,
+    authorityFullRef: input.authorityFullRef,
+    authoritySha: input.authoritySha,
     policy: input.policy,
     files,
     exclusiveChanges: {

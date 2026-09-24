@@ -3,23 +3,31 @@ import {
   arbitrateDivergence,
   computeStanding,
   isOwner,
-  signerIdentity,
   type ArbitrationInput,
   type SideHistory,
 } from '../../src/effective-directive/arbitration.js';
 import { parseCodeowners } from '../../src/effective-directive/codeowners.js';
-import type { CommitRecord, SignatureStatus } from '../../src/effective-directive/git.js';
+import {
+  userIdEmail,
+  type CommitRecord,
+  type SignatureStatus,
+} from '../../src/effective-directive/git.js';
 
 const BASE = 'b'.repeat(40);
 const ZERO = '0'.repeat(40);
 
-/** A commit that sets each path to the given post-image blob id. */
+/**
+ * A commit that sets each path to the given post-image blob id. By default a good
+ * signature's signer is also its verified identity, as for an SSH principal;
+ * pass verifiedSigners to model an OpenPGP keyring answer.
+ */
 function commit(
   sha: string,
   authorEmail: string,
   blobs: Record<string, string>,
   signatureStatus: SignatureStatus = 'N',
   signer = '',
+  verifiedSigners: string[] = signatureStatus === 'G' && signer ? [userIdEmail(signer)] : [],
 ): CommitRecord {
   return {
     sha: sha.padEnd(40, '0'),
@@ -27,6 +35,9 @@ function commit(
     authorEmail,
     signatureStatus,
     signer,
+    signingKey: '',
+    primaryKey: '',
+    verifiedSigners,
     files: Object.keys(blobs),
     blobs,
   };
@@ -68,7 +79,7 @@ function input(
 const TOKEN = 'src/auth/token.ts';
 const ALICE = 'alice@example.com';
 
-describe('isOwner and signerIdentity', () => {
+describe('isOwner', () => {
   it('matches email owners case-insensitively', () => {
     expect(isOwner('Alice@Example.com', [ALICE], {})).toBe(true);
     expect(isOwner('eve@example.com', [ALICE], {})).toBe(false);
@@ -86,11 +97,6 @@ describe('isOwner and signerIdentity', () => {
     expect(isOwner('BOB@corp.example', ['@bob'], identities)).toBe(true);
     expect(isOwner('dave@example.com', ['@org/core'], identities)).toBe(false);
     expect(isOwner('dave@example.com', ['@unmapped'], identities)).toBe(false);
-  });
-
-  it('extracts the identity from GPG and SSH signer strings', () => {
-    expect(signerIdentity('Alice Example <alice@example.com>')).toBe(ALICE);
-    expect(signerIdentity(' alice@example.com ')).toBe(ALICE);
   });
 });
 
@@ -114,6 +120,43 @@ describe('computeStanding', () => {
       level: 'VERIFIED_OWNER',
       hasStanding: true,
     });
+  });
+
+  it('ignores the %GS user ID when no verified identity is an owner', () => {
+    // OpenPGP: the key holder chose the user ID, and the keyring does not validate it.
+    const spoof = computeStanding(
+      [
+        commit('c1', 'bob@example.com', { f: 'x' }, 'G', 'Impersonated <alice@example.com>', [
+          'bob@example.com',
+        ]),
+      ],
+      'f',
+      'x',
+      owners,
+      {},
+      strict,
+    );
+    expect(spoof).toMatchObject({ level: 'NON_OWNER', hasStanding: false });
+
+    // A keyring-valid secondary user ID of the owner counts, whatever %GS shows.
+    const secondary = computeStanding(
+      [
+        commit('c2', 'bob@example.com', { f: 'x' }, 'G', 'Bob <bob@example.com>', [
+          'bob@example.com',
+          ALICE,
+        ]),
+      ],
+      'f',
+      'x',
+      owners,
+      {},
+      strict,
+    );
+    expect(secondary).toMatchObject({ level: 'VERIFIED_OWNER', hasStanding: true });
+
+    // A record without the verified list (never annotated) fails closed.
+    const bare = { ...commit('c3', ALICE, { f: 'x' }, 'G', ALICE), verifiedSigners: undefined };
+    expect(computeStanding([bare], 'f', 'x', owners, {}, strict).level).toBe('UNVERIFIED_OWNER');
   });
 
   it('does not trust an owner author email that another key signed', () => {
@@ -189,6 +232,7 @@ describe('arbitrateDivergence', () => {
     expect(plan.status).toBe('PERMITTED_WITH_OVERRIDE');
     expect(plan.isObjectiveTruthClaim).toBe(false);
     expect(plan.authorityRef).toBe('merge base');
+    expect(plan.authorityFullRef).toBeUndefined();
     const [file] = plan.files;
     expect(file).toMatchObject({
       path: TOKEN,
@@ -299,6 +343,34 @@ describe('arbitrateDivergence', () => {
     expect(plan.files[0]?.left).toEqual({ level: 'NON_OWNER', hasStanding: false });
   });
 
+  it('blocks a bad signature or revoked key even on an unowned path', () => {
+    const bad = arbitrateDivergence(
+      input(
+        side('agent-a', [commit('a1', 'bot@bots.example', { 'README.md': 'x' }, 'B')], {
+          'README.md': 'x',
+        }),
+        side('agent-b', [commit('b1', 'bot2@bots.example', { 'README.md': 'y' })], {
+          'README.md': 'y',
+        }),
+      ),
+    );
+    expect(bad.files[0]).toMatchObject({ status: 'BLOCKED_CONFLICT', reason: 'INVALID_SIGNATURE' });
+
+    const revoked = arbitrateDivergence(
+      input(
+        side('agent-a', [commit('a1', 'bot@bots.example', { 'app.ts': 'x' })], { 'app.ts': 'x' }),
+        side('agent-b', [commit('b1', 'bot2@bots.example', { 'app.ts': 'y' }, 'R')], {
+          'app.ts': 'y',
+        }),
+        { codeowners: undefined },
+      ),
+    );
+    expect(revoked.files[0]).toMatchObject({
+      status: 'BLOCKED_CONFLICT',
+      reason: 'INVALID_SIGNATURE',
+    });
+  });
+
   it('returns AMBIGUOUS when no rule assigns an owner', () => {
     const plan = arbitrateDivergence(
       input(
@@ -347,6 +419,38 @@ describe('arbitrateDivergence', () => {
     );
     expect(plan.status).toBe('PERMITTED');
     expect(plan.files.map((f) => f.reason)).toEqual(['IDENTICAL_CHANGE', 'IDENTICAL_CHANGE']);
+  });
+
+  it('keeps identical content PERMITTED even when a side has a bad signature or revoked key', () => {
+    const plan = arbitrateDivergence(
+      input(
+        side('agent-a', [commit('a1', 'bot@bots.example', { [TOKEN]: 's' }, 'B')], {
+          [TOKEN]: 's',
+        }),
+        side('agent-b', [commit('b1', 'bot2@bots.example', { [TOKEN]: 's' }, 'R')], {
+          [TOKEN]: 's',
+        }),
+      ),
+    );
+    expect(plan.status).toBe('PERMITTED');
+    expect(plan.files[0]).toMatchObject({ status: 'PERMITTED', reason: 'IDENTICAL_CHANGE' });
+  });
+
+  it('reports a CODEOWNERS path that both sides change once', () => {
+    const plan = arbitrateDivergence(
+      input(
+        side('agent-a', [commit('a1', 'bot@bots.example', { '.github/CODEOWNERS': 'o1' })], {
+          '.github/CODEOWNERS': 'o1',
+        }),
+        side('agent-b', [commit('b1', 'bot2@bots.example', { '.github/CODEOWNERS': 'o2' })], {
+          '.github/CODEOWNERS': 'o2',
+        }),
+      ),
+    );
+    expect(plan.files.map((f) => [f.path, f.reason])).toEqual([
+      ['.github/CODEOWNERS', 'AUTHORITY_SOURCE_MODIFIED'],
+    ]);
+    expect(plan.exclusiveChanges).toEqual({ left: 0, right: 0 });
   });
 
   it('blocks when an agent branch changes an authority source, and counts exclusive changes', () => {

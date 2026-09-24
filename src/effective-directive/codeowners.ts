@@ -84,7 +84,10 @@ export function patternToRegExp(pattern: string): RegExp {
   return new RegExp(`${prefix}${globToRegExpSource(body)}${suffix}$`);
 }
 
-function globToRegExpSource(glob: string): string {
+function globToRegExpSource(pattern: string): string {
+  // Collapse runs such as "**/**/" (same meaning), so the regex has no chain of
+  // optional groups that backtracks exponentially on a path that does not match.
+  const glob = pattern.replace(/(?:\*\*\/)+/g, '**/').replace(/\*{3,}/g, '**');
   let out = '';
   let i = 0;
   while (i < glob.length) {
