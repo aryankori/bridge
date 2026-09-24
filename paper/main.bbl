@@ -69,10 +69,10 @@ Retrieved September 22, 2026 from \tempurl}
   Liebig}, \bibinfo{person}{Benjamin Brandl}, \bibinfo{person}{Christian
   Lengauer}, {and} \bibinfo{person}{Christian K{\"a}stner}.}
   \bibinfo{year}{2011}\natexlab{}.
-\newblock \showarticletitle{{Semistructured merge}}. In
-  \bibinfo{booktitle}{\emph{Proceedings of the 19th ACM SIGSOFT symposium and
-  the 13th European conference on Foundations of software engineering}}.
-  \bibinfo{publisher}{ACM}, \bibinfo{pages}{190--200}.
+\newblock \showarticletitle{{Semistructured merge: rethinking merge in revision
+  control systems}}. In \bibinfo{booktitle}{\emph{Proceedings of the 19th ACM
+  SIGSOFT symposium and the 13th European conference on Foundations of software
+  engineering}}. \bibinfo{publisher}{ACM}, \bibinfo{pages}{190--200}.
 \newblock
 \href{https://doi.org/10.1145/2025113.2025141}{doi:\nolinkurl{10.1145/2025113.2025141}}
 
@@ -477,7 +477,8 @@ Retrieved September 22, 2026 from \tempurl}
 \bibfield{author}{\bibinfo{person}{Butler Lampson}, \bibinfo{person}{Mart{\'i}n
   Abadi}, \bibinfo{person}{Michael Burrows}, {and} \bibinfo{person}{Edward
   Wobber}.} \bibinfo{year}{1992}\natexlab{}.
-\newblock \showarticletitle{{Authentication in distributed systems}}.
+\newblock \showarticletitle{{Authentication in distributed systems: theory and
+  practice}}.
 \newblock \bibinfo{journal}{\emph{ACM Transactions on Computer Systems}}
   \bibinfo{volume}{10}, \bibinfo{number}{4} (\bibinfo{year}{1992}),
   \bibinfo{pages}{265--310}.
@@ -735,7 +736,8 @@ Retrieved September 22, 2026 from \tempurl}
   \bibinfo{person}{Marek Zawirski}.} \bibinfo{year}{2011}\natexlab{}.
 \newblock \showarticletitle{{Conflict-Free Replicated Data Types}}.
 \newblock In \bibinfo{booktitle}{\emph{Stabilization, Safety, and Security of
-  Distributed Systems}}. \bibinfo{publisher}{Springer Berlin Heidelberg},
+  Distributed Systems}}. \bibinfo{series}{Lecture Notes in Computer Science},
+  Vol.~\bibinfo{volume}{6976}. \bibinfo{publisher}{Springer Berlin Heidelberg},
   \bibinfo{pages}{386--400}.
 \newblock
 \href{https://doi.org/10.1007/978-3-642-24550-3_29}{doi:\nolinkurl{10.1007/978-3-642-24550-3_29}}
@@ -800,8 +802,8 @@ Retrieved September 22, 2026 from \tempurl}
         {singh1999commit}
 \bibfield{author}{\bibinfo{person}{Munindar~P. Singh}.}
   \bibinfo{year}{1999}\natexlab{}.
-\newblock \showarticletitle{{An ontology for commitments in multiagent
-  systems}}.
+\newblock \showarticletitle{{An ontology for commitments in multiagent systems:
+  Toward a unification of normative concepts}}.
 \newblock \bibinfo{journal}{\emph{Artificial Intelligence and Law}}
   \bibinfo{volume}{7}, \bibinfo{number}{1} (\bibinfo{year}{1999}),
   \bibinfo{pages}{97--113}.
@@ -960,10 +962,11 @@ Retrieved September 22, 2026 from \tempurl}
         {yolum2002flexible}
 \bibfield{author}{\bibinfo{person}{Pinar Yolum} {and}
   \bibinfo{person}{Munindar~P. Singh}.} \bibinfo{year}{2002}\natexlab{}.
-\newblock \showarticletitle{{Flexible protocol specification and execution}}.
-  In \bibinfo{booktitle}{\emph{Proceedings of the first international joint
+\newblock \showarticletitle{{Flexible protocol specification and execution:
+  applying event calculus planning using commitments}}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the first international joint
   conference on Autonomous agents and multiagent systems part 2 - AAMAS '02}}.
-  \bibinfo{publisher}{ACM Press}, \bibinfo{pages}{527}.
+  \bibinfo{publisher}{ACM Press}, \bibinfo{pages}{527--534}.
 \newblock
 \href{https://doi.org/10.1145/544862.544867}{doi:\nolinkurl{10.1145/544862.544867}}
 
@@ -976,9 +979,11 @@ Retrieved September 22, 2026 from \tempurl}
 \newblock \showarticletitle{{InjecAgent: Benchmarking Indirect Prompt
   Injections in Tool-Integrated Large Language Model Agents}}. In
   \bibinfo{booktitle}{\emph{Findings of the Association for Computational
-  Linguistics: ACL 2024}}.
+  Linguistics: ACL 2024}}. \bibinfo{publisher}{Association for Computational
+  Linguistics}, \bibinfo{pages}{10471--10506}.
 \newblock
 \showeprint[arxiv]{2403.02691}
+\href{https://doi.org/10.18653/v1/2024.findings-acl.624}{doi:\nolinkurl{10.18653/v1/2024.findings-acl.624}}
 
 
 \bibitem[Zhang et~al\mbox{.}(2024)]%

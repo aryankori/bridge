@@ -63,49 +63,47 @@ Warning--empty publisher in yao2023react
 Warning--empty address in yao2023react
 Warning--page numbers missing in both pages and numpages fields in yao2023react
 Warning--empty address in yolum2002flexible
-Warning--empty publisher in zhan2024injecagent
 Warning--empty address in zhan2024injecagent
-Warning--page numbers missing in both pages and numpages fields in zhan2024injecagent
 Warning--empty address in zhang2024autocoderover
 You've used 73 entries,
             6273 wiz_defined-function locations,
-            1943 strings with 33968 characters,
-and the built_in function-call counts, 84573 in all, are:
-= -- 10303
+            1946 strings with 34185 characters,
+and the built_in function-call counts, 85072 in all, are:
+= -- 10395
 > -- 3203
 < -- 1
 + -- 1083
 - -- 1108
-* -- 6475
-:= -- 8429
-add.period$ -- 345
+* -- 6509
+:= -- 8465
+add.period$ -- 347
 call.type$ -- 73
 change.case$ -- 619
 chr.to.int$ -- 72
-cite$ -- 126
-duplicate$ -- 7276
-empty$ -- 5115
+cite$ -- 124
+duplicate$ -- 7317
+empty$ -- 5142
 format.name$ -- 1340
-if$ -- 20143
+if$ -- 20266
 int.to.chr$ -- 3
 int.to.str$ -- 1
 missing$ -- 244
-newline$ -- 674
+newline$ -- 675
 num.names$ -- 510
-pop$ -- 2905
+pop$ -- 2894
 preamble$ -- 1
 purify$ -- 1185
 quote$ -- 0
-skip$ -- 2750
+skip$ -- 2772
 stack$ -- 0
-substring$ -- 6082
-swap$ -- 699
+substring$ -- 6194
+swap$ -- 714
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 1847
-warning$ -- 53
-while$ -- 451
+warning$ -- 51
+while$ -- 456
 width$ -- 0
-write$ -- 1456
-(There were 53 warnings)
+write$ -- 1460
+(There were 51 warnings)
