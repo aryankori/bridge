@@ -1,7 +1,7 @@
 # Bridge - Hermes Current State
 
 **Generated:** Phase 0 reconstruction 
-**Author:** Hermes Agent (Research Lead / Evaluation Lead) 
+**Author:** aryankori
 **Categories:** REPOSITORY FACT · EXPERIMENTAL EVIDENCE · AGENT REPORT · MEMORY · INFERENCE · HYPOTHESIS
 
 ---

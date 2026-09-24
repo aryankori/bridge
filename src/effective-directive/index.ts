@@ -5,3 +5,7 @@ export * from './detector.js';
 export * from './resolver.js';
 export * from './fixtures.js';
 export * from './evaluator.js';
+export * from './codeowners.js';
+export * from './git.js';
+export * from './arbitration.js';
+export * from './cli.js';

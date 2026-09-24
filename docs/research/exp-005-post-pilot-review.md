@@ -1,6 +1,6 @@
 # BRIDGE - EXP-005 POST-PILOT INDEPENDENT REVIEW
 
-**Author:** Hermes Agent (Independent Reviewer)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Status:** Post-pilot artifact review - NO LIVE EXPERIMENT RUN BY THIS REVIEWER
 

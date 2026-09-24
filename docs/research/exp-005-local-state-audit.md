@@ -1,6 +1,6 @@
 # EXP-005 Forensic Local State Audit & Reconciliation Report
 
-**Author:** Antigravity (Execution Lead / Local Engineering / Experiment Runtime) 
+**Author:** aryankori
 **Date:** 2026-09-02 
 **Target Repository:** `bridge` (`C:\Users\aryan\Documents\AI and ML\bridge`) 
 **Status:** FORENSIC RECONCILIATION COMPLETE 

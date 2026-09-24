@@ -1,6 +1,6 @@
 # BRIDGE - EFFECTIVE DIRECTIVE PROTOTYPE
 
-**Author:** Bridge Research & Core Architecture 
+**Author:** aryankori
 **Date:** 2026-08-27 
 **Status:** Validated Research Prototype (Local Read-Only) 
 **Output Class:** `EFFECTIVE DIRECTIVE` (Strictly non-truth claim: `isObjectiveTruthClaim = false`)

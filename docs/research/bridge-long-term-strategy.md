@@ -1,6 +1,6 @@
 # BRIDGE - Long-Term Strategy
 
-**Author:** Hermes Agent (Independent Deep Researcher)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Status:** Final research synthesis - not a product spec, not a pitch
 

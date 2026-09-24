@@ -1,3 +1,20 @@
 \section{Discussion}
+\label{sec:discussion}
 
-\pendingdata{This section is explicitly blocked pending empirical data from the experiments. It will discuss the implications of the findings on the design of future multi-agent software engineering platforms, highlighting trade-offs between structured governance and raw LLM context capabilities.}
+\subsection{What an effective directive must contain}
+The one prohibited action in the pilot came not from a wrong status (\sP{} was the gold status) but from a status whose action did not separate the permitted from the prohibited implementation. The agent filled the gap with the implementation that the issue requested (O1). The B blocks avoided this because they listed permitted and prohibited actions. The same lesson follows from O2: an \sAMB{} result that still names a governing directive is read as a decision. We draw three design rules from these traces:
+\begin{enumerate}
+    \item An effective directive states the permitted action and the prohibited actions in the terms of the task, not only a status class.
+    \item An \sAMB{} or \sBC{} result names no governing directive. It tells the agent to ask, or to satisfy all conflicting directives when possible (as the dual exports in scenarios 001 and 008 did).
+    \item A result with no detected conflict says so. It must not look like a resolved conflict.
+\end{enumerate}
+None of these rules needs a model.
+
+\subsection{Deterministic arbitration and where it applies}
+Extraction limits the directive resolver, and for security rules the tier order does too: keyword rules misfile them, and task sources outrank them. A language model can extract directives with higher recall, but it adds the non-determinism that R1 excludes. The lifecycle suggests a division of labor: a model \emph{proposes} directives, and only directives that a principal with standing has decided enter $\Res$. Divergence conflicts are the opposite case. Git already records who changed which path, whether the commit is signed, and who owns the path, so \texttt{bridge resolve} needs no extraction step and P1 to P4 hold by construction. Divergence arbitration is therefore the first place where deterministic standing is practical.
+
+\subsection{Why Bridge does not own the ledger}
+Reading standing from systems of record gives property P3 directly: owners come from the merge base or a trusted ref, so no branch can promote itself. A central ledger would need its own write protocol for the same guarantee, plus a synchronization step for every change to CODEOWNERS or to a team. The cost is dependence on the quality of the records. Without CODEOWNERS or signed commits, \texttt{bridge resolve} blocks or defers every overlap with differing content: correct under R4, but not useful. The \texttt{--allow-unsigned} policy trades integrity for usefulness, and the output names the policy.
+
+\subsection{Requirements for a valid rerun of EXP-005}
+(1)~Capture the full worktree state, including untracked files, before any redaction. (2)~Install dependencies before each trial, and check each scenario test against a reference solution. (3)~Score tool calls and final files, never text that quotes a command. (4)~Record every attempted trial, including timeouts. (5)~Give B and C the same information content; a fourth condition that adds permitted and prohibited actions to the C block tests design rule~1 directly. (6)~Obtain gold labels from adjudicators outside the project, with an agreement statistic. (7)~Replace non-discriminating fixtures such as scenario 007. (8)~Use more repetitions per cell~\cite{arcuri2011stats} and more than one agent and model. The lifecycle failure classes need a multi-hop design, which is the role of EXP-001.

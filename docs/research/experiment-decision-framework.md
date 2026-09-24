@@ -1,6 +1,6 @@
 # BRIDGE - EXPERIMENT DECISION FRAMEWORK
 
-**Author:** Hermes Agent (Independent Research Synthesizer)
+**Author:** aryankori
 **Date:** 2026-08-27
 **Status:** Pre-EXP-001 execution - defines decision rules before seeing results
 

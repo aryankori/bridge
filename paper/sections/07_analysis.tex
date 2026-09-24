@@ -1,6 +1,53 @@
 \section{Analysis}
+\label{sec:analysis}
 
-\pendingdata{This section is explicitly blocked pending empirical data from EXP-001.}
+\subsection{RQ1: what status agreement does and does not show}
+On EXP-004, the resolver disagrees with the gold status only on whether to \emph{report} an override. It never disagrees on whether the agent may act. This is the result we expected from a deterministic tier order: the order is simple, and the benchmark rewards exactly that order. The weak steps are extraction and, for security rules, the tier order. Conflict recall is 71.4\% on EXP-004, and on EXP-005 the resolver misses the conflict in three of ten scenarios. Substring rules file the security policies of scenarios 003 and 009 as branch policy (``pr'' matches ``process'' and ``primitives''), so they cannot conflict with the task. Correct extraction would not give the gold action either: the task (tier 80) outranks the security file (tier 60).
 
-\subsection{Causal Mechanisms}
-\pendingdata{Ablation analysis of observed benefits (e.g., whether gains in Condition C are driven by token reduction, explicit negative constraints, or artifact grounding) will be conducted post-experiment.}
+Status agreement can hide a disagreement about the action. In scenario 003, the gold label is \sP{} because the task is permitted \emph{if} the agent reads the token from the environment. The resolver output is \sP{} because it found no conflict. The two labels are equal, but they permit different actions. A benchmark that scores only the status cannot detect this. Section~\ref{sec:analysis-observed} shows that this difference is what the live agent acted on.
+
+\subsection{RQ2: why the pilot is inconclusive}
+The pilot does not answer RQ2. Only 25 of 60 trials have a record, and selection depends on the timeout. The recorded trials cover a different scenario mix in each condition, so pooled rates compare different tasks. The cells hold 4, 12, and 9 trials. The B blocks name permitted and prohibited actions (for example, ``Flag equal-tier agent rule ambiguity while providing dual export compatibility''), and the C blocks name none, so B and C differ in content as well as in origin. Finally, the scorer is not valid (RQ3). Section~\ref{sec:threats} discusses each threat. A matched view is the least biased description that the data permit. In the five scenarios with both a B and a C record (003, 004, 007, 008, and 010), the B trials satisfy the audit rule in 6 of 6 cases and the C trials in 3 of 7. In the three scenarios with both an A and a C record (007, 008, and 010), A satisfies the rule in 1 of 4 cases and C in 2 of 5. These counts describe the traces; they do not estimate an effect.
+
+\subsection{RQ3: the falsification trigger is a scorer artifact}
+The pre-registered criteria report the thesis as weakened. The trace audit shows that this report depends on defects D1 to D4, not on agent behavior. The scorer gives zero correct actions to 15 trials that satisfy the audit rule, reports four false allows for four refusals, and misses the only prohibited action. We therefore do not accept the falsification verdict. We also do not reverse it, because the audit is post hoc and our own. The correct conclusion is that EXP-005 has not yet tested its hypothesis. Section~\ref{sec:discussion} lists the changes that a valid rerun needs.
+
+\subsection{Failure modes observed in the traces}
+\label{sec:analysis-observed}
+We name a failure mode only when a recorded trace shows its mechanism.
+
+\begin{description}
+    \item[O1 Coarse permission.] A status for a coarse action lets the agent choose the implementation. In scenario 003, the C block said ``\sP{} for action: Configure auth token in \texttt{src/config.ts}''. The issue asked for a hardcoded token, and the agent hardcoded it, citing the Bridge directive. The B block for the same scenario named the permitted implementation (read \texttt{process.env.AUTH\_TOKEN}), and the B trial followed it. This is one trial, but its mechanism is explicit in the agent's own words.
+    \item[O2 Contradictory ambiguity.] For scenario 008, the resolver returned \sAMB{} and \emph{also} named a governing directive (``Governed by \ldots\ \texttt{.cursorrules}: \ldots\ camelCase''). The C agent exported only \texttt{calculateTotal} ``as per the \texttt{.cursorrules} directive''. The raw file was also in its prompt, and the A agent chose the same way (O3), so the block may not be the cause. The defect is in the resolver: its ambiguity branch still names a governing directive.
+    \item[O3 Silent ambiguity collapse.] Without any directive, the A agent in scenario 008 chose camelCase and did not mention the conflict.
+    \item[O4 Non-discriminating fixture.] In scenario 007, the only identifier is \texttt{status}, which is valid in both camelCase and snake\_case. Four of five trials concluded that no change was necessary. That conclusion is defensible, so the scenario cannot separate the conditions.
+    \item[O5 Ceiling on the safety gate.] All four recorded trials of scenario 010 refused the force push, including the A trial. For this model and this scenario, the safety gate adds nothing that the traces can show.
+\end{description}
+
+
+\subsection{Lifecycle failure taxonomy}
+\label{sec:analysis-taxonomy}
+Three failures can occur when a claim moves between agents without its lifecycle state. We define each as a violation of one lifecycle invariant (Section~\ref{sec:framework-lifecycle}) and give a detection rule. Table~\ref{tab:taxonomy} summarizes what the data can show: \emph{no experiment in this paper can fully observe these failures}, and we observed none.
+
+\begin{description}
+    \item[Ghost Dependency.] An agent acts on a claim that another agent reported as \st{Implemented}, but the artifact does not exist at the commit where the second agent starts. Example: a transcript says ``I added \texttt{retryWithBackoff} to \texttt{net.ts}'', but the function was never committed. \emph{Detection:} for each claim in a handoff that names an artifact, check that the artifact exists at the handoff commit; flag each missing artifact that the receiving agent later references.
+    \item[Zombie Constraint.] A directive that a higher or newer source superseded (state \st{Obsolete}) still governs an action. Example: a 2021 guide requires Jest after the project moved to Vitest. \emph{Detection:} flag each action that satisfies an \st{Obsolete} directive and violates the directive that superseded it. Scenario 002 targets this failure. Its two recorded trials (both C) used the Vitest script and never ran Jest, so we observed no instance, but the A and B cells for scenario 002 are empty.
+    \item[Dead-End Hypothesis Resurrection.] An agent proposes or tests again a hypothesis that an earlier agent tested and rejected, without new evidence. Example: a second agent retries a fix that the first agent already reverted because a test failed. \emph{Detection:} compare each proposal of the receiving agent with the rejected (\st{Obsolete}) proposals of the handoff; flag matches that cite no new evidence.
+\end{description}
+
+\begin{table}[t]
+\caption{Lifecycle failure classes. ``Testable in'' names the experiment whose design can observe the class.}
+\label{tab:taxonomy}
+\footnotesize
+\begin{tabular}{@{}llll@{}}
+\toprule
+Class & Invariant & Testable in & Observed \\
+\midrule
+Ghost Dependency & I1 (evidence) & EXP-001 (not run) & 0 \\
+Zombie Constraint & I2 (no force) & EXP-005 scn.~002 & 0 of 2 \\
+Dead-End Resurrection & I3 (no return) & EXP-001 (not run) & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The taxonomy is therefore a hypothesis about failures in multi-hop handoffs, with operational detection rules. It is not an empirical finding of this paper. Studies of multi-agent LLM systems report related failures, such as information withholding and ignored input from other agents~\cite{cemri2025fail}, which supports the need to test for them.

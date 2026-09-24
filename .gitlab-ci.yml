@@ -30,7 +30,7 @@ typecheck:
 unit-tests:
   stage: test
   script:
-    - pnpm test
+    - pnpm test:coverage
 
 experiment-validate:
   stage: test

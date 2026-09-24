@@ -1,3 +1,6 @@
 \section{Conclusion}
+\label{sec:conclusion}
 
-\pendingdata{This section is explicitly blocked pending empirical data. It will summarize the transition from context amnesia to governed Project Truth, based on the findings from EXP-001 and EXP-002, and outline the necessary primitives for accountable multi-agent interoperability.}
+When several coding agents share a repository, the conflicts between their instructions and their changes are questions of authority, not of memory. Instead of a central record of project truth, Bridge computes effective standing from the records that teams already keep. We formalized this as a claim lifecycle, an authority order $\succA$, and a resolution operator $\Res$, and implemented $\Res$ as a directive resolver and as \texttt{bridge resolve}.
+
+The resolver agrees with 35 of 40 gold statuses on a blind benchmark, and none of its errors grants a restricted action. The live pilot recorded 25 of 60 trials with a scorer that does not measure behavior, so it does not show whether Bridge directives help agents. The traces do show how a directive fails: a coarse permission let one agent justify a hardcoded secret, and an ambiguity report still named a winner. These observations define the next directive format and the rerun protocol. The replication package lets others check every table.

@@ -2,7 +2,7 @@
 
 **Document ID:** `BRIDGE-THESIS-V2` 
 **Date:** 2026-08-27 
-**Author:** Bridge Integration Team 
+**Author:** aryankori
 **Status:** Architectural Specification & Strategic Thesis 
 **Standard:** ASD-STE100 Simplified Technical English 
 

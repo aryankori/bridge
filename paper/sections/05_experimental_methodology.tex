@@ -1,30 +1,45 @@
-\section{Experimental Methodology}
+\section{Method}
+\label{sec:method}
 
-To answer the research questions, we designed a reproducible empirical program executing isolated agentic software engineering tasks within a deterministic harness. 
+All artifacts in this section are in the replication package: the resolver, both benchmarks, the pilot harness, the recorded pilot manifest, the audit script, and the scripts that produce every table.
 
-\subsection{Environment and Control Mechanics}
-To prevent cross-trial contamination and ensure determinism:
-\begin{itemize}
-    \item \textbf{Isolated Worktrees:} Every trial executes in a freshly cloned, ephemeral Git worktree initialized at a strict base commit hash.
-    \item \textbf{Model Pinning:} The receiver agent (OpenCode) is strictly pinned to a specific, verified model endpoint (\pendingdata{e.g., nvidia/nvidia/nemotron-3-super-120b-a12b}) invoked via NDJSON streaming to prevent UI-layer non-determinism.
-    \item \textbf{Metrics Collection:} The experimental harness automatically extracts and validates outcome metrics without LLM-based summary hallucination. Measurements include token consumption, exit codes, task duration, and automated test suite status.
-\end{itemize}
+\subsection{The directive resolver}
+\label{sec:method-resolver}
+The resolver implements $\Res$ (Section~\ref{sec:framework}) for directive conflicts. It is deterministic and calls no language model. It runs in five steps.
+\begin{enumerate}
+    \item \textbf{Extraction.} For each line of each source, keyword rules assign a category (package manager, test command, branch policy, code style, file deletion, or general constraint), a polarity (\st{REQUIRE}, \st{ALLOW}, \st{PREFER}, or \st{DENY}), and a subject (for example, \texttt{pnpm} or \texttt{snake\_case}).
+    \item \textbf{Tiering.} Each directive inherits the tier of its source: explicit human instruction (weight 100), task specification (80), agent rule file (60), project documentation (40), Git state (30), and default convention (10).
+    \item \textbf{Conflict detection.} Two directives in one category conflict when their subjects differ or their polarities are \st{REQUIRE} and \st{DENY}. A conflict between two directives of equal weight becomes a precedence ambiguity, unless both sources have a modification time; then the newer source wins.
+    \item \textbf{Safety gate.} A destructive action, or an action on a protected branch, needs an \st{EXPLICIT\_HUMAN} allow or require directive, on any subject. Otherwise the status is \sRA{}.
+    \item \textbf{Status.} Otherwise, any precedence ambiguity gives \sAMB{}. If the highest-weight relevant directive denies the action, the status is \sBC{}. If it overrides a lower directive, the status is \sPWO{}. Otherwise the status is \sP{}.
+\end{enumerate}
+Each result carries the governing directive, the overridden directives, the conflicts, an evidence trail with source locations, and the fixed field \texttt{isObjectiveTruthClaim = false}. Both experiments use the resolver as frozen at one commit. The current source differs from that commit only in whitespace (\texttt{git diff -w} is empty).
 
-\subsection{EXP-001: Cross-Agent Work Transfer}
-EXP-001 isolates the single-hop transmission boundary. A primary analysis agent (Claude Code) initiates a task, and upon interruption or delegation, the state is transferred to a receiver agent (OpenCode) across three controlled conditions:
-\begin{itemize}
-    \item \textbf{Condition A (Baseline):} The receiver agent receives the raw task prompt with zero prior context.
-    \item \textbf{Condition B (Transcript Transfer):} The receiver agent receives the raw, unpruned conversation transcript of the primary agent, capped at 8KB.
-    \item \textbf{Condition C (Structured Transfer):} The receiver agent receives a JSON-RPC compliant \texttt{ExperimentalWorkTransfer} payload containing distilled metadata, verified facts, and unresolved hypotheses extracted via the Bridge logic layer.
-\end{itemize}
-All conditions are evaluated against a standardized refactoring task.
+\subsection{EXP-004: blind resolution benchmark}
+EXP-004 contains 40 scenarios: 15 development scenarios and 25 held-out scenarios. Each scenario gives an intended action and a set of raw sources. The scenarios cover package managers, branch protection, naming style, runtime versions, destructive cleanup, security vetoes, stale documentation, injected fake authority, and equal-tier contradictions. A blind runner removes all labels and passes only the action and the sources to the resolver. Each gold label gives a status, whether a conflict exists, and the citations that a correct explanation must contain. We report exact status agreement, conflict detection precision and recall, ambiguity calibration (the share of gold \sAMB{} cases that the resolver marks \sAMB{}), false allows (a permissive status for a gold-restricted case), false blocks, and citation recall.
 
-\subsection{EXP-002: Persistent Project Intelligence}
-\pendingdata{Pending justification from EXP-001}. Assuming structured transfer provides empirical gains, EXP-002 evaluates longitudinal persistence.
-\begin{itemize}
-    \item \textbf{Condition A:} A sequence of three interconnected coding sessions executed by an agent with zero persistence between sessions.
-    \item \textbf{Condition B:} The identical sequence executed with Bridge project intelligence injected as initial context in Sessions 2 and 3.
-\end{itemize}
+\subsection{EXP-005: live agent pilot}
+\label{sec:method-exp005}
+\paragraph{Scenarios.} EXP-005 has ten scenarios, each a small runnable repository with a task, conflicting sources, and a test. The scenario files assign five scenarios to an \emph{unambiguous} tier, three to an \emph{ambiguous} tier, and two to an \emph{unsolvable or safety} tier. Table~\ref{tab:exp005-resolver} lists them.
 
-\subsection{Metrics and Primary Outcomes}
-The primary outcomes measured across all experiments are correctness, automated test success rates, and successful task completion. Secondary outcomes include token consumption, execution duration, payload size, and the rate of manual human intervention required to resolve agent deadlocks.
+\paragraph{Conditions.} Every condition receives the same raw sources, task text, and closing sentence (``Please proceed to implement and verify this task.'').
+\begin{description}
+    \item[A (RAW).] Raw sources only.
+    \item[B (HUMAN).] Raw sources plus a directive block written by the project team for each scenario (the gold adjudication).
+    \item[C (BRIDGE).] Raw sources plus a directive block that the frozen resolver produced.
+\end{description}
+The B and C blocks share four headers (\texttt{Status}, \texttt{Directive}, \texttt{Rationale}, \texttt{Evidence}). Their content is not equivalent: Section~\ref{sec:analysis} shows that the B blocks name permitted and prohibited actions and the C blocks do not.
+
+\paragraph{Execution.} The agent is OpenCode in non-interactive mode (\texttt{--auto --pure --format json}) with one pinned model, \texttt{nvidia/}\allowbreak\modelname. Harness \texttt{5f53d12} runs each trial in a fresh fixture repository with a 180-second timeout. The plan has 10 scenarios $\times$ 3 conditions $\times$ 2 replications $=$ 60 trials, in an order shuffled by a seeded generator (Mulberry32, seed 42). The runner records the full NDJSON event stream, token counts, duration, the Git patch, and the result of the scenario test.
+
+\paragraph{Pre-registered scorer and falsification criteria.} Before the run, the team fixed an automated scorer and four falsification criteria. The thesis counts as weakened if (1)~the BRIDGE outcome is not more than 0.05 above RAW, (2)~HUMAN exceeds BRIDGE by more than 0.40, (3)~false blocks exceed prevented violations, or (4)~inspection shows that agents ignore the directive.
+
+\subsection{Post-hoc trace audit}
+\label{sec:method-audit}
+We designed the audit \emph{after} the pilot, when we found defects in the scorer (Section~\ref{sec:results-scorer}). It is exploratory. The audit reads only the agent's own events from the recorded stream: assistant text and tool-call inputs (file writes, file edits, and shell commands). It never reads the prompt, so text that the agent only received cannot count as an action. One fixed rule per scenario applies to all three conditions (Table~\ref{tab:audit-rules}). The rules follow the gold directive text. For scenario 005 the gold text does not address the scenario conflict, so the rule uses the scenario's expected outcome. The audit reports counts only. It computes no test statistics, because the recorded cells are small and not balanced.
+
+\subsection{Verification of \texttt{bridge resolve}}
+\label{sec:method-cli}
+Section~\ref{sec:framework-git} defines the semantics of \texttt{bridge resolve}. We verify the implementation (about 1{,}400 lines of TypeScript) with 93 automated tests: synthetic histories for every signature status, and real temporary repositories with worktrees, criss-cross merges, odd path names, identity maps, and commits signed by owner, agent, and untrusted SSH and OpenPGP keys. Statement, branch, function, and line coverage of its five source files is 100\%, and CI fails if it drops.
+
+\paragraph{EXP-001.} EXP-001 compares three ways to hand an interrupted task to a second agent: no context, a raw transcript, and a structured \texttt{ExperimentalWorkTransfer} record. Its harness exists, but provider quota limits blocked the live pilot. Section~\ref{sec:threats-reliability} explains why we withdraw earlier values.

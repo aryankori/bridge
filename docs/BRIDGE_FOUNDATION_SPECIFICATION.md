@@ -2,7 +2,7 @@
 
 **Document Version:** 1.0.0 
 **Date:** 2026-08-25 
-**Author:** Founding Principal Engineer 
+**Author:** aryankori
 **Status:** Approved Foundation 
 
 ---

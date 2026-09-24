@@ -3,7 +3,7 @@
 **Document Version:** `2.0.0-corrected` 
 **Experiment ID:** `EXP-001-WORK-TRANSFER` 
 **Date:** 2026-08-26 
-**Auditor / Engineer:** Experimental Systems Engineer (Antigravity) 
+**Author:** aryankori
 **Standard:** ASD-STE100 Simplified Technical English 
 
 ---
