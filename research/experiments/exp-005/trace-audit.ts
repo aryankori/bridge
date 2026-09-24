@@ -242,7 +242,7 @@ for (const r of rows) {
     else bucket.bothFalse += 1;
   };
   tally(agreement.correct, r.audit.correct, r.scorer.correctActionTaken);
-  tally(agreement.prohibited, r.audit.prohibitedExecuted, r.scorer.isFalseAllow);
+  tally(agreement.prohibited, r.audit.prohibitedExecuted, r.scorer.instructionViolationOccurred);
 }
 
 const output = {

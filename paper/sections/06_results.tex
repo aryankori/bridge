@@ -46,7 +46,7 @@ BC ($n$=0) & 0 & 0 & 0 & 0 & 0 \\
 \end{table}
 
 \subsection{RQ1: resolution agreement on EXP-005}
-Table~\ref{tab:exp005-resolver} gives the pre-verification on the ten EXP-005 scenarios. The resolver agrees with all ten gold statuses. This is agreement with labels that the project team wrote, not accuracy. Two labels contradict their own tier: scenario 001 is ``unambiguous'' but has the gold status \sAMB{}, and scenario 009 is ``unsolvable'' and its gold text says ``reject the task'', but its gold status is \sP{}. Three labels were changed to match the resolver (Section~\ref{sec:threats}). In three scenarios (003, 004, and 009), the resolver reports no conflict, although each contains one by construction.
+Table~\ref{tab:exp005-resolver} gives the pre-verification on the ten EXP-005 scenarios. The resolver agrees with all ten gold statuses. This is agreement with labels that the project team wrote, not accuracy. Two labels contradict their own tier: scenario 001 is ``unambiguous'' but has the gold status \sAMB{}, and scenario 009 is ``unsolvable'' and its gold text says ``Reject task'', but its gold status is \sP{}. Three labels were changed to match the resolver (Section~\ref{sec:threats}). In three scenarios (003, 004, and 009), the resolver reports no conflict, although each contains one by construction.
 
 \begin{table}[t]
 \caption{EXP-005 resolver pre-verification against project-authored gold labels. Status: gold status, which equals the resolver status in all ten scenarios. ``Conf.'' = the resolver reported at least one conflict. $\dagger$ = gold status disagrees with the scenario tier.}
@@ -119,7 +119,7 @@ Mean tool calls & 3.5 & 5.9 & 7.1 \\
 \label{sec:results-scorer}
 When we read the recorded traces, we found four defects in the scorer and its inputs.
 \begin{description}
-    \item[D1 Empty patches.] The harness captured patches with \texttt{git diff HEAD}. This command omits untracked files, and most tasks require a new file. The patch is empty in all 25 records. For scenarios 001, 003, 004, and 005, the scorer looks for the required construct in the patch. For scenario 002, it requires a passing test (D2). In the unambiguous tier, only scenario 001 can pass at all, through a keyword in the agent text.
+    \item[D1 Empty patches.] The harness captured patches with \texttt{git diff HEAD}. This command omits untracked files, and most tasks require a new file. The patch is empty in all 25 records. The scorer checks the patch for 004, and for 003 with a lowercased string that cannot match; no rule fits the 001 or 005 gold text. For 002 it needs a passing test (D2). In the unambiguous tier, only 001 can pass, via a keyword in agent text.
     \item[D2 No test runtime.] The verification step ran \texttt{pnpm test} in worktrees without installed dependencies. It failed with ``\texttt{vitest} is not recognized'' in all 25 records. The test metric measures the environment, not the agent.
     \item[D3 Quoted commands count as actions.] The scorer searches the whole event stream for the forbidden command. In all four recorded trials of scenario 010, the agent refused and quoted \texttt{git push --force origin main} in its refusal. The scorer counts each refusal as a false allow and a violation. The false-block rule (``the output contains \emph{cannot} and the tests did not pass'') fires on any refusal or error text, because the tests never pass (D2).
     \item[D4 Redaction before scoring.] The harness redacts secrets before it stores the stream. The token \texttt{DEV\_\allowbreak TOKEN\_\allowbreak SECRET\_\allowbreak 9999} became \texttt{[REDACTED\_SECRET]}, so the scorer's check for the literal token cannot fire. The one trial that hardcoded the secret (scenario 003, condition C) receives no violation.
@@ -154,7 +154,7 @@ Scn. & Gold & Audit rule (derived from the gold directive text) & A & B & C \\
 Table~\ref{tab:scorer-audit} compares the scorer with the audit trial by trial. The two agree on correctness in 10 of 25 trials. In the other 15, the scorer marks as incorrect a trial that satisfies the audit rule; the reverse never occurs. On prohibited actions, they agree in 20 of 25 trials. The scorer reports four false allows that the traces do not contain (D3) and misses the one prohibited action that the traces do contain (D4).
 
 \begin{table}[t]
-\caption{Pre-registered scorer versus post-hoc trace audit, per trial ($n$=25). $^{*}$For the scorer, a prohibited action is a false allow.}
+\caption{Pre-registered scorer versus post-hoc trace audit, per trial ($n$=25). $^{*}$For the scorer, a prohibited action is a violation.}
 \label{tab:scorer-audit}
 \footnotesize
 \begin{tabular}{@{}lcccc@{}}
