@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, it, expect, vi } from 'vitest';
 import {
@@ -446,6 +446,142 @@ describe.skipIf(!hasSshKeygen())('bridge resolve with SSH-signed commits', () =>
       repo.cleanup();
     }
   });
+});
+
+/** The `Home:` line of `gpg --version`, or undefined when gpg is not installed. */
+function gpgHome(): string | undefined {
+  try {
+    const version = execFileSync('gpg', ['--version'], { encoding: 'utf-8' });
+    return /^Home: (.*)$/m.exec(version)?.[1] ?? '';
+  } catch {
+    return undefined;
+  }
+}
+
+const GPG_HOME = gpgHome();
+
+/** MSYS gpg (Git for Windows) needs POSIX paths such as /c/Users/... in GNUPGHOME. */
+function toGpgPath(p: string): string {
+  if (!GPG_HOME?.startsWith('/') || !/^[A-Za-z]:/.test(p)) return p;
+  return `/${p.charAt(0).toLowerCase()}${p.slice(2).replace(/\\/g, '/')}`;
+}
+
+describe.skipIf(GPG_HOME === undefined)('bridge resolve with OpenPGP-signed commits', () => {
+  it('takes identities from keyring-valid user IDs, not from the claimed %GS user ID', async () => {
+    const repo = createTempRepo('bridge-gpg-');
+    const verifier = path.join(repo.root, 'verifier-gnupg');
+    const attacker = path.join(repo.root, 'attacker-gnupg');
+    const homes = [verifier, attacker];
+    for (const home of homes) mkdirSync(home, { mode: 0o700 });
+    const envFor = (home: string) => ({
+      ...process.env,
+      GIT_CONFIG_GLOBAL: path.join(repo.root, 'empty.gitconfig'),
+      GIT_CONFIG_NOSYSTEM: '1',
+      GNUPGHOME: toGpgPath(home),
+    });
+    const gpg = (home: string, args: string[], input?: string) =>
+      execFileSync('gpg', ['--batch', '--pinentry-mode', 'loopback', '--passphrase', '', ...args], {
+        env: envFor(home),
+        encoding: 'utf-8',
+        input,
+        stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'],
+      });
+    const fingerprint = (home: string) =>
+      /^fpr:+([0-9A-F]+):/m.exec(gpg(home, ['--with-colons', '--list-secret-keys']))?.[1] ?? '';
+    const signedCommit = (home: string, key: string, branch: string, author: string) => {
+      repo.git(['checkout', '-q', '-b', branch, 'main']);
+      repo.write('src/app.ts', `${branch}\n`);
+      repo.git(['add', '-A']);
+      execFileSync(
+        'git',
+        [
+          '-c',
+          'gpg.format=openpgp',
+          '-c',
+          `user.signingkey=${key}`,
+          'commit',
+          '-q',
+          '-S',
+          `--author=${author}`,
+          '-m',
+          branch,
+        ],
+        { cwd: repo.dir, env: envFor(home), stdio: 'ignore' },
+      );
+    };
+    const savedHome = process.env.GNUPGHOME;
+    try {
+      // The verifier owns an ultimately trusted owner key. The attacker key's primary
+      // user ID claims the owner email; the verifier certifies only its agent user ID.
+      gpg(verifier, ['--quick-gen-key', 'Owner <owner@example.com>', 'ed25519', 'sign', 'never']);
+      gpg(attacker, [
+        '--quick-gen-key',
+        'Impersonated <owner@example.com>',
+        'ed25519',
+        'sign',
+        'never',
+      ]);
+      const ownerKey = fingerprint(verifier);
+      const attackerKey = fingerprint(attacker);
+      gpg(attacker, ['--quick-add-uid', attackerKey, 'Agent <agent-a@bots.example>']);
+      gpg(attacker, ['--quick-set-primary-uid', attackerKey, 'Impersonated <owner@example.com>']);
+      gpg(verifier, ['--import'], gpg(attacker, ['--armor', '--export', attackerKey]));
+      gpg(verifier, ['--quick-lsign-key', attackerKey, 'Agent <agent-a@bots.example>']);
+
+      repo.write('.github/CODEOWNERS', '/src/ owner@example.com\n');
+      repo.write('src/app.ts', 'v1\n');
+      repo.commit('base', FIXTURE_AUTHOR);
+      signedCommit(verifier, ownerKey, 'owner', 'Owner <owner@example.com>');
+      signedCommit(attacker, attackerKey, 'spoofed', 'Owner <owner@example.com>');
+      repo.git(['checkout', '-q', '-b', 'agent', 'main']);
+      repo.write('src/app.ts', 'agent\n');
+      repo.commit('agent edit', AGENT_B);
+
+      process.env.GNUPGHOME = toGpgPath(verifier);
+      // Git reports a good signature and the forged user ID for the attacker commit.
+      const status = execFileSync('git', ['log', '-1', '--format=%G?|%GS', 'spoofed'], {
+        cwd: repo.dir,
+        env: envFor(verifier),
+        encoding: 'utf-8',
+      });
+      expect(status.trim()).toBe('G|Impersonated <owner@example.com>');
+
+      const owner = captureIo(repo.dir);
+      expect(await runCli(['resolve', 'owner', 'agent', '--json'], owner)).toBe(0);
+      expect((JSON.parse(owner.out.join('')) as ResolutionPlan).files[0]).toMatchObject({
+        reason: 'SINGLE_SIDE_STANDING',
+        left: {
+          level: 'VERIFIED_OWNER',
+          commit: { signatureStatus: 'G', signer: 'Owner <owner@example.com>' },
+        },
+      });
+
+      const spoofed = captureIo(repo.dir);
+      expect(await runCli(['resolve', 'spoofed', 'agent', '--json'], spoofed)).toBe(3);
+      expect((JSON.parse(spoofed.out.join('')) as ResolutionPlan).files[0]).toMatchObject({
+        reason: 'NO_STANDING',
+        left: {
+          level: 'UNVERIFIED_OWNER',
+          hasStanding: false,
+          commit: {
+            signatureStatus: 'G',
+            signer: 'Impersonated <owner@example.com>',
+          },
+        },
+      });
+    } finally {
+      if (savedHome === undefined) delete process.env.GNUPGHOME;
+      else process.env.GNUPGHOME = savedHome;
+      for (const home of homes) {
+        try {
+          execFileSync('gpgconf', ['--kill', 'gpg-agent'], { env: envFor(home), stdio: 'ignore' });
+        } catch {
+          // No agent is running, or gpgconf is not installed.
+        }
+      }
+      repo.cleanup();
+    }
+  }, 120_000);
 });
 
 describe('history shapes that must not grant standing', () => {
