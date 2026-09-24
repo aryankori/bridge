@@ -46,6 +46,47 @@ describe('WorkTransfer Primitive', () => {
  expect(scrubbed).toContain('[REDACTED_SECRET]');
  });
 
+ it('scrubs AWS keys and Anthropic keys', () => {
+  const text = 'AWS: AKIAIOSFODNN7EXAMPLE and Anthropic: sk-ant-api03-abcdef1234567890abcdef1234567890abcdef1234567890';
+  const scrubbed = scrubTransferSecrets(text);
+  expect(scrubbed).toContain('AWS: [REDACTED_SECRET] and Anthropic: [REDACTED_SECRET]');
+  expect(scrubbed).not.toContain('AKIAIOSFODNN7EXAMPLE');
+  expect(scrubbed).not.toContain('sk-ant-api03-abcdef1234567890abcdef1234567890abcdef1234567890');
+ });
+
+ it('scrubs private keys and JWTs', () => {
+  const text = 'Key: -----BEGIN RSA PRIVATE KEY-----... and JWT: eyJhbGciOiJIUzI1NiIsInR5cCI.eyJzdWIiOiIxMjM0NTY3ODkw.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+  const scrubbed = scrubTransferSecrets(text);
+  expect(scrubbed).toContain('Key: [REDACTED_SECRET]... and JWT: [REDACTED_SECRET]');
+  expect(scrubbed).not.toContain('-----BEGIN RSA PRIVATE KEY-----');
+  expect(scrubbed).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI.eyJzdWIiOiIxMjM0NTY3ODkw.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c');
+ });
+
+ it('scrubs database URIs and generic API keys', () => {
+  const text = 'DB: postgres://user:pass123@localhost:5432/db and API_KEY=secret_value_123';
+  const scrubbed = scrubTransferSecrets(text);
+  expect(scrubbed).toContain('DB: [REDACTED_SECRET] and [REDACTED_SECRET]');
+  expect(scrubbed).not.toContain('postgres://user:pass123@localhost:5432/db');
+  expect(scrubbed).not.toContain('API_KEY=secret_value_123');
+ });
+
+ it('recursively scrubs relevantFiles and metadata', () => {
+  const pkg = createWorkTransferPackage({
+    title: 'T', task: 'T', objective: 'O', sourceAgent: 'A',
+    relevantFiles: [{ path: 'config.json', content: 'postgres://user:pass@host/db' }],
+    metadata: {
+      nested: {
+        key: 'sk-ant-12345678901234567890',
+      },
+      list: ['AKIAIOSFODNN7EXAMPLE']
+    }
+  });
+
+  expect(pkg.relevantFiles[0].content).toBe('[REDACTED_SECRET]');
+  expect((pkg.metadata as any).nested.key).toBe('[REDACTED_SECRET]');
+  expect((pkg.metadata as any).list[0]).toBe('[REDACTED_SECRET]');
+ });
+
  it('asserts path confinement within root directory', () => {
  expect(() => assertPathConfinement('src/index.ts', tempDir)).not.toThrow();
  expect(() => assertPathConfinement('../outside.txt', tempDir)).toThrow(/Path traversal violation/);
@@ -124,6 +165,20 @@ describe('WorkTransfer Primitive', () => {
  it('throws when prototype pollution is attempted', () => {
  const payload = JSON.parse('{"id": "1", "task": "2", "objective": "3", "sourceAgentId": "4", "title": "5", "provenance": {"timestamp": "t", "bridgeVersion": "v", "sourceAgentId": "s"}, "__proto__": {"polluted": "yes"}}');
  expect(() => deserializeWorkTransfer(JSON.stringify(payload))).toThrow(/prototype pollution detected/);
+ });
+
+ it('throws when payload exceeds 1MB', () => {
+  const hugePayload = 'a'.repeat(1024 * 1024 + 1);
+  expect(() => deserializeWorkTransfer(hugePayload)).toThrow(/payload exceeds 1MB limit/);
+ });
+
+ it('throws when fields exceed max lengths', () => {
+  const basePkg = createWorkTransferPackage({
+    title: 'Test', task: 'T', objective: 'O', sourceAgent: 'A'
+  });
+  const payload = JSON.parse(serializeWorkTransfer(basePkg));
+  payload.title = 'a'.repeat(100001);
+  expect(() => deserializeWorkTransfer(JSON.stringify(payload))).toThrow(/exceeds maximum length/);
  });
 
  it('throws when changedFiles contains an invalid status', () => {
@@ -250,6 +305,29 @@ describe('WorkTransfer Primitive', () => {
  const res = applyWorkTransferToWorkspace(maliciousPkg, tempDir);
  expect(res.errors).toHaveLength(1);
  expect(res.errors[0]).toContain('Path traversal violation');
+ });
+
+ it('blocks null byte injections in paths', () => {
+ const maliciousPkg = createWorkTransferPackage({
+ title: 'Null Byte Traversal', task: 'Test', objective: 'Test', sourceAgent: 'agent-src',
+ changedFiles: [{ path: 'safe\0/../../etc/passwd', status: 'added', content: 'hacked' }],
+ });
+ const res = applyWorkTransferToWorkspace(maliciousPkg, tempDir);
+ expect(res.errors).toHaveLength(1);
+ expect(res.errors[0]).toContain('null bytes detected');
+ });
+
+ it('blocks non-string content types', () => {
+ const invalidPkg = createWorkTransferPackage({
+ title: 'Non-String', task: 'Test', objective: 'Test', sourceAgent: 'agent-src',
+ changedFiles: [{ path: 'safe.txt', status: 'added' }],
+ });
+ // Manually mutate it to an array
+ (invalidPkg.changedFiles[0] as any).content = [1, 2, 3];
+
+ const res = applyWorkTransferToWorkspace(invalidPkg, tempDir);
+ expect(res.errors).toHaveLength(1);
+ expect(res.errors[0]).toContain('File content must be a string');
  });
  });
 });

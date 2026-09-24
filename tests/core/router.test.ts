@@ -137,4 +137,22 @@ describe('AgentRouter', () => {
  const decision = router.routeTransfer(transfer);
  expect(decision.selectedAgentId).toBe('claude-code');
  });
+
+ it('breaks ties deterministically using alphabetical ID', () => {
+  const tieRegistry = new AgentRegistry(eventBus);
+  const tieRouter = new AgentRouter(tieRegistry);
+
+  // Clone mockClaude but alter names and IDs to test tiebreaker
+  const agentZ = { ...mockClaude, id: agentId('z-agent'), name: 'Z Agent' };
+  const agentM = { ...mockClaude, id: agentId('m-agent'), name: 'M Agent' };
+  const agentA = { ...mockClaude, id: agentId('a-agent'), name: 'A Agent' };
+
+  tieRegistry.register(new MockAdapter(agentZ));
+  tieRegistry.register(new MockAdapter(agentM));
+  tieRegistry.register(new MockAdapter(agentA));
+
+  const decisionTie = tieRouter.route();
+  expect(decisionTie.selectedAgentId).toBe('a-agent');
+  expect(decisionTie.rationale).toContain('tie broken by ID');
+ });
 });

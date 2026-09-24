@@ -20,6 +20,9 @@
 
 import { spawn, type ChildProcess } from 'node:child_process';
 import { createInterface, type Interface as ReadlineInterface } from 'node:readline';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import type { Logger } from '../core/types.js';
 import type { Transport, TransportState, StdioTransportOptions } from './types.js';
 
 export class StdioJsonTransport implements Transport {
@@ -33,7 +36,7 @@ export class StdioJsonTransport implements Transport {
  private _state: TransportState = 'idle';
  private iteratorDone = false;
 
- constructor(private readonly options: StdioTransportOptions) {}
+ constructor(private readonly options: StdioTransportOptions, private readonly logger?: Logger) {}
 
  get state(): TransportState {
  return this._state;
@@ -55,15 +58,33 @@ export class StdioJsonTransport implements Transport {
  throw new Error('Transport is already connecting');
  }
 
+ // Validate command
+ if (!path.isAbsolute(this.options.command)) {
+   throw new Error(`Command must be an absolute path: ${this.options.command}`);
+ }
+ if (!fs.existsSync(this.options.command)) {
+   throw new Error(`Command executable not found: ${this.options.command}`);
+ }
+ if (/[&|;`$]/.test(this.options.command)) {
+   throw new Error(`Command contains shell metacharacters: ${this.options.command}`);
+ }
+
  this._state = 'connecting';
 
  try {
+ const safeEnvKeys = ['PATH', 'HOME', 'NODE_ENV', 'TERM'];
+ const safeEnv: Record<string, string | undefined> = {};
+ for (const key of safeEnvKeys) {
+   safeEnv[key] = process.env[key];
+ }
+
  const child = spawn(this.options.command, this.options.args ?? [], {
  cwd: this.options.cwd,
- env: { ...process.env, ...this.options.env },
+ env: { ...safeEnv, ...this.options.env },
  stdio: ['pipe', 'pipe', 'pipe'],
  // Don't let the child keep the parent alive
  detached: false,
+ shell: false,
  });
 
  this.process = child;
@@ -86,10 +107,13 @@ export class StdioJsonTransport implements Transport {
  try {
  const parsed = JSON.parse(trimmed);
  this.enqueue(parsed);
- } catch {
+ } catch (err) {
  // Non-JSON line - some agents emit preamble text before JSON.
  // Capture it but don't crash.
  this.stderrLines.push(`[non-json stdout] ${trimmed}`);
+ if (this.logger) {
+   this.logger.warn(`Non-JSON output on stdout: ${trimmed}`);
+ }
  }
  });
 
@@ -232,6 +256,11 @@ export class StdioJsonTransport implements Transport {
  resolve({ value: data, done: false });
  } else {
  // No one waiting - buffer it
+ const maxSize = this.options.maxQueueSize ?? 10000;
+ if (this.messageQueue.length >= maxSize) {
+   this.messageQueue.shift(); // Drop the oldest message
+   this.notifyError(new Error(`StdioJsonTransport queue limit exceeded (${maxSize}), dropped oldest message.`));
+ }
  this.messageQueue.push(data);
  }
  }
@@ -251,8 +280,10 @@ export class StdioJsonTransport implements Transport {
  for (const handler of this.errorHandlers) {
  try {
  handler(err);
- } catch {
- // Swallow listener errors
+ } catch (handlerErr) {
+ if (this.logger) {
+   this.logger.error(`Error in StdioJsonTransport error handler`, handlerErr);
+ }
  }
  }
  }
@@ -261,8 +292,10 @@ export class StdioJsonTransport implements Transport {
  for (const handler of this.closeHandlers) {
  try {
  handler(code);
- } catch {
- // Swallow listener errors
+ } catch (handlerErr) {
+ if (this.logger) {
+   this.logger.error(`Error in StdioJsonTransport close handler`, handlerErr);
+ }
  }
  }
  }

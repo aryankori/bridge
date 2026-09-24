@@ -117,6 +117,12 @@ const SECRET_PATTERNS = [
  /DEV_TOKEN_[A-Z0-9_]+/g,
  /Bearer\s+[a-zA-Z0-9._-]{20,}/gi,
  /password\s*[:=]\s*['"][^'"]+['"]/gi,
+ /AKIA[0-9A-Z]{16}/g,
+ /-----BEGIN.*PRIVATE KEY-----/g,
+ /eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g,
+ /sk-ant-[a-zA-Z0-9-_]{20,}/g,
+ /(postgres|mongodb|mysql):\/\/[^:\s]+:[^@\s]+@[^\s]+/gi,
+ /(API_KEY|SECRET)\s*[:=]\s*['"]?[^\s'"]+['"]?/gi,
 ];
 
 export function scrubTransferSecrets(text: string): string {
@@ -127,8 +133,32 @@ export function scrubTransferSecrets(text: string): string {
  return result;
 }
 
+export function scrubRecursive(obj: any): any {
+  if (typeof obj === 'string') {
+    return scrubTransferSecrets(obj);
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(scrubRecursive);
+  }
+  if (obj && typeof obj === 'object') {
+    const scrubbed: any = {};
+    for (const key of Object.keys(obj)) {
+      scrubbed[key] = scrubRecursive(obj[key]);
+    }
+    return scrubbed;
+  }
+  return obj;
+}
+
 export function assertPathConfinement(targetPath: string, rootDir: string): void {
- const resolvedTarget = path.resolve(rootDir, targetPath);
+ if (targetPath.indexOf('\0') !== -1) {
+   throw new Error('Path traversal violation: null bytes detected');
+ }
+ const normalizedPath = path.normalize(targetPath);
+ if (normalizedPath.split(path.sep).includes('..')) {
+   throw new Error('Path traversal violation: ".." segments detected');
+ }
+ const resolvedTarget = path.resolve(rootDir, normalizedPath);
  const resolvedRoot = path.resolve(rootDir);
 
  if (!resolvedTarget.startsWith(resolvedRoot)) {
@@ -202,7 +232,11 @@ export function createWorkTransferPackage(options: CreateWorkTransferOptions): W
  sourceAgentId: sourceId,
  targetAgentId: targetId,
  changedFiles: sanitizedChangedFiles,
- relevantFiles: options.relevantFiles ?? [],
+ relevantFiles: (options.relevantFiles ?? []).map((f) => ({
+   path: f.path,
+   reason: f.reason ? scrubTransferSecrets(f.reason) : undefined,
+   content: f.content ? scrubTransferSecrets(f.content) : undefined,
+ })),
  artifacts: sanitizedArtifacts,
  commands: (options.commands ?? []).map((c) => ({
  ...c,
@@ -231,7 +265,7 @@ export function createWorkTransferPackage(options: CreateWorkTransferOptions): W
  branch: options.branch,
  bridgeVersion: '0.1.0',
  },
- metadata: options.metadata,
+ metadata: options.metadata ? scrubRecursive(options.metadata) : undefined,
  };
 }
 
@@ -240,6 +274,11 @@ export function serializeWorkTransfer(pkg: WorkTransferPackage): string {
 }
 
 export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
+  // Check payload size to prevent huge payload parsing
+  if (jsonText.length > 1024 * 1024) {
+    throw new Error('Malformed WorkTransferPackage: payload exceeds 1MB limit');
+  }
+
   const parsed = JSON.parse(jsonText);
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     throw new Error('Malformed WorkTransferPackage: must be a JSON object');
@@ -260,6 +299,12 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     throw new Error('Malformed WorkTransferPackage: prototype pollution detected');
   }
 
+  const enforceStringLength = (val: string, maxLen: number, fieldName: string) => {
+    if (val.length > maxLen) {
+      throw new Error(`Malformed WorkTransferPackage: field "${fieldName}" exceeds maximum length of ${maxLen}`);
+    }
+  };
+
   // Mandatory top-level string fields
   const requiredStringFields = ['id', 'task', 'objective', 'sourceAgentId', 'title'];
   for (const field of requiredStringFields) {
@@ -269,6 +314,7 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     if (typeof parsed[field] !== 'string') {
       throw new Error(`Malformed WorkTransferPackage: field "${field}" must be a string`);
     }
+    enforceStringLength(parsed[field], 100000, field);
   }
 
   // Provenance validation
@@ -302,8 +348,17 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
       if (typeof file.path !== 'string') {
         throw new Error('Malformed WorkTransferPackage: changedFiles[].path must be a string');
       }
+      enforceStringLength(file.path, 10000, 'changedFiles[].path');
       if (file.status !== 'added' && file.status !== 'modified' && file.status !== 'deleted') {
         throw new Error('Malformed WorkTransferPackage: changedFiles[].status must be added, modified, or deleted');
+      }
+      if (file.diff !== undefined) {
+        if (typeof file.diff !== 'string') throw new Error('Malformed WorkTransferPackage: changedFiles[].diff must be a string');
+        enforceStringLength(file.diff, 1000000, 'changedFiles[].diff');
+      }
+      if (file.content !== undefined) {
+        if (typeof file.content !== 'string') throw new Error('Malformed WorkTransferPackage: changedFiles[].content must be a string');
+        enforceStringLength(file.content, 1000000, 'changedFiles[].content');
       }
     }
   }
@@ -313,6 +368,15 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     for (const f of parsed.relevantFiles) {
       if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: relevantFiles elements must be objects');
       if (typeof f.path !== 'string') throw new Error('Malformed WorkTransferPackage: relevantFiles[].path must be a string');
+      enforceStringLength(f.path, 10000, 'relevantFiles[].path');
+      if (f.reason !== undefined) {
+        if (typeof f.reason !== 'string') throw new Error('Malformed WorkTransferPackage: relevantFiles[].reason must be a string');
+        enforceStringLength(f.reason, 10000, 'relevantFiles[].reason');
+      }
+      if (f.content !== undefined) {
+        if (typeof f.content !== 'string') throw new Error('Malformed WorkTransferPackage: relevantFiles[].content must be a string');
+        enforceStringLength(f.content, 1000000, 'relevantFiles[].content');
+      }
     }
   }
 
@@ -321,8 +385,19 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     for (const f of parsed.artifacts) {
       if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: artifacts elements must be objects');
       if (typeof f.id !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].id must be a string');
+      enforceStringLength(f.id, 10000, 'artifacts[].id');
       if (typeof f.name !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].name must be a string');
+      enforceStringLength(f.name, 10000, 'artifacts[].name');
       if (typeof f.type !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].type must be a string');
+      enforceStringLength(f.type, 10000, 'artifacts[].type');
+      if (f.path !== undefined) {
+        if (typeof f.path !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].path must be a string');
+        enforceStringLength(f.path, 10000, 'artifacts[].path');
+      }
+      if (f.content !== undefined) {
+        if (typeof f.content !== 'string') throw new Error('Malformed WorkTransferPackage: artifacts[].content must be a string');
+        enforceStringLength(f.content, 1000000, 'artifacts[].content');
+      }
     }
   }
 
@@ -331,7 +406,17 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     for (const f of parsed.commands) {
       if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: commands elements must be objects');
       if (typeof f.command !== 'string') throw new Error('Malformed WorkTransferPackage: commands[].command must be a string');
+      enforceStringLength(f.command, 100000, 'commands[].command');
       if (typeof f.exitCode !== 'number') throw new Error('Malformed WorkTransferPackage: commands[].exitCode must be a number');
+      if (f.durationMs !== undefined && typeof f.durationMs !== 'number') throw new Error('Malformed WorkTransferPackage: commands[].durationMs must be a number');
+      if (f.stdout !== undefined) {
+        if (typeof f.stdout !== 'string') throw new Error('Malformed WorkTransferPackage: commands[].stdout must be a string');
+        enforceStringLength(f.stdout, 1000000, 'commands[].stdout');
+      }
+      if (f.stderr !== undefined) {
+        if (typeof f.stderr !== 'string') throw new Error('Malformed WorkTransferPackage: commands[].stderr must be a string');
+        enforceStringLength(f.stderr, 1000000, 'commands[].stderr');
+      }
     }
   }
 
@@ -340,7 +425,21 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     for (const f of parsed.tests) {
       if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: tests elements must be objects');
       if (typeof f.command !== 'string') throw new Error('Malformed WorkTransferPackage: tests[].command must be a string');
+      enforceStringLength(f.command, 100000, 'tests[].command');
       if (typeof f.passed !== 'boolean') throw new Error('Malformed WorkTransferPackage: tests[].passed must be a boolean');
+      if (f.summary !== undefined) {
+        if (typeof f.summary !== 'string') throw new Error('Malformed WorkTransferPackage: tests[].summary must be a string');
+        enforceStringLength(f.summary, 1000000, 'tests[].summary');
+      }
+      if (f.stdout !== undefined) {
+        if (typeof f.stdout !== 'string') throw new Error('Malformed WorkTransferPackage: tests[].stdout must be a string');
+        enforceStringLength(f.stdout, 1000000, 'tests[].stdout');
+      }
+      if (f.stderr !== undefined) {
+        if (typeof f.stderr !== 'string') throw new Error('Malformed WorkTransferPackage: tests[].stderr must be a string');
+        enforceStringLength(f.stderr, 1000000, 'tests[].stderr');
+      }
+      if (f.durationMs !== undefined && typeof f.durationMs !== 'number') throw new Error('Malformed WorkTransferPackage: tests[].durationMs must be a number');
     }
   }
 
@@ -349,7 +448,16 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     for (const f of parsed.decisions) {
       if (!f || typeof f !== 'object') throw new Error('Malformed WorkTransferPackage: decisions elements must be objects');
       if (typeof f.decision !== 'string') throw new Error('Malformed WorkTransferPackage: decisions[].decision must be a string');
+      enforceStringLength(f.decision, 100000, 'decisions[].decision');
       if (typeof f.rationale !== 'string') throw new Error('Malformed WorkTransferPackage: decisions[].rationale must be a string');
+      enforceStringLength(f.rationale, 1000000, 'decisions[].rationale');
+      validateArray(f.alternativesConsidered, 'decisions[].alternativesConsidered');
+      if (f.alternativesConsidered) {
+        for (const alt of f.alternativesConsidered) {
+          if (typeof alt !== 'string') throw new Error('Malformed WorkTransferPackage: decisions[].alternativesConsidered elements must be strings');
+          enforceStringLength(alt, 100000, 'decisions[].alternativesConsidered element');
+        }
+      }
     }
   }
 
@@ -357,6 +465,7 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
   if (parsed.unresolvedQuestions) {
     for (const q of parsed.unresolvedQuestions) {
       if (typeof q !== 'string') throw new Error('Malformed WorkTransferPackage: unresolvedQuestions elements must be strings');
+      enforceStringLength(q, 100000, 'unresolvedQuestions element');
     }
   }
 
@@ -364,6 +473,7 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
   if (parsed.outcomes) {
     for (const q of parsed.outcomes) {
       if (typeof q !== 'string') throw new Error('Malformed WorkTransferPackage: outcomes elements must be strings');
+      enforceStringLength(q, 100000, 'outcomes element');
     }
   }
 
@@ -371,6 +481,7 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
   if (parsed.failures) {
     for (const q of parsed.failures) {
       if (typeof q !== 'string') throw new Error('Malformed WorkTransferPackage: failures elements must be strings');
+      enforceStringLength(q, 100000, 'failures element');
     }
   }
 
@@ -473,8 +584,17 @@ export function applyWorkTransferToWorkspace(
  result.deletedFiles.push(file.path);
  }
  } else if (file.content !== undefined) {
+ if (typeof file.content !== 'string') {
+   throw new Error('File content must be a string');
+ }
  fs.mkdirSync(path.dirname(fullPath), { recursive: true });
- fs.writeFileSync(fullPath, file.content, 'utf-8');
+ // TOCTOU check after mkdirSync
+ const finalResolved = path.resolve(fullPath);
+ const resolvedRoot = path.resolve(targetWorkspaceRoot);
+ if (!finalResolved.startsWith(resolvedRoot)) {
+   throw new Error(`Path traversal violation after directory creation: "${fullPath}" escapes root "${targetWorkspaceRoot}"`);
+ }
+ fs.writeFileSync(finalResolved, file.content, 'utf-8');
  result.appliedFiles.push(file.path);
  }
  } catch (err: unknown) {

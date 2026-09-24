@@ -170,4 +170,45 @@ describe('JsonRpcClient', () => {
 
  await expect(promise).rejects.toThrow('stopped');
  });
+
+ it('wraps ID generation at Number.MAX_SAFE_INTEGER', async () => {
+  await setup();
+  // Mutate private nextId
+  (client as any).nextId = Number.MAX_SAFE_INTEGER;
+
+  // We can't easily intercept the message being sent, but we can see the id of the sent messages if we could hook into the transport.
+  // Instead, let's just make two requests and let them timeout, or mock transport send.
+  const oldSend = transport.send.bind(transport);
+  const sentMessages: any[] = [];
+  transport.send = async (data: any) => {
+    sentMessages.push(data);
+    return oldSend(data);
+  };
+
+  client.request('test1').catch(() => {});
+  client.request('test2').catch(() => {});
+
+  expect(sentMessages.length).toBeGreaterThanOrEqual(2);
+  expect(sentMessages[0].id).toBe(Number.MAX_SAFE_INTEGER);
+  expect(sentMessages[1].id).toBe(1);
+ });
+
+ it('enforces maximum pending requests limit', async () => {
+  // Setup a client with limit 2
+  transport = new StdioJsonTransport({
+    command: process.execPath,
+    args: [RPC_SERVER],
+  });
+  await transport.connect();
+
+  client = new JsonRpcClient(transport, 5000, 2);
+  client.start();
+
+  // These should succeed (queued in pending)
+  client.request('slow', { delayMs: 5000 }).catch(() => {});
+  client.request('slow', { delayMs: 5000 }).catch(() => {});
+
+  // This one should fail immediately because pending is full
+  await expect(client.request('test3')).rejects.toThrow(/exceeded max pending requests limit/);
+ });
 });

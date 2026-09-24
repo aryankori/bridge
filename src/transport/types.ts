@@ -69,6 +69,8 @@ export interface StdioTransportOptions {
  env?: Record<string, string>;
  /** Timeout in ms for the process to start producing output */
  startupTimeoutMs?: number;
+ /** Maximum size of the internal message queue before dropping oldest messages */
+ maxQueueSize?: number;
 }
 
 // ---------------------------------------------------------------------------
