@@ -1,0 +1,22 @@
+version: 1
+instructions:
+  - id: type-soundness
+    title: Strict TypeScript & ESM Compliance
+    description: >
+      Verify that all TypeScript code uses strict typing without `any`. Ensure all relative imports
+      include the `.js` extension required by ES modules (Node.js ESM).
+  - id: path-confinement
+    title: Assert Workspace Path Confinement
+    description: >
+      Any file operations touching agent workspaces must use `assertPathConfinement` to prevent
+      directory traversal vulnerabilities.
+  - id: test-coverage
+    title: Test Completeness
+    description: >
+      Ensure that every new feature or bug fix has corresponding unit or integration tests
+      under `tests/` and that existing tests in the suite pass.
+  - id: benchmark-invariants
+    title: Preserve Benchmark Gold Labels
+    description: >
+      Under no circumstances should gold labels or scenario expectations in `research/experiments/`
+      be weakened or altered without an explicit RFC and research memo.

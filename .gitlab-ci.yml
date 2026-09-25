@@ -5,6 +5,12 @@ stages:
   - security
   - build
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
 default:
   before_script:
     - corepack enable
@@ -38,6 +44,15 @@ experiment-validate:
   script:
     - pnpm experiment:validate
 
+agent-verify:
+  stage: test
+  script:
+    - test -f AGENTS.md
+    - test -f .gitlab/duo/AGENTS.md
+    - test -f .gitlab/duo/mr-review-instructions.yaml
+    - pnpm typecheck
+    - pnpm experiment:validate
+
 security-audit:
   stage: security
   script:
@@ -51,3 +66,4 @@ build:
     paths:
       - dist/
     expire_in: 1 week
+
