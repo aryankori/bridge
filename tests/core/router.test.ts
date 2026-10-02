@@ -29,6 +29,64 @@ class MockAdapter implements AgentAdapter {
 }
 
 describe('AgentRouter', () => {
+
+  describe('Task 10: Router Scoring Determinism', () => {
+    it('should break ties deterministically by agent ID', () => {
+      const registry = new AgentRegistry(new EventBus());
+
+      const agentB = new MockAdapter({
+        id: agentId('agent-b'),
+        name: 'Agent B',
+        version: '1.0',
+        executablePath: '/bin/agent-b',
+        dataDir: null,
+        transports: ['stdio-json'],
+        capabilities: {
+          launch: true,
+          sendMessage: true,
+          streamOutput: true,
+          listSessions: false,
+          resumeSession: false,
+          exportSession: false,
+          importSession: false,
+          mcpClient: false,
+          mcpServer: false,
+          acp: false,
+        },
+        evidence: {},
+      });
+
+      const agentA = new MockAdapter({
+        id: agentId('agent-a'),
+        name: 'Agent A',
+        version: '1.0',
+        executablePath: '/bin/agent-a',
+        dataDir: null,
+        transports: ['stdio-json'],
+        capabilities: {
+          launch: true,
+          sendMessage: true,
+          streamOutput: true,
+          listSessions: false,
+          resumeSession: false,
+          exportSession: false,
+          importSession: false,
+          mcpClient: false,
+          mcpServer: false,
+          acp: false,
+        },
+        evidence: {},
+      });
+
+      registry.register(agentB);
+      registry.register(agentA);
+
+      const router = new AgentRouter(registry);
+      const decision = router.route({ requiredCapabilities: { sendMessage: true } });
+      expect(decision.selectedAgentId).toBe('agent-a');
+    });
+  });
+
  let registry: AgentRegistry;
  let router: AgentRouter;
  let eventBus: EventBus;

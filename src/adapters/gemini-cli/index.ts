@@ -85,8 +85,8 @@ export class GeminiCliAdapter implements AgentAdapter {
  const first = out.split(/\r?\n/)[0]?.trim();
  if (first && fs.existsSync(first)) return first;
  } catch {
- // Fallback
- }
+      // Intentionally swallowed: command execution failed, fallback to default name
+    }
 
  return 'gemini';
  }
@@ -102,8 +102,8 @@ export class GeminiCliAdapter implements AgentAdapter {
  }).trim();
  this._descriptor.version = verOutput || null;
  } catch {
- // Version non-fatal
- }
+      // Intentionally swallowed: version check is non-fatal
+    }
  return this._descriptor;
  }
  return null;

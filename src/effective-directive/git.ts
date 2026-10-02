@@ -127,6 +127,7 @@ function isDirectory(candidate: string): boolean {
   try {
     return statSync(candidate).isDirectory();
   } catch {
+    // Intentionally swallowed: statSync fails if directory does not exist or lacks permissions
     return false;
   }
 }
@@ -400,6 +401,7 @@ async function configValue(git: GitRunner, repoDir: string, key: string): Promis
   try {
     return (await git(['config', '--get', key], repoDir)).trim();
   } catch {
+    // Intentionally swallowed: git config --get fails if key is not found
     return '';
   }
 }
