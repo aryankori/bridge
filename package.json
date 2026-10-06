@@ -6,55 +6,59 @@
  "main": "dist/index.js",
  "types": "dist/index.d.ts",
  "bin": {
- "bridge": "dist/bin/bridge.js"
+  "bridge": "dist/bin/bridge.js"
  },
  "scripts": {
- "dev": "tsx watch src/index.ts",
- "build": "tsup",
- "typecheck": "tsc --noEmit",
- "test": "vitest run",
- "test:watch": "vitest",
- "test:coverage": "vitest run --coverage",
- "lint": "eslint src/ tests/",
- "lint:fix": "eslint src/ tests/ --fix",
- "format": "prettier --write .",
- "format:check": "prettier --check .",
- "clean": "rm -rf dist",
- "experiment:validate": "tsx research/experiments/exp-001/validate.ts",
- "experiment:smoke": "tsx research/experiments/exp-001/smoke-tests.ts",
- "experiment:pilot": "tsx research/experiments/exp-001/harness.ts --mode pilot",
- "experiment:replicate": "tsx research/experiments/exp-001/harness.ts --mode replicate"
+  "dev": "tsx watch src/index.ts",
+  "build": "tsup",
+  "typecheck": "tsc --noEmit",
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "test:coverage": "vitest run --coverage",
+  "lint": "eslint src/ tests/",
+  "lint:fix": "eslint src/ tests/ --fix",
+  "format": "prettier --write .",
+  "format:check": "prettier --check .",
+  "clean": "rm -rf dist",
+  "experiment:validate": "tsx research/experiments/exp-001/validate.ts",
+  "experiment:smoke": "tsx research/experiments/exp-001/smoke-tests.ts",
+  "experiment:pilot": "tsx research/experiments/exp-001/harness.ts --mode pilot",
+  "experiment:replicate": "tsx research/experiments/exp-001/harness.ts --mode replicate"
  },
  "engines": {
- "node": ">=20.0.0"
+  "node": ">=20.0.0"
  },
  "repository": {
- "type": "git",
- "url": "git+https://github.com/aryankori/bridge.git"
+  "type": "git",
+  "url": "git+https://github.com/aryankori/bridge.git"
  },
  "private": true,
  "license": "MIT",
  "author": "aryankori",
  "devDependencies": {
- "@types/node": "^26.3.0",
- "@typescript-eslint/eslint-plugin": "^8.68.0",
- "@typescript-eslint/parser": "^8.68.0",
- "@vitest/coverage-v8": "4.1.11",
- "eslint": "^10.9.1",
- "eslint-config-prettier": "^10.1.8",
- "prettier": "^3.9.6",
- "tsup": "^8.5.1",
- "tsx": "^4.23.12",
- "typescript": "^5.7.3",
- "vitest": "^4.1.11"
+  "@types/node": "^26.6.4",
+  "@typescript-eslint/eslint-plugin": "^8.71.1",
+  "@typescript-eslint/parser": "^8.71.1",
+  "@vitest/coverage-v8": "4.1.11",
+  "eslint": "^10.12.0",
+  "eslint-config-prettier": "^10.1.8",
+  "prettier": "^3.9.9",
+  "tsup": "^8.5.1",
+  "tsx": "^4.23.15",
+  "typescript": "^5.9.3",
+  "vitest": "^4.1.11"
  },
  "packageManager": "pnpm@9.15.4",
  "pnpm": {
- "onlyBuiltDependencies": [
- "esbuild"
- ],
- "approvedBuilds": [
- "esbuild"
- ]
+  "onlyBuiltDependencies": [
+   "esbuild"
+  ],
+  "approvedBuilds": [
+   "esbuild"
+  ]
+ },
+ "dependencies": {
+  "brace-expansion": "^5.0.12",
+  "source-map-js": "^1.2.2"
  }
 }

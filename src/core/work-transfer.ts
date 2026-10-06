@@ -317,6 +317,16 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     enforceStringLength(parsed[field], 100000, field);
   }
 
+  const optionalStringFields = ['projectId', 'workspacePath', 'targetAgentId'];
+  for (const field of optionalStringFields) {
+    if (field in parsed && parsed[field] !== undefined) {
+      if (typeof parsed[field] !== 'string') {
+        throw new Error(`Malformed WorkTransferPackage: field "${field}" must be a string`);
+      }
+      enforceStringLength(parsed[field], 100000, field);
+    }
+  }
+
   // Provenance validation
   if (!parsed.provenance || typeof parsed.provenance !== 'object') {
     throw new Error('Malformed WorkTransferPackage: missing required field "provenance"');
