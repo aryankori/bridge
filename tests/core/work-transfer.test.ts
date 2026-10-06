@@ -160,6 +160,14 @@ describe('WorkTransfer Primitive', () => {
  provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
  changedFiles: []
  }))).toThrow(/field "id" must be a string/);
+
+ // Invalid optional string type
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', task: 't', objective: 'o', sourceAgentId: 's', title: 't',
+ projectId: 123,
+ provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/field "projectId" must be a string/);
  });
 
  it('throws when prototype pollution is attempted', () => {
