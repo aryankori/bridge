@@ -55,6 +55,10 @@
  ],
  "approvedBuilds": [
  "esbuild"
- ]
+ ],
+ "overrides": {
+ "brace-expansion": "^5.0.11",
+ "source-map-js": "^1.2.2"
+ }
  }
 }
