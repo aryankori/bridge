@@ -88,7 +88,7 @@ export class ClaudeCodeAdapter implements AgentAdapter {
  const first = out.split(/\r?\n/)[0]?.trim();
  if (first && fs.existsSync(first)) return first;
  } catch {
- // Fallback
+ // Intentionally swallowed: If which/where fails, we fallback to the default 'claude' command.
  }
 
  return 'claude';
@@ -105,7 +105,7 @@ export class ClaudeCodeAdapter implements AgentAdapter {
  }).trim();
  this._descriptor.version = verOutput || null;
  } catch {
- // Version check non-fatal
+ // Intentionally swallowed: Failure to determine version is non-fatal; we proceed without a version.
  }
  return this._descriptor;
  }
