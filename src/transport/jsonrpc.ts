@@ -190,6 +190,9 @@ export class JsonRpcClient {
  this.handleMessage(raw);
  }
  } catch (err) {
+      if (this.logger) {
+        this.logger.error('JSON-RPC Transport error occurred:', err);
+      }
  // Transport error - reject all pending
  const error = err instanceof Error ? err : new Error(String(err));
  for (const [id, pending] of this.pending) {
