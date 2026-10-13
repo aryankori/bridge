@@ -148,6 +148,9 @@ export class StdioJsonTransport implements Transport {
 
  this._state = 'connected';
  } catch (err) {
+      if (this.logger) {
+        this.logger.error('Failed to connect StdioJsonTransport:', err);
+      }
  this._state = 'error';
  throw err;
  }
