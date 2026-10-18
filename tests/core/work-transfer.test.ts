@@ -160,6 +160,47 @@ describe('WorkTransfer Primitive', () => {
  provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
  changedFiles: []
  }))).toThrow(/field "id" must be a string/);
+
+ // Missing title
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', task: 't', objective: 'o', sourceAgentId: 's',
+ provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/missing required field "title"/);
+
+ // Missing task
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', title: 't', objective: 'o', sourceAgentId: 's',
+ provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/missing required field "task"/);
+
+ // Missing objective
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', title: 't', task: 't', sourceAgentId: 's',
+ provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/missing required field "objective"/);
+
+ // Missing sourceAgentId
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', title: 't', task: 't', objective: 'o',
+ provenance: { timestamp: 't', bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/missing required field "sourceAgentId"/);
+
+ // Missing provenance
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', title: 't', task: 't', objective: 'o', sourceAgentId: 's',
+ changedFiles: []
+ }))).toThrow(/missing required field "provenance"/);
+
+ // Missing provenance.timestamp
+ expect(() => deserializeWorkTransfer(JSON.stringify({
+ id: '123', title: 't', task: 't', objective: 'o', sourceAgentId: 's',
+ provenance: { bridgeVersion: 'v', sourceAgentId: 's' },
+ changedFiles: []
+ }))).toThrow(/field "provenance.timestamp" must be a string/);
  });
 
  it('throws when prototype pollution is attempted', () => {

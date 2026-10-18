@@ -339,6 +339,55 @@ export function deserializeWorkTransfer(jsonText: string): WorkTransferPackage {
     }
   };
 
+  // Root fields schema validation
+  if (typeof parsed.id !== 'string') throw new Error('Malformed WorkTransferPackage: field "id" must be a string');
+  enforceStringLength(parsed.id, 10000, 'id');
+  if (typeof parsed.title !== 'string') throw new Error('Malformed WorkTransferPackage: missing required field "title" or it must be a string');
+  enforceStringLength(parsed.title, 100000, 'title');
+  if (typeof parsed.task !== 'string') throw new Error('Malformed WorkTransferPackage: missing required field "task" or it must be a string');
+  enforceStringLength(parsed.task, 100000, 'task');
+  if (typeof parsed.objective !== 'string') throw new Error('Malformed WorkTransferPackage: missing required field "objective" or it must be a string');
+  enforceStringLength(parsed.objective, 100000, 'objective');
+  if (typeof parsed.sourceAgentId !== 'string') throw new Error('Malformed WorkTransferPackage: missing required field "sourceAgentId" or it must be a string');
+  enforceStringLength(parsed.sourceAgentId, 10000, 'sourceAgentId');
+
+  if (parsed.targetAgentId !== undefined) {
+    if (typeof parsed.targetAgentId !== 'string') throw new Error('Malformed WorkTransferPackage: field "targetAgentId" must be a string');
+    enforceStringLength(parsed.targetAgentId, 10000, 'targetAgentId');
+  }
+  if (parsed.projectId !== undefined) {
+    if (typeof parsed.projectId !== 'string') throw new Error('Malformed WorkTransferPackage: field "projectId" must be a string');
+    enforceStringLength(parsed.projectId, 10000, 'projectId');
+  }
+  if (parsed.workspacePath !== undefined) {
+    if (typeof parsed.workspacePath !== 'string') throw new Error('Malformed WorkTransferPackage: field "workspacePath" must be a string');
+    enforceStringLength(parsed.workspacePath, 100000, 'workspacePath');
+  }
+
+  // Provenance schema validation
+  if (!parsed.provenance || typeof parsed.provenance !== 'object') {
+    throw new Error('Malformed WorkTransferPackage: missing required field "provenance" or it must be an object');
+  }
+  if (typeof parsed.provenance.timestamp !== 'string') throw new Error('Malformed WorkTransferPackage: field "provenance.timestamp" must be a string');
+  enforceStringLength(parsed.provenance.timestamp, 1000, 'provenance.timestamp');
+  if (typeof parsed.provenance.sourceAgentId !== 'string') throw new Error('Malformed WorkTransferPackage: provenance.sourceAgentId must be a string');
+  enforceStringLength(parsed.provenance.sourceAgentId, 10000, 'provenance.sourceAgentId');
+  if (typeof parsed.provenance.bridgeVersion !== 'string') throw new Error('Malformed WorkTransferPackage: provenance.bridgeVersion must be a string');
+  enforceStringLength(parsed.provenance.bridgeVersion, 10000, 'provenance.bridgeVersion');
+
+  if (parsed.provenance.sourceAgentName !== undefined) {
+    if (typeof parsed.provenance.sourceAgentName !== 'string') throw new Error('Malformed WorkTransferPackage: provenance.sourceAgentName must be a string');
+    enforceStringLength(parsed.provenance.sourceAgentName, 10000, 'provenance.sourceAgentName');
+  }
+  if (parsed.provenance.commitSha !== undefined) {
+    if (typeof parsed.provenance.commitSha !== 'string') throw new Error('Malformed WorkTransferPackage: provenance.commitSha must be a string');
+    enforceStringLength(parsed.provenance.commitSha, 10000, 'provenance.commitSha');
+  }
+  if (parsed.provenance.branch !== undefined) {
+    if (typeof parsed.provenance.branch !== 'string') throw new Error('Malformed WorkTransferPackage: provenance.branch must be a string');
+    enforceStringLength(parsed.provenance.branch, 10000, 'provenance.branch');
+  }
+
   validateArray(parsed.changedFiles, 'changedFiles');
   if (parsed.changedFiles) {
     for (const file of parsed.changedFiles) {
