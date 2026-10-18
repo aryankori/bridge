@@ -214,6 +214,7 @@ async function ensureCommitInRepo(
   try {
     await git(['cat-file', '-e', `${endpoint.sha}^{commit}`], repo);
   } catch {
+    // Intentionally dropping the inner error and wrapping it in a domain-specific ResolveError
     throw new ResolveError(
       `Commit ${endpoint.sha} (${endpoint.label}) is not in the repository at ${repo}. Both worktrees must share one repository.`,
     );

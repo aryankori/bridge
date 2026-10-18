@@ -85,7 +85,8 @@ export class OpenCodeAdapter implements AgentAdapter {
  const first = out.split(/\r?\n/)[0]?.trim();
  if (first && fs.existsSync(first)) return first;
  } catch {
- // Fallback
+ // Empty catch intentionally ignores 'which'/'where.exe' failures
+ // since we will fall back to returning 'opencode' default command.
  }
 
  return 'opencode';
@@ -102,7 +103,8 @@ export class OpenCodeAdapter implements AgentAdapter {
  }).trim();
  this._descriptor.version = verOutput || null;
  } catch {
- // Version check non-fatal
+ // Empty catch intentionally ignores version check failures.
+ // A failure here is non-fatal; we just leave version as null.
  }
  return this._descriptor;
  }
