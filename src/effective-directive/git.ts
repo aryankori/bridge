@@ -127,6 +127,7 @@ function isDirectory(candidate: string): boolean {
   try {
     return statSync(candidate).isDirectory();
   } catch {
+    // fs.statSync throws if the file does not exist or lacks permissions. Return false in these cases.
     return false;
   }
 }
@@ -400,6 +401,7 @@ async function configValue(git: GitRunner, repoDir: string, key: string): Promis
   try {
     return (await git(['config', '--get', key], repoDir)).trim();
   } catch {
+    // git config --get exits with a non-zero status if the key doesn't exist, which is expected.
     return '';
   }
 }
