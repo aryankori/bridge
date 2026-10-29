@@ -214,6 +214,7 @@ async function ensureCommitInRepo(
   try {
     await git(['cat-file', '-e', `${endpoint.sha}^{commit}`], repo);
   } catch {
+    // git cat-file -e exits with non-zero if the object does not exist. We intentionally throw a custom ResolveError in this case.
     throw new ResolveError(
       `Commit ${endpoint.sha} (${endpoint.label}) is not in the repository at ${repo}. Both worktrees must share one repository.`,
     );

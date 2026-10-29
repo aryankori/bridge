@@ -85,7 +85,7 @@ export class CodexAdapter implements AgentAdapter {
  const first = out.split(/\r?\n/)[0]?.trim();
  if (first && fs.existsSync(first)) return first;
  } catch {
- // Fallback
+    // Fallback to default name if command is not found in PATH or execution fails
  }
 
  return 'codex';
@@ -102,7 +102,7 @@ export class CodexAdapter implements AgentAdapter {
  }).trim();
  this._descriptor.version = verOutput || null;
  } catch {
- // Version non-fatal
+    // Version check is non-fatal; ignore error
  }
  return this._descriptor;
  }
