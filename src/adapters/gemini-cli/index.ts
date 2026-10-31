@@ -85,7 +85,7 @@ export class GeminiCliAdapter implements AgentAdapter {
  const first = out.split(/\r?\n/)[0]?.trim();
  if (first && fs.existsSync(first)) return first;
  } catch {
- // Fallback
+      // Fallback to default command if 'which' fails to find executable
  }
 
  return 'gemini';
@@ -102,7 +102,7 @@ export class GeminiCliAdapter implements AgentAdapter {
  }).trim();
  this._descriptor.version = verOutput || null;
  } catch {
- // Version non-fatal
+      // Version check failure is non-fatal; we will just have a null version
  }
  return this._descriptor;
  }
