@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  vite: '>=8.2.4'
+  vite: 8.2.4
 
 importers:
 
@@ -41,9 +41,6 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
-      vite:
-        specifier: 8.2.4
-        version: 8.2.4(@types/node@26.3.0)(esbuild@0.27.7)(tsx@4.23.12)
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@26.3.0)(@vitest/coverage-v8@4.1.11)(vite@8.2.4(@types/node@26.3.0)(esbuild@0.27.7)(tsx@4.23.12))
@@ -769,7 +766,7 @@ packages:
     resolution: {integrity: sha512-2XJVD55d1o5AZous5CCGKS74g/riOj9odEt2bQpCVZeblHyHdnMeFl4jl0XjU21stf4mbjUkew2eXQZt65g5CQ==}
     peerDependencies:
       msw: ^2.4.9
-      vite: '>=8.2.4'
+      vite: 8.2.4
     peerDependenciesMeta:
       msw:
         optional: true
@@ -1448,7 +1445,7 @@ packages:
       '@vitest/ui': 4.1.11
       happy-dom: '*'
       jsdom: '*'
-      vite: '>=8.2.4'
+      vite: 8.2.4
     peerDependenciesMeta:
       '@edge-runtime/vm':
         optional: true
